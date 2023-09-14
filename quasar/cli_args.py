@@ -10,7 +10,7 @@ class TThmoUAXlrSuGJKbRtTwrhvihcAqADzp(argparse.Action):
             raise TypeError("type must be an Enum when using EnumAction")
         tmujDLxgYaCDFcisPjJrwuVqCDvwpMHt = tuple(dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO.value for dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO in ljnptQvQTcjCRoKUsgERGUPmIIPsOuKZ)
         kwargs.setdefault("choices", tmujDLxgYaCDFcisPjJrwuVqCDvwpMHt)
-        kwargs.setdefault("metavar", f"[{','.join(list(choices))}]")
+        kwargs.setdefault("metavar", f"[{','.join(list(tmujDLxgYaCDFcisPjJrwuVqCDvwpMHt))}]")
         super(TThmoUAXlrSuGJKbRtTwrhvihcAqADzp, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS).__init__(**kwargs)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS._enum = ljnptQvQTcjCRoKUsgERGUPmIIPsOuKZ
     def __call__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, igCtajZqjJempyRtCXGEtbeTNbPBhKtk, namespace, values, option_string=None):
