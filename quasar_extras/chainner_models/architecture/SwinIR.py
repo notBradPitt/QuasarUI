@@ -108,7 +108,7 @@ class kdrkFBfJmtiPIYqxzEHXaLXyHdTuEzkK(nn.Module):
         VxEFwqRUZKQIODDttRLPjJQWwjYKIRso (int): Shift vqDBJgidQufnKyAltPYRqiKGjmztArDJ for SW-MSA.
         uDdUvEneYSYoIevRgfdDqvFctrSBFezp (float): Ratio of mlp hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk.
         uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool, optional): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None, optional): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set.
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None, optional): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set.
         UopxEzgpVJqkfTBuNkdEmNLRqPMUWpUu (float, optional): Dropout rate. Default: 0.0
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU (float, optional): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0.0
         rzBOFNtNGPLXcyQbBkTWNeSrLkUVYuYg (float, optional): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.0
@@ -360,7 +360,7 @@ class AChYplcoYnbIdhsQFtwgdTUvUiOViJYb(nn.Module):
         nutobJTmWCYYpulsyYOoRWLklenNVeiu (int): Window vqDBJgidQufnKyAltPYRqiKGjmztArDJ. Default: 7
         uDdUvEneYSYoIevRgfdDqvFctrSBFezp (float): Ratio of mlp hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk. Default: 4
         uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set. Default: None
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set. Default: None
         drop_rate (float): Dropout rate. Default: 0
         attn_drop_rate (float): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0
         drop_path_rate (float): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.1
