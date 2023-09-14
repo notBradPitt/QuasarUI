@@ -23,7 +23,7 @@ class FysyHDAhzveVQGJRNBJHfHxZedLYKfhV(torch.nn.Module):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.adm_channels = lLgbOYEeDmYyyxASAROATrPmlqgqYORG.get("adm_in_channels", None)
         if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.adm_channels is None:
             rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.adm_channels = 0
-        print("model_type", SZAVLBSfrTycZhmQUtWaVvoZUmpPNFnx.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
+        print("model_type", SZAVLBSfrTycZhmQUtWaVvoZUmpPNFnx.name)
         print("adm", rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.adm_channels)
     def OnzWlzKaxvcGRiDToHScHroOvomgpvlX(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, given_betas=None, beta_schedule="linear", iaqNqpReXPEdYpNiyUIejEPLCqtbtedA=1000,
                           uxpvmlqmOaPaMVrpHrWCryZCjOHCVbkJ=1e-4, linear_end=2e-2, zPdwEaBmJLoyWlLEECXftyIOeNavvXbe=8e-3):

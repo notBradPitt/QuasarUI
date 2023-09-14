@@ -49,32 +49,32 @@ def kxrHWrKUsAImLcADDJwQctHfTpGpGvug(type_name):
     if type_name == "input":
         return oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
     return None
-def ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ):
-    if pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ.endswith("[output]"):
+def ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(name):
+    if name.endswith("[output]"):
         qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo()
-        pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ = pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ[:-9]
-    elif pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ.endswith("[input]"):
+        name = name[:-9]
+    elif name.endswith("[input]"):
         qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ = pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ[:-8]
-    elif pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ.endswith("[temp]"):
+        name = name[:-8]
+    elif name.endswith("[temp]"):
         qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
-        pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ = pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ[:-7]
+        name = name[:-7]
     else:
-        return pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, None
-    return pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ
-def OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, default_dir=None):
-    pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
+        return name, None
+    return name, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ
+def OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(name, default_dir=None):
+    name, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(name)
     if qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ is None:
         if default_dir is not None:
             qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = default_dir
         else:
             qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
-    return os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
-def LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ):
-    pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
+    return os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, name)
+def LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(name):
+    name, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(name)
     if qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ is None:
         qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
-    jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
+    jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, name)
     return os.path.exists(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
 def tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, full_folder_path):
     global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG

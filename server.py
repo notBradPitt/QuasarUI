@@ -107,10 +107,10 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
             DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.path.join(
                 rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, 'extensions/**/*.js'), recursive=True)
             HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv = list(map(lambda f: "/" + os.path.relpath(f, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root).replace("\\", "/"), files))
-            for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
+            for name, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
                 DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.path.join(dir, '**/*.js'), recursive=True)
                 HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv.extend(list(map(lambda f: "/extensions/" + urllib.parse.quote(
-                    pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ) + "/" + os.path.relpath(f, dir).replace("\\", "/"), files)))
+                    name) + "/" + os.path.relpath(f, dir).replace("\\", "/"), files)))
             return web.json_response(HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv)
         def mZYpkoTuRffoqoPxsmINFTYRYhLkpbHy(ZYvUveSnZKyFJUuTpSPHWUbByngGqELv):
             if ZYvUveSnZKyFJUuTpSPHWUbByngGqELv is None:
@@ -286,7 +286,7 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
             kbasCXwVBHYxjnfxoYMePJNFwjOQJuuH, mqBKvQSkDHBcoMjHYqBSBckPFVKkaKxr = quasar.model_management.pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, torch_free_too=True)
             zrNEqtwItZmzpRltVnSBfgdEAifrcRDg = {
                 "system": {
-                    "os": os.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ,
+                    "os": os.name,
                     "python_version": sys.AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ,
                     "embedded_python": os.path.split(os.path.split(sys.executable)[0])[1] == "python_embeded"
                 },
@@ -414,9 +414,9 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
             return web.Response(status=200)
     def grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP)
-        for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
+        for name, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
             rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi([
-                web.static('/extensions/' + urllib.parse.quote(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ), dir, follow_symlinks=True),
+                web.static('/extensions/' + urllib.parse.quote(name), dir, follow_symlinks=True),
             ])
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi([
             web.static('/', rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, follow_symlinks=True),

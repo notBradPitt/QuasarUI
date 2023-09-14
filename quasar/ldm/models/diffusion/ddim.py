@@ -10,11 +10,11 @@ class ssNFVfoMRtNHTsZhYRkqXDWbhUDSsDKt(object):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs = HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.parameterization = kwargs.get("parameterization", "eps")
-    def BpOtVuSttURsCNYELWmrxpBkqOPYBBlj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP):
+    def BpOtVuSttURsCNYELWmrxpBkqOPYBBlj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, name, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP):
         if type(jXgWCEykFJZnOJknbIlhJGCSQwytwtJP) == torch.Tensor:
             if jXgWCEykFJZnOJknbIlhJGCSQwytwtJP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc:
                 jXgWCEykFJZnOJknbIlhJGCSQwytwtJP = jXgWCEykFJZnOJknbIlhJGCSQwytwtJP.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-        setattr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP)
+        setattr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, name, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP)
     def tsMUuSGvjHEShpizgUiHhBUvXzEpNCvO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ddim_num_steps, ddim_discretize="uniform", ddim_eta=0., aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True):
         xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm = ydGLHegofJxILoEQvdIngtXoioplZMrS(ddim_discr_method=ddim_discretize, num_ddim_timesteps=ddim_num_steps,
                                                   buEvQvwasZgYyUqrxGfyNjTbzvwhzPXv=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ddpm_num_timesteps,aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS)

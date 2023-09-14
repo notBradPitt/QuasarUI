@@ -9,10 +9,10 @@ class FNPzkrvGxaqvoCNOqICrVrrNcmdkiBFJ(nn.Module):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj('decay', torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(eeehCkWlicOSSZeEWMocEIpaDJxlRTfD, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32))
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj('num_updates', torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(0, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.int) if use_num_upates
         else torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(-1, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.int))
-        for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.named_parameters():
+        for name, HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.named_parameters():
             if HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj.requires_grad:
-                mDtiVcQQGxNFjYuUGgPRCKftGiKZKSux = pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ.replace('.', '')
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.m_name2s_name.update({pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ: mDtiVcQQGxNFjYuUGgPRCKftGiKZKSux})
+                mDtiVcQQGxNFjYuUGgPRCKftGiKZKSux = name.replace('.', '')
+                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.m_name2s_name.update({name: mDtiVcQQGxNFjYuUGgPRCKftGiKZKSux})
                 rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj(mDtiVcQQGxNFjYuUGgPRCKftGiKZKSux, HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj.tEcQvpBwXwdqvKxRTLEBROBUyPoodldL().detach().data)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.collected_params = []
     def QUnBChpydDvJCBjwmHKTcazasCgmERja(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):

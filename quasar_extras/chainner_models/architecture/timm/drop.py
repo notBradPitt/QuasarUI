@@ -12,7 +12,7 @@ Hacked together by / Copyright 2020 Ross Wightman
     DropBlock with an experimental gaussian jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD option. Simplied from above without concern for ERUVMXIoRhkepyeqXbuVyzEnnckUwodx
     lPmJfojDSUTFirrgKPryiJRYyZOFajzZ KHpRlHOzblljQyskecSxzUuWZtneWwta at edges.
     This is the same as the DropConnect impl I created for EfficientNet, etc networks, however,
-    the original pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ is misleading as 'Drop Connect' is GlZreLQjBCiBptpFgmbsMbhjFlMgPVav different form of kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA in GlZreLQjBCiBptpFgmbsMbhjFlMgPVav separate paper...
+    the original name is misleading as 'Drop Connect' is GlZreLQjBCiBptpFgmbsMbhjFlMgPVav different form of kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA in GlZreLQjBCiBptpFgmbsMbhjFlMgPVav separate paper...
     See discussion: https://github.com/tensorflow/tpu/issues/494
-    changing the rmOubEJgfxmJuwTevhKPPVPDYGHXWRFZ and argument HveFqGlqmEyksihfawoPfrqdqxCAXCVr sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ 'drop path' rather than mix DropConnect as GlZreLQjBCiBptpFgmbsMbhjFlMgPVav rmOubEJgfxmJuwTevhKPPVPDYGHXWRFZ pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ and use
+    changing the rmOubEJgfxmJuwTevhKPPVPDYGHXWRFZ and argument HveFqGlqmEyksihfawoPfrqdqxCAXCVr sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ 'drop path' rather than mix DropConnect as GlZreLQjBCiBptpFgmbsMbhjFlMgPVav rmOubEJgfxmJuwTevhKPPVPDYGHXWRFZ name and use
     'survival rate' as the argument.

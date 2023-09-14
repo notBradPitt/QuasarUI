@@ -2,7 +2,7 @@ import os
 import importlib.util
 from quasar.cli_args import DukiculvUpjhZIVvaGinshRSKLSTgVVl
 def fOHoOssbHKFfHCuawarWordhfvicTSxb():
-    if os.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ == 'nt':
+    if os.name == 'nt':
         import ctypes
         class ibYCpkkxCAmfZbkJMhXViZgSqdPfBWqf(ctypes.Structure):
             _fields_ = [

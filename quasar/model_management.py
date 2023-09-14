@@ -500,7 +500,7 @@ def LlPEFQdsyRQPhjrfArraPsqqOdqUiGhQ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, PdGW
     TybTfjccLYlRrmjrblOlIJZQgUgZmlBM = False
     OiNVyiywgURbgOHSjdnIYNDIIaJjOJre = ["1080", "1070", "titan x", "p3000", "p3200", "p4000", "p4200", "p5000", "p5200", "p6000", "1060", "1050"]
     for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in OiNVyiywgURbgOHSjdnIYNDIIaJjOJre:
-        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb in cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ.lower():
+        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb in cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.name.lower():
             TybTfjccLYlRrmjrblOlIJZQgUgZmlBM = True
     if TybTfjccLYlRrmjrblOlIJZQgUgZmlBM:
         sGVNGqMDbfOiItaBylfOUWpFtkYLRfBF = (pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI() * 0.9 - BhZEdLwSnzaDJwUfESecuJfraxpORxNr())
@@ -510,7 +510,7 @@ def LlPEFQdsyRQPhjrfArraPsqqOdqUiGhQ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, PdGW
         return False
     BXOksMoCymLVRejnmYFCcWFrzgWLVtuJ = ["1660", "1650", "1630", "T500", "T550", "T600", "MX550", "MX450", "CMP 30HX"]
     for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in BXOksMoCymLVRejnmYFCcWFrzgWLVtuJ:
-        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb in cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ:
+        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb in cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.name:
             return False
     return True
 def sIeWDNiYvNWPLHobyjQHaTvlWZnazsHi(force=False):

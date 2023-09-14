@@ -46,13 +46,13 @@ def yyWaFzdOtJjUoPbjcnMdZOoSVzjhtGQq(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, averaged_
     PdGWiWNrDwHLuxVqHGwwISTXDvUzkDgP = dict(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.named_parameters())
     ssxkwYsFbNZdTHZiEKwzxHRpdkWLnjlx = dict(averaged_model.named_parameters())
     assert PdGWiWNrDwHLuxVqHGwwISTXDvUzkDgP.keys() == ssxkwYsFbNZdTHZiEKwzxHRpdkWLnjlx.keys()
-    for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, wqONwpPqzusAImUvAyPmoTAxAbxfcvHV in PdGWiWNrDwHLuxVqHGwwISTXDvUzkDgP.items():
-        ssxkwYsFbNZdTHZiEKwzxHRpdkWLnjlx[pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ].mul_(eeehCkWlicOSSZeEWMocEIpaDJxlRTfD).add_(wqONwpPqzusAImUvAyPmoTAxAbxfcvHV, uigKGapaQVcFiOjEiWwRAHjjkAWxsqck=1 - eeehCkWlicOSSZeEWMocEIpaDJxlRTfD)
+    for name, wqONwpPqzusAImUvAyPmoTAxAbxfcvHV in PdGWiWNrDwHLuxVqHGwwISTXDvUzkDgP.items():
+        ssxkwYsFbNZdTHZiEKwzxHRpdkWLnjlx[name].mul_(eeehCkWlicOSSZeEWMocEIpaDJxlRTfD).add_(wqONwpPqzusAImUvAyPmoTAxAbxfcvHV, uigKGapaQVcFiOjEiWwRAHjjkAWxsqck=1 - eeehCkWlicOSSZeEWMocEIpaDJxlRTfD)
     qPLtxWnhxftsSAYZmlGtdyOkBwnUdwgP = dict(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.named_buffers())
     QaFhcdpHHReMPKHnOCfkWYARCgJItCAq = dict(averaged_model.named_buffers())
     assert qPLtxWnhxftsSAYZmlGtdyOkBwnUdwgP.keys() == QaFhcdpHHReMPKHnOCfkWYARCgJItCAq.keys()
-    for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, ubjDIQVqxUMutpqSGhbwVzGikBuhWDVX in qPLtxWnhxftsSAYZmlGtdyOkBwnUdwgP.items():
-        QaFhcdpHHReMPKHnOCfkWYARCgJItCAq[pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ].copy_(ubjDIQVqxUMutpqSGhbwVzGikBuhWDVX)
+    for name, ubjDIQVqxUMutpqSGhbwVzGikBuhWDVX in qPLtxWnhxftsSAYZmlGtdyOkBwnUdwgP.items():
+        QaFhcdpHHReMPKHnOCfkWYARCgJItCAq[name].copy_(ubjDIQVqxUMutpqSGhbwVzGikBuhWDVX)
 class AwSTvhnKDKoohhqsIfTPaXnBQsyNEElU:
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, inv_gamma=1., power=1., xDHXyZxnTpgTIUWmlIOPGEtWVzfhHsDh=0., xPSUMHJpcKTzcLMKKmAzyKtzHGhYpbqS=1., start_at=0,
                  AXGNHRRRaXEGosLBtJYejDSeliYPSxwB=0):

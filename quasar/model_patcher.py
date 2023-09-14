@@ -46,18 +46,18 @@ class CmIugCFMKLyCSZlTCvUgomMGPXzvLNTG:
             rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["sampler_cfg_function"] = sampler_cfg_function
     def NSWvVpnNXQNVmvIfTYANKVEUuiTEnfwo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, unet_wrapper_function):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["model_function_wrapper"] = unet_wrapper_function
-    def zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ):
+    def zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, name):
         sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["transformer_options"]
         if "patches" not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
             sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"] = {}
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"][pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ] = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"].get(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, []) + [YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn]
-    def zFUiKqfWUnwPMzfBXahnOLUJRtWPmxSh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD):
+        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"][name] = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"].get(name, []) + [YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn]
+    def zFUiKqfWUnwPMzfBXahnOLUJRtWPmxSh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, name, block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD):
         sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["transformer_options"]
         if "patches_replace" not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
             sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"] = {}
-        if pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"]:
-            sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"][pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ] = {}
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"][pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ][(block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD)] = YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn
+        if name not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"]:
+            sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"][name] = {}
+        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"][name][(block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD)] = YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn
     def hHPgZMdHzzFfDXPQMViqoITNoINrStkW(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn1_patch")
     def jstBFVPVrDeSKOCaLQsAhwclSzZXFUnY(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn):
@@ -74,15 +74,15 @@ class CmIugCFMKLyCSZlTCvUgomMGPXzvLNTG:
         sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["transformer_options"]
         if "patches" in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
             ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"]
-            for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-                NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN = ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ]
+            for name in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
+                NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN = ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[name]
                 for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN)):
                     if hasattr(NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], "to"):
                         NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] = NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
         if "patches_replace" in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
             ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"]
-            for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-                NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN = ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ]
+            for name in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
+                NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN = ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[name]
                 for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN:
                     if hasattr(NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm], "to"):
                         NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm] = NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm].sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)

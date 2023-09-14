@@ -11,11 +11,11 @@ class sXLiacNyCNvYEcqslQTODwAWZJdLwDPI(object):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ddpm_num_timesteps = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.num_timesteps
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs = HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc
-    def BpOtVuSttURsCNYELWmrxpBkqOPYBBlj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP):
+    def BpOtVuSttURsCNYELWmrxpBkqOPYBBlj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, name, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP):
         if type(jXgWCEykFJZnOJknbIlhJGCSQwytwtJP) == torch.Tensor:
             if jXgWCEykFJZnOJknbIlhJGCSQwytwtJP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc:
                 jXgWCEykFJZnOJknbIlhJGCSQwytwtJP = jXgWCEykFJZnOJknbIlhJGCSQwytwtJP.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-        setattr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP)
+        setattr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, name, jXgWCEykFJZnOJknbIlhJGCSQwytwtJP)
     def tsMUuSGvjHEShpizgUiHhBUvXzEpNCvO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ddim_num_steps, ddim_discretize="uniform", ddim_eta=0., aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True):
         if ddim_eta != 0:
             raise ValueError('ddim_eta must be 0 for PLMS')

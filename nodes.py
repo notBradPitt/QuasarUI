@@ -1408,9 +1408,9 @@ def VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, ignore=se
             if os.path.isdir(YCwPMrCfndvbAsdSRIxJujNhkijrxjqq):
                 OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ[tieEujcveVfDzVXIDWvRBbuhQgiLzcLd] = YCwPMrCfndvbAsdSRIxJujNhkijrxjqq
         if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_CLASS_MAPPINGS") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_CLASS_MAPPINGS") is not None:
-            for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP:
-                if pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ not in ignore:
-                    wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ] = FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ]
+            for name in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP:
+                if name not in ignore:
+                    wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[name] = FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[name]
             if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_DISPLAY_NAME_MAPPINGS") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_DISPLAY_NAME_MAPPINGS") is not None:
                 fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf.update(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf)
             return True

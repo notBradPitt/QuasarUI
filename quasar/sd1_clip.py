@@ -1,4 +1,4 @@
-        Takes GlZreLQjBCiBptpFgmbsMbhjFlMgPVav potential FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ and tries sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ retrieve it.
+        Takes GlZreLQjBCiBptpFgmbsMbhjFlMgPVav potential FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu name and tries sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ retrieve it.
         Returns GlZreLQjBCiBptpFgmbsMbhjFlMgPVav Tuple consisting of the FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu and any leftover string, FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu can be None.
         Takes GlZreLQjBCiBptpFgmbsMbhjFlMgPVav qKBREHoSgcMHYVCNTapmPyODbBOyQAyv and converts it sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ GlZreLQjBCiBptpFgmbsMbhjFlMgPVav list of (token, RXBOtvKSHQkBvdKDbckmnlphvVygYURP, word id) elements.
         Tokens can both be integer SKTuXdEkUTcvRMkWNnuUOzlxSfTAvHGL and pre computed CLIP ibpplCpMyGvmcNhdPbuiRzLXosZnzkul.

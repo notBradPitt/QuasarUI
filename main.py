@@ -44,7 +44,7 @@ import shutil
 import threading
 import gc
 from quasar.cli_args import DukiculvUpjhZIVvaGinshRSKLSTgVVl
-if os.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ == "nt":
+if os.name == "nt":
     import logging
     logging.getLogger("xformers").addFilter(lambda record: 'A matching Triton is not available' not in record.getMessage())
 if __name__ == "__main__":
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     if DukiculvUpjhZIVvaGinshRSKLSTgVVl.auto_launch:
         def IBuVgpnjgzsNWxsaHVFkjxPIHZswrSaP(CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port):
             import webbrowser
-            if os.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ == 'nt' and CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv == '0.0.0.0':
+            if os.name == 'nt' and CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv == '0.0.0.0':
                 CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv = '127.0.0.1'
             webbrowser.open(f"http://{address}:{port}")
         ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN = IBuVgpnjgzsNWxsaHVFkjxPIHZswrSaP
