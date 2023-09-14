@@ -20,17 +20,17 @@ def CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, target_di
     return HthxDLxzAIsfoXjVhdkDOIkulknDYkXt.detach().tEcQvpBwXwdqvKxRTLEBROBUyPoodldL() if HthxDLxzAIsfoXjVhdkDOIkulknDYkXt.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type == 'mps' else HthxDLxzAIsfoXjVhdkDOIkulknDYkXt
 def PwJzymvvoojavDaJkLCXUcIrPqjaJEwc(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC):
     return sum(HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj.numel() for HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.parameters())
-def jVeqrMSEwOBLsWhruTZzfRzUWRfuZGGQ(paTH, url, digest=None):
-    paTH = Path(paTH)
-    paTH.parent.mkdir(parents=True, exist_ok=True)
-    if not paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH():
-        with urllib.request.urlopen(url) as HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk, open(paTH, 'wb') as f:
+def jVeqrMSEwOBLsWhruTZzfRzUWRfuZGGQ(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, url, digest=None):
+    hxKDuOteESNpOgdClxSsFUWnOOOOTwlR = Path(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR)
+    hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.parent.mkdir(parents=True, exist_ok=True)
+    if not hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH():
+        with urllib.request.urlopen(url) as HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk, open(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, 'wb') as f:
             shutil.copyfileobj(HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk, f)
     if digest is not None:
-        kpNtVjVmmsmopYNhoukvXPvVaTccjSNs = hashlib.sha256(open(paTH, 'rb').read()).hexdigest()
+        kpNtVjVmmsmopYNhoukvXPvVaTccjSNs = hashlib.sha256(open(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, 'rb').read()).hexdigest()
         if digest != kpNtVjVmmsmopYNhoukvXPvVaTccjSNs:
             raise OSError(f'hash of {path} (url: {url}) failed to validate')
-    return paTH
+    return hxKDuOteESNpOgdClxSsFUWnOOOOTwlR
 @contextmanager
 def gzsaxinHqFCHkVAPwBPjEHdKjdvuZYAQ(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC=True):
     dCjHnaMauOPDOhrflhhKTHvlhkmATAlA = [FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.training for FRIBQCDfDDxIonplwxvPCicvOmmOgYPC in VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.modules()]
@@ -143,14 +143,14 @@ class KmrFxJYEcqlbyidxnRtGlzChYnCkBENx(data.Dataset):
         super().__init__()
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.hpDCmssMBWJUwBayrpShjJoOSQeDdfbl = Path(hpDCmssMBWJUwBayrpShjJoOSQeDdfbl)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform = nn.Identity() if transform is None else transform
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI = sorted(paTH for paTH in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.hpDCmssMBWJUwBayrpShjJoOSQeDdfbl.rglob('*') if paTH.BsNMPzInPMJbfbtzWNcCZMzWMgmxchHs.lower() in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.OqvjoLSvQwIzafOkaiyctjuYLUItNdKU)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI = sorted(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR for hxKDuOteESNpOgdClxSsFUWnOOOOTwlR in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.hpDCmssMBWJUwBayrpShjJoOSQeDdfbl.rglob('*') if hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.BsNMPzInPMJbfbtzWNcCZMzWMgmxchHs.lower() in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.OqvjoLSvQwIzafOkaiyctjuYLUItNdKU)
     def __repr__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
         return f'FolderOfImages(root="{rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.hpDCmssMBWJUwBayrpShjJoOSQeDdfbl}", len: {len(self)})'
     def __len__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
         return len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI)
     def __getitem__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nyrzKxQtioheHIZujafABgijbCjrWhBU):
-        paTH = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI[nyrzKxQtioheHIZujafABgijbCjrWhBU]
-        with open(paTH, 'rb') as f:
+        hxKDuOteESNpOgdClxSsFUWnOOOOTwlR = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI[nyrzKxQtioheHIZujafABgijbCjrWhBU]
+        with open(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, 'rb') as f:
             eLyJtroPthPCROYWyMphoIrGatNOOXCO = Image.open(f).convert('RGB')
         eLyJtroPthPCROYWyMphoIrGatNOOXCO = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
         return eLyJtroPthPCROYWyMphoIrGatNOOXCO,

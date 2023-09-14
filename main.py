@@ -6,7 +6,7 @@ import folder_paths
 import time
 def fiAlZuPsdeRSZmhCFsdMbvCbOnmzcmdp():
     def jwYQYNSSQBHfZtwDIriJhTfttvOkxlrq(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
-        tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = os.paTH.splitext(QvimMcbvePOnJmwCatidzBJmEZiYzzYA)[0]
+        tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(QvimMcbvePOnJmwCatidzBJmEZiYzzYA)[0]
         try:
             spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, QvimMcbvePOnJmwCatidzBJmEZiYzzYA)
             module = importlib.util.module_from_spec(tGbdsHvGtwbCVaXZaEuAlbGSnOHDESEH)
@@ -20,11 +20,11 @@ def fiAlZuPsdeRSZmhCFsdMbvCbOnmzcmdp():
         HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl = os.listdir(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ)
         qAglvKZFHtpKgbAknmdlQpAolXyaYQdS = []
         for uzcEftlpQdaRTMylsKksTMmyjgzcrlLK in HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl:
-            XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp = os.paTH.join(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ, uzcEftlpQdaRTMylsKksTMmyjgzcrlLK)
-            if os.paTH.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp.endswith(".disabled") or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp == "__pycache__":
+            XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ, uzcEftlpQdaRTMylsKksTMmyjgzcrlLK)
+            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp.endswith(".disabled") or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp == "__pycache__":
                 continue
-            QvimMcbvePOnJmwCatidzBJmEZiYzzYA = os.paTH.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "prestartup_script.py")
-            if os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
+            QvimMcbvePOnJmwCatidzBJmEZiYzzYA = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "prestartup_script.py")
+            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
                 NxDTHICOqkfnhyLwtejLSCWiivMDAyZv = time.perf_counter()
                 syoCixXNjFxZAimZmlHgvNsypzGRqzuD = jwYQYNSSQBHfZtwDIriJhTfttvOkxlrq(QvimMcbvePOnJmwCatidzBJmEZiYzzYA)
                 qAglvKZFHtpKgbAknmdlQpAolXyaYQdS.append((time.perf_counter() - NxDTHICOqkfnhyLwtejLSCWiivMDAyZv, XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, syoCixXNjFxZAimZmlHgvNsypzGRqzuD))
@@ -93,7 +93,7 @@ def HLlvCRPdqgoEmbXuEpDcAJYkJdkyKVNb(REDIKAYZymAzMirxFmomyJtEGktwcqlE):
     quasar.utils.set_progress_bar_global_hook(UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP)
 def NkleSZdBjwAMaearQpaODmfIoMUveLqT():
     CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP = folder_paths.PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
-    if os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP):
+    if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP):
         shutil.rmtree(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP, ignore_errors=True)
 def zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(yaml_path):
     with open(yaml_path, 'r') as stream:
@@ -111,12 +111,12 @@ def zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(yaml_path):
                     continue
                 BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW
                 if TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC is not None:
-                    BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = os.paTH.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
+                    BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
                 print("Adding extra search path", NECAaWUrFGIXcLimrerEYmxYIykQBfXb, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
                 folder_paths.tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
 if __name__ == "__main__":
     if DukiculvUpjhZIVvaGinshRSKLSTgVVl.sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX:
-        CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP = os.paTH.join(os.paTH.abspath(DukiculvUpjhZIVvaGinshRSKLSTgVVl.sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX), "temp")
+        CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(DukiculvUpjhZIVvaGinshRSKLSTgVVl.sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX), "temp")
         print(f"Setting temp directory to: {temp_dir}")
         folder_paths.UjFfHXPSSdYnVuSiGnNlPxKKudSjKFNY(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP)
     NkleSZdBjwAMaearQpaODmfIoMUveLqT()
@@ -124,8 +124,8 @@ if __name__ == "__main__":
     asyncio.set_event_loop(ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK)
     REDIKAYZymAzMirxFmomyJtEGktwcqlE = REDIKAYZymAzMirxFmomyJtEGktwcqlE.vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd(ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK)
     mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = execution.djbvqxsurYqUcvHzsaPmWWgRGaFgiGbE(REDIKAYZymAzMirxFmomyJtEGktwcqlE)
-    EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "extra_model_paths.yaml")
-    if os.paTH.isfile(EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg):
+    EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "extra_model_paths.yaml")
+    if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg):
         zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg)
     if DukiculvUpjhZIVvaGinshRSKLSTgVVl.extra_model_paths_config:
         for MJafEhTfEBNmQGXzAAFXwUBXvYOtnghP in itertools.chain(*DukiculvUpjhZIVvaGinshRSKLSTgVVl.extra_model_paths_config):
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     HLlvCRPdqgoEmbXuEpDcAJYkJdkyKVNb(REDIKAYZymAzMirxFmomyJtEGktwcqlE)
     threading.Thread(GaEZlYKiAryhWRjBEPreKAKYPxvvvvNo=YuFVcvfYKKjsoLiAOeZDsRkUvHoaNoGJ, daemon=True, DukiculvUpjhZIVvaGinshRSKLSTgVVl=(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, REDIKAYZymAzMirxFmomyJtEGktwcqlE,)).tUuYqnLjDXuftYgMagGpmrobxWgfcbgq()
     if DukiculvUpjhZIVvaGinshRSKLSTgVVl.GtSyetIaLksMxiwaHjRuEDPDczomOxfB:
-        DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = os.paTH.abspath(DukiculvUpjhZIVvaGinshRSKLSTgVVl.GtSyetIaLksMxiwaHjRuEDPDczomOxfB)
+        DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(DukiculvUpjhZIVvaGinshRSKLSTgVVl.GtSyetIaLksMxiwaHjRuEDPDczomOxfB)
         print(f"Setting output directory to: {output_dir}")
         folder_paths.QaqVOGrCQsMzyJzwFXeqRMUkMfnKwrHp(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)
     if DukiculvUpjhZIVvaGinshRSKLSTgVVl.quick_test_for_ci:

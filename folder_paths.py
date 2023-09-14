@@ -2,29 +2,29 @@ import os
 import time
 hZQMFPwtakjynkeurEyZiPAYMqwfPAZc = set(['.ckpt', '.pt', '.bin', '.pth', '.safetensors'])
 RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG = {}
-TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC = os.paTH.dirname(os.paTH.realpath(__file__))
-iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM = os.paTH.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, "models")
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["checkpoints"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "checkpoints")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["configs"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "configs")], [".yaml"])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["loras"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "loras")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["vae"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "vae")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["clip"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "clip")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["unet"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "unet")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["clip_vision"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "clip_vision")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["style_models"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "style_models")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["embeddings"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "embeddings")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["diffusers"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "diffusers")], ["folder"])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["vae_approx"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "vae_approx")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["controlnet"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "controlnet"), os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "t2i_adapter")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["gligen"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "gligen")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["upscale_models"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "upscale_models")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["custom_nodes"] = ([os.paTH.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, "custom_nodes")], [])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["hypernetworks"] = ([os.paTH.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "hypernetworks")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-GtSyetIaLksMxiwaHjRuEDPDczomOxfB = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "output")
-sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "temp")
-JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "input")
+TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__))
+iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, "models")
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["checkpoints"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "checkpoints")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["configs"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "configs")], [".yaml"])
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["loras"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "loras")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["vae"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "vae")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["clip"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "clip")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["unet"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "unet")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["clip_vision"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "clip_vision")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["style_models"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "style_models")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["embeddings"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "embeddings")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["diffusers"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "diffusers")], ["folder"])
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["vae_approx"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "vae_approx")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["controlnet"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "controlnet"), os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "t2i_adapter")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["gligen"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "gligen")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["upscale_models"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "upscale_models")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["custom_nodes"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, "custom_nodes")], [])
+RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["hypernetworks"] = ([os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "hypernetworks")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
+GtSyetIaLksMxiwaHjRuEDPDczomOxfB = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "output")
+sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "temp")
+JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "input")
 JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM = {}
-if not os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP):
+if not os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP):
     os.makedirs(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP)
 def QaqVOGrCQsMzyJzwFXeqRMUkMfnKwrHp(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh):
     global GtSyetIaLksMxiwaHjRuEDPDczomOxfB
@@ -69,13 +69,13 @@ def OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, default_d
             qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = default_dir
         else:
             qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
-    return os.paTH.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
+    return os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
 def LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ):
     pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
     if qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ is None:
         qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
-    jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.paTH.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
-    return os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
+    jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
+    return os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
 def tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, full_folder_path):
     global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
     if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ in RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG:
@@ -85,32 +85,32 @@ def tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, full_fold
 def HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
     return RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ][0][:]
 def obGgHnWHZHxVqLnvnUwXaOsmgUVmduqj(directory, hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs=None):
-    if not os.paTH.isdir(directory):
+    if not os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isdir(directory):
         return [], {}
     if hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs is None:
         hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs = []
     EpPkhmvnuPCNYOnbTkWPbRocxmdOwtHI = []
-    tMqhONnNTXdwHJmOQatOuImsYofVgJxi = {directory: os.paTH.getmtime(directory)}
+    tMqhONnNTXdwHJmOQatOuImsYofVgJxi = {directory: os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.getmtime(directory)}
     for XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP, mkvCrqyejrekyuWxgtHkShApwhhCDyMu in os.walk(directory, followlinks=True, topdown=True):
         fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP[:] = [TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo for TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo in fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP if TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo not in hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs]
         for cUwDjpDYeDLcRutcYgVbXhXpxYeYFdHt in mkvCrqyejrekyuWxgtHkShApwhhCDyMu:
-            qNWMfFLBJiRgAvaCCCCahKsWaeudkTaD = os.paTH.relpath(os.paTH.join(XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, cUwDjpDYeDLcRutcYgVbXhXpxYeYFdHt), directory)
+            qNWMfFLBJiRgAvaCCCCahKsWaeudkTaD = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.relpath(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, cUwDjpDYeDLcRutcYgVbXhXpxYeYFdHt), directory)
             EpPkhmvnuPCNYOnbTkWPbRocxmdOwtHI.append(qNWMfFLBJiRgAvaCCCCahKsWaeudkTaD)
         for TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo in fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP:
-            paTH = os.paTH.join(XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo)
-            tMqhONnNTXdwHJmOQatOuImsYofVgJxi[paTH] = os.paTH.getmtime(paTH)
+            hxKDuOteESNpOgdClxSsFUWnOOOOTwlR = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo)
+            tMqhONnNTXdwHJmOQatOuImsYofVgJxi[hxKDuOteESNpOgdClxSsFUWnOOOOTwlR] = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.getmtime(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR)
     return EpPkhmvnuPCNYOnbTkWPbRocxmdOwtHI, tMqhONnNTXdwHJmOQatOuImsYofVgJxi
 def ogrHHnnoHaDAeFerfHoOKjouTxChktKm(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE, HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv):
-    return sorted(list(filter(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: os.paTH.splitext(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)[-1].lower() in HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv, DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE)))
+    return sorted(list(filter(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)[-1].lower() in HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv, DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE)))
 def TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM):
     global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
     if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ not in RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG:
         return None
     LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu = RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ]
-    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.paTH.relpath(os.paTH.join("/", VpsbOZzufynrTFUvvRofTQeRCOCIKJOM), "/")
+    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.relpath(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join("/", VpsbOZzufynrTFUvvRofTQeRCOCIKJOM), "/")
     for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu[0]:
-        BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = os.paTH.join(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-        if os.paTH.isfile(BvZbFoQIcgYmFXROwptYbIKgzYJORrYY):
+        BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
+        if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(BvZbFoQIcgYmFXROwptYbIKgzYJORrYY):
             return BvZbFoQIcgYmFXROwptYbIKgzYJORrYY
     return None
 def wZITfTxkrUGlgkNhyVkQeGQnBOOGviUn(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
@@ -134,11 +134,11 @@ def cbzhDWvXQBiEgEVdjzZaBlkWnnmGvfgj(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
     for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1]:
         ufReozYqFDHrDJiiCgVhHqnMnsesjFSb = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1][NECAaWUrFGIXcLimrerEYmxYIykQBfXb]
         OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-        if os.paTH.getmtime(OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX) != ufReozYqFDHrDJiiCgVhHqnMnsesjFSb:
+        if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.getmtime(OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX) != ufReozYqFDHrDJiiCgVhHqnMnsesjFSb:
             return None
     LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu = RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ]
     for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu[0]:
-        if os.paTH.isdir(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isdir(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
             if NECAaWUrFGIXcLimrerEYmxYIykQBfXb not in iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1]:
                 return None
     return iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
@@ -151,7 +151,7 @@ def DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
     return list(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[0])
 def RzAZobMvYWLmMtiqbeSollhpzISOJhWp(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, image_width=0, image_height=0):
     def kvXDIOWWdUPJRythbyaKVomFIZtNHPIf(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM):
-        EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL = len(os.paTH.basename(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
+        EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL = len(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.basename(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
         mAocOLWlgMJvPYVmSRndfhQdAcKHgPwi = VpsbOZzufynrTFUvvRofTQeRCOCIKJOM[:EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL + 1]
         try:
             hCVGAfCArAJbgwQyBsUtCdmTkaFHlUwI = int(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM[EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL + 1:].split('_')[0])
@@ -163,10 +163,10 @@ def RzAZobMvYWLmMtiqbeSollhpzISOJhWp(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, DIUNPQiJK
         input = input.replace("%height%", str(image_height))
         return input
     azafsUqgjjnMJDTDVblsTwqgMmfrAEPm = UWfTdcFvxzbgLumqlxvZmrHJBBJcgAIR(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, image_width, image_height)
-    EijzAwkTdadIdbBCcDEUbEYNNcstskwi = os.paTH.dirname(os.paTH.normpath(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
-    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.paTH.basename(os.paTH.normpath(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
-    NSnmtWjKbAQhROMkmRknqzSaUCojgOin = os.paTH.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, EijzAwkTdadIdbBCcDEUbEYNNcstskwi)
-    if os.paTH.commonpath((DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, os.paTH.abspath(NSnmtWjKbAQhROMkmRknqzSaUCojgOin))) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
+    EijzAwkTdadIdbBCcDEUbEYNNcstskwi = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.normpath(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
+    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.basename(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.normpath(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
+    NSnmtWjKbAQhROMkmRknqzSaUCojgOin = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, EijzAwkTdadIdbBCcDEUbEYNNcstskwi)
+    if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.commonpath((DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(NSnmtWjKbAQhROMkmRknqzSaUCojgOin))) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
         print("Saving image outside the output folder is not allowed.")
         return {}
     try:
