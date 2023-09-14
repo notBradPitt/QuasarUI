@@ -5,9 +5,9 @@ A powerful and modular stable diffusion GUI and backend.
 ![QuasarUI Screenshot](quasarui_screenshot.png)
 
 This ui will let you design and execute advanced stable diffusion pipelines using a graph/nodes/flowchart based interface. For some workflow examples and see what QuasarUI can do you can check out:
-### [QuasarUI Examples](https://quasaranonymous.github.io/QuasarUI_examples/)
 
-### [Installing QuasarUI](#installing)
+
+
 
 ## Features
 - Nodes/graph/flowchart interface to experiment and create complex Stable Diffusion workflows without needing to code anything.
@@ -18,24 +18,22 @@ This ui will let you design and execute advanced stable diffusion pipelines usin
 - Works even if you don't have a GPU with: ```--cpu``` (slow)
 - Can load ckpt, safetensors and diffusers models/checkpoints. Standalone VAEs and CLIP models.
 - Embeddings/Textual inversion
-- [Loras (regular, locon and loha)](https://quasaranonymous.github.io/QuasarUI_examples/lora/)
-- [Hypernetworks](https://quasaranonymous.github.io/QuasarUI_examples/hypernetworks/)
+- Loras (regular, locon and loha)
+- Hypernetworks
 - Loading full workflows (with seeds) from generated PNG files.
 - Saving/Loading workflows as Json files.
-- Nodes interface can be used to create complex workflows like one for [Hires fix](https://quasaranonymous.github.io/QuasarUI_examples/2_pass_txt2img/) or much more advanced ones.
-- [Area Composition](https://quasaranonymous.github.io/QuasarUI_examples/area_composition/)
-- [Inpainting](https://quasaranonymous.github.io/QuasarUI_examples/inpaint/) with both regular and inpainting models.
-- [ControlNet and T2I-Adapter](https://quasaranonymous.github.io/QuasarUI_examples/controlnet/)
-- [Upscale Models (ESRGAN, ESRGAN variants, SwinIR, Swin2SR, etc...)](https://quasaranonymous.github.io/QuasarUI_examples/upscale_models/)
-- [unCLIP Models](https://quasaranonymous.github.io/QuasarUI_examples/unclip/)
-- [GLIGEN](https://quasaranonymous.github.io/QuasarUI_examples/gligen/)
-- [Model Merging](https://quasaranonymous.github.io/QuasarUI_examples/model_merging/)
-- Latent previews with [TAESD](#how-to-show-high-quality-previews)
+- Nodes interface can be used to create complex workflows like one for Hires fix or much more advanced ones.
+- Area Composition
+- Inpainting with both regular and inpainting models.
+- ControlNet and T2I-Adapter
+- Upscale Models (ESRGAN, ESRGAN variants, SwinIR, Swin2SR, etc...)
+- unCLIP Models
+- GLIGEN
+- Model Merging
+- Latent previews with TAESD
 - Starts up very fast.
 - Works fully offline: will never download anything.
-- [Config file](extra_model_paths.yaml.example) to set the search paths for models.
-
-Workflow examples can be found on the [Examples page](https://quasaranonymous.github.io/QuasarUI_examples/)
+- Config file to set the search paths for models.
 
 ## Shortcuts
 
@@ -63,106 +61,10 @@ Workflow examples can be found on the [Examples page](https://quasaranonymous.gi
 
 Ctrl can also be replaced with Cmd instead for macOS users
 
-# Installing
-
-## Windows
-
-There is a portable standalone build for Windows that should work for running on Nvidia GPUs or for running on your CPU only on the [releases page](https://github.com/quasaranonymous/QuasarUI/releases).
-
-### [Direct link to download](https://github.com/quasaranonymous/QuasarUI/releases/download/latest/QuasarUI_windows_portable_nvidia_cu118_or_cpu.7z)
-
-Simply download, extract with [7-Zip](https://7-zip.org) and run. Make sure you put your Stable Diffusion checkpoints/models (the huge ckpt/safetensors files) in: QuasarUI\models\checkpoints
-
-#### How do I share models between another UI and QuasarUI?
-
-See the [Config file](extra_model_paths.yaml.example) to set the search paths for models. In the standalone windows build you can find this file in the QuasarUI directory. Rename this file to extra_model_paths.yaml and edit it with your favorite text editor.
-
-## Jupyter Notebook
-
-To run it on services like paperspace, kaggle or colab you can use my [Jupyter Notebook](notebooks/quasarui_colab.ipynb)
-
-## Manual Install (Windows, Linux)
-
-Git clone this repo.
-
-Put your SD checkpoints (the huge ckpt/safetensors files) in: models/checkpoints
-
-Put your VAE in: models/vae
-
-### AMD GPUs (Linux only)
-AMD users can install rocm and pytorch with pip if you don't have it already installed, this is the command to install the stable version:
-
-```pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/rocm5.4.2```
-
-This is the command to install the nightly with ROCm 5.6 that supports the 7000 series and might have some performance improvements:
-```pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm5.6```
-
-### NVIDIA
-
-Nvidia users should install torch and xformers using this command:
-
-```pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118 xformers```
-
-#### Troubleshooting
-
-If you get the "Torch not compiled with CUDA enabled" error, uninstall torch with:
-
-```pip uninstall torch```
-
-And install it again with the command above.
-
-### Dependencies
-
-Install the dependencies by opening your terminal inside the QuasarUI folder and:
-
-```pip install -r requirements.txt```
-
-After this you should have everything installed and can proceed to running QuasarUI.
-
-### Others:
-
-#### [Intel Arc](https://github.com/quasaranonymous/QuasarUI/discussions/476)
-
-#### Apple Mac silicon
-
-You can install QuasarUI in Apple Mac silicon (M1 or M2) with any recent macOS version.
-
-1. Install pytorch nightly. For instructions, read the [Accelerated PyTorch training on Mac](https://developer.apple.com/metal/pytorch/) Apple Developer guide (make sure to install the latest pytorch nightly).
-1. Follow the [QuasarUI manual installation](#manual-install-windows-linux) instructions for Windows and Linux.
-1. Install the QuasarUI [dependencies](#dependencies). If you have another Stable Diffusion UI [you might be able to reuse the dependencies](#i-already-have-another-ui-for-stable-diffusion-installed-do-i-really-have-to-install-all-of-these-dependencies).
-1. Launch QuasarUI by running `python main.py --force-fp16`. Note that --force-fp16 will only work if you installed the latest pytorch nightly.
-
-> **Note**: Remember to add your models, VAE, LoRAs etc. to the corresponding Quasar folders, as discussed in [QuasarUI manual installation](#manual-install-windows-linux).
-
-#### DirectML (AMD Cards on Windows)
-
-```pip install torch-directml``` Then you can launch QuasarUI with: ```python main.py --directml```
-
-### I already have another UI for Stable Diffusion installed do I really have to install all of these dependencies?
-
-You don't. If you have another UI installed and working with its own python venv you can use that venv to run QuasarUI. You can open up your favorite terminal and activate it:
-
-```source path_to_other_sd_gui/venv/bin/activate```
-
-or on Windows:
-
-With Powershell: ```"path_to_other_sd_gui\venv\Scripts\Activate.ps1"```
-
-With cmd.exe: ```"path_to_other_sd_gui\venv\Scripts\activate.bat"```
-
-And then you can use that terminal to run QuasarUI without installing any dependencies. Note that the venv folder might be called something else depending on the SD UI.
 
 # Running
 
 ```python main.py```
-
-### For AMD cards not officially supported by ROCm
-
-Try running it with this command if you have issues:
-
-For 6700, 6600 and maybe other RDNA2 or older: ```HSA_OVERRIDE_GFX_VERSION=10.3.0 python main.py```
-
-For AMD 7600 and maybe other RDNA3 cards: ```HSA_OVERRIDE_GFX_VERSION=11.0.0 python main.py```
 
 # Notes
 
@@ -196,17 +98,3 @@ You can set this command line setting to disable the upcasting to fp32 in some c
 Use ```--preview-method auto``` to enable previews.
 
 The default installation includes a fast latent preview method that's low-resolution. To enable higher-quality previews with [TAESD](https://github.com/madebyollin/taesd), download the [taesd_decoder.pth](https://github.com/madebyollin/taesd/raw/main/taesd_decoder.pth) (for SD1.x and SD2.x) and [taesdxl_decoder.pth](https://github.com/madebyollin/taesd/raw/main/taesdxl_decoder.pth) (for SDXL) models and place them in the `models/vae_approx` folder. Once they're installed, restart QuasarUI to enable high-quality previews.
-
-## Support and dev channel
-
-[Matrix space: #quasarui_space:matrix.org](https://app.element.io/#/room/%23quasarui_space%3Amatrix.org) (it's like discord but open source).
-
-# QA
-
-### Why did you make this?
-
-I wanted to learn how Stable Diffusion worked in detail. I also wanted something clean and powerful that would let me experiment with SD without restrictions.
-
-### Who is this for?
-
-This is for anyone that wants to make complex workflows with SD or that wants to learn more how SD works. The interface follows closely how SD works and the code should be much more simple to understand than other SD UIs.

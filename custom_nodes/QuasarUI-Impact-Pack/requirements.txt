@@ -1,3 +1,0 @@
-segment-anything
-scikit-image
-piexif
