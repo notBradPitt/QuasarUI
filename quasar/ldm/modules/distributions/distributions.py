@@ -1,92 +1,67 @@
 import torch
 import numpy as np
-
-
-class AbstractDistribution:
-    def sample(self):
+class sCeyoPvsHhYexcMSTyaaDWagfopbuXip:
+    def kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
         raise NotImplementedError()
-
-    def mode(self):
+    def bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
         raise NotImplementedError()
-
-
-class DiracDistribution(AbstractDistribution):
-    def __init__(self, value):
-        self.value = value
-
-    def sample(self):
-        return self.value
-
-    def mode(self):
-        return self.value
-
-
-class DiagonalGaussianDistribution(object):
-    def __init__(self, parameters, deterministic=False):
-        self.parameters = parameters
-        self.mean, self.logvar = torch.chunk(parameters, 2, dim=1)
-        self.logvar = torch.clamp(self.logvar, -30.0, 20.0)
-        self.deterministic = deterministic
-        self.std = torch.exp(0.5 * self.logvar)
-        self.var = torch.exp(self.logvar)
-        if self.deterministic:
-            self.var = self.std = torch.zeros_like(self.mean).to(device=self.parameters.device)
-
-    def sample(self):
-        x = self.mean + self.std * torch.randn(self.mean.shape).to(device=self.parameters.device)
-        return x
-
-    def kl(self, other=None):
-        if self.deterministic:
+class uBUYPcsxKzrEbRWuCwVKpZbMYvRYyIkM(sCeyoPvsHhYexcMSTyaaDWagfopbuXip):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc = GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+    def kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+    def bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+class AMWOznfcIxmGDIhDMGJCUcUBGkZOTYHR(object):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, parameters, deterministic=False):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.parameters = parameters
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar = torch.ebMwMGDmpDsmyMtCQfGxUhZuVHvTpavF(parameters, 2, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar = torch.clamp(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar, -30.0, 20.0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.deterministic = deterministic
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fOYIxmVRkbmqKCdAjhgqqAEkLdJvKBVd = torch.exp(0.5 * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.var = torch.exp(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.deterministic:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.var = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fOYIxmVRkbmqKCdAjhgqqAEkLdJvKBVd = torch.zeros_like(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.parameters.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+    def kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fOYIxmVRkbmqKCdAjhgqqAEkLdJvKBVd * torch.randn(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.parameters.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+    def ReOezauLzpKhKOMaBTwILcLSifpkEEZx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, other=None):
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.deterministic:
             return torch.Tensor([0.])
         else:
             if other is None:
-                return 0.5 * torch.sum(torch.pow(self.mean, 2)
-                                       + self.var - 1.0 - self.logvar,
-                                       dim=[1, 2, 3])
+                return 0.5 * torch.sum(torch.pow(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean, 2)
+                                       + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.var - 1.0 - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar,
+                                       yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=[1, 2, 3])
             else:
                 return 0.5 * torch.sum(
-                    torch.pow(self.mean - other.mean, 2) / other.var
-                    + self.var / other.var - 1.0 - self.logvar + other.logvar,
-                    dim=[1, 2, 3])
-
-    def nll(self, sample, dims=[1,2,3]):
-        if self.deterministic:
+                    torch.pow(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean - other.mean, 2) / other.var
+                    + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.var / other.var - 1.0 - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar + other.logvar,
+                    yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=[1, 2, 3])
+    def bixCHGAcLEJUWpAfAYgKzCgeLWvMBBJV(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd, ipYTWVOPDpfJXeTFApPIgldytQSaUFdk=[1,2,3]):
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.deterministic:
             return torch.Tensor([0.])
-        logtwopi = np.log(2.0 * np.pi)
+        UaenjLMuxvUWTBPWBfLFDygqLruNDsTp = np.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(2.0 * np.pi)
         return 0.5 * torch.sum(
-            logtwopi + self.logvar + torch.pow(sample - self.mean, 2) / self.var,
-            dim=dims)
-
-    def mode(self):
-        return self.mean
-
-
-def normal_kl(mean1, logvar1, mean2, logvar2):
-    """
-    source: https://github.com/openai/guided-diffusion/blob/27c20a8fab9cb472df5d6bdd6c8d11c8f430b924/guided_diffusion/losses.py#L12
-    Compute the KL divergence between two gaussians.
-    Shapes are automatically broadcasted, so batches can be compared to
-    scalars, among other use cases.
-    """
-    tensor = None
-    for obj in (mean1, logvar1, mean2, logvar2):
-        if isinstance(obj, torch.Tensor):
-            tensor = obj
+            UaenjLMuxvUWTBPWBfLFDygqLruNDsTp + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.logvar + torch.pow(kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean, 2) / rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.var,
+            yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=ipYTWVOPDpfJXeTFApPIgldytQSaUFdk)
+    def bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mean
+def VRFKuusWrpTlNpRGNEkkvzEZsUHqNipe(mean1, fcWUfPOcppQQGWqcdXQBFKUWUtTlFYVm, mean2, RzOEXvgnCbSyqrndzuPALdEBVccKSacy):
+    xPmCFphFKpGMpIsczaSKHmMgRPZzJwla = None
+    for glUavvDBRdewYAKFdDMMzdAIZsTAFOso in (mean1, fcWUfPOcppQQGWqcdXQBFKUWUtTlFYVm, mean2, RzOEXvgnCbSyqrndzuPALdEBVccKSacy):
+        if isinstance(glUavvDBRdewYAKFdDMMzdAIZsTAFOso, torch.Tensor):
+            xPmCFphFKpGMpIsczaSKHmMgRPZzJwla = glUavvDBRdewYAKFdDMMzdAIZsTAFOso
             break
-    assert tensor is not None, "at least one argument must be a Tensor"
-
-    # Force variances to be Tensors. Broadcasting helps convert scalars to
-    # Tensors, but it does not work for torch.exp().
-    logvar1, logvar2 = [
-        x if isinstance(x, torch.Tensor) else torch.tensor(x).to(tensor)
-        for x in (logvar1, logvar2)
+    assert xPmCFphFKpGMpIsczaSKHmMgRPZzJwla is not None, "at least one argument must be a Tensor"
+    fcWUfPOcppQQGWqcdXQBFKUWUtTlFYVm, RzOEXvgnCbSyqrndzuPALdEBVccKSacy = [
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb if isinstance(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, torch.Tensor) else torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(NECAaWUrFGIXcLimrerEYmxYIykQBfXb).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(xPmCFphFKpGMpIsczaSKHmMgRPZzJwla)
+        for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in (fcWUfPOcppQQGWqcdXQBFKUWUtTlFYVm, RzOEXvgnCbSyqrndzuPALdEBVccKSacy)
     ]
-
     return 0.5 * (
         -1.0
-        + logvar2
-        - logvar1
-        + torch.exp(logvar1 - logvar2)
-        + ((mean1 - mean2) ** 2) * torch.exp(-logvar2)
+        + RzOEXvgnCbSyqrndzuPALdEBVccKSacy
+        - fcWUfPOcppQQGWqcdXQBFKUWUtTlFYVm
+        + torch.exp(fcWUfPOcppQQGWqcdXQBFKUWUtTlFYVm - RzOEXvgnCbSyqrndzuPALdEBVccKSacy)
+        + ((mean1 - mean2) ** 2) * torch.exp(-RzOEXvgnCbSyqrndzuPALdEBVccKSacy)
     )

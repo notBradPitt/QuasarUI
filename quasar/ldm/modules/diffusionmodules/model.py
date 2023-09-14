@@ -1,737 +1,598 @@
-# pytorch_diffusion + derived encoder decoder
 import math
 import torch
 import torch.nn as nn
 import numpy as np
 from einops import rearrange
 from typing import Optional, Any
-
-from ..attention import MemoryEfficientCrossAttention
+from ..attention import jfuIbfkFdWANZYpHZjuHkfnjaHCwdire
 from quasar import model_management
 import quasar.ops
-
-if model_management.xformers_enabled_vae():
+if model_management.tifElOLkamgDCGAybMmNngkxKANHIbzS():
     import xformers
     import xformers.ops
-
-def get_timestep_embedding(timesteps, embedding_dim):
-    """
-    This matches the implementation in Denoising Diffusion Probabilistic Models:
-    From Fairseq.
-    Build sinusoidal embeddings.
-    This matches the implementation in tensor2tensor, but differs slightly
-    from the description in Section 3.5 of "Attention Is All You Need".
-    """
-    assert len(timesteps.shape) == 1
-
-    half_dim = embedding_dim // 2
-    emb = math.log(10000) / (half_dim - 1)
-    emb = torch.exp(torch.arange(half_dim, dtype=torch.float32) * -emb)
-    emb = emb.to(device=timesteps.device)
-    emb = timesteps.float()[:, None] * emb[None, :]
-    emb = torch.cat([torch.sin(emb), torch.cos(emb)], dim=1)
-    if embedding_dim % 2 == 1:  # zero pad
-        emb = torch.nn.functional.pad(emb, (0,1,0,0))
-    return emb
-
-
-def nonlinearity(x):
-    # swish
-    return x*torch.sigmoid(x)
-
-
-def Normalize(in_channels, num_groups=32):
-    return torch.nn.GroupNorm(num_groups=num_groups, num_channels=in_channels, eps=1e-6, affine=True)
-
-
-class Upsample(nn.Module):
-    def __init__(self, in_channels, with_conv):
+def FBGIyMBfRymrmsEWcEPIkRwuaTeBVITr(iaqNqpReXPEdYpNiyUIejEPLCqtbtedA, embedding_dim):
+    assert len(iaqNqpReXPEdYpNiyUIejEPLCqtbtedA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) == 1
+    kUDyPzYUnjCMRilJYWZZFlqgXgunyVDA = embedding_dim // 2
+    cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE = math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(10000) / (kUDyPzYUnjCMRilJYWZZFlqgXgunyVDA - 1)
+    cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE = torch.exp(torch.arange(kUDyPzYUnjCMRilJYWZZFlqgXgunyVDA, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32) * -cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE)
+    cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE = cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=iaqNqpReXPEdYpNiyUIejEPLCqtbtedA.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+    cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE = iaqNqpReXPEdYpNiyUIejEPLCqtbtedA.float()[:, None] * cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE[None, :]
+    cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE = torch.cat([torch.sin(cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE), torch.cos(cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE)], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)
+    if embedding_dim % 2 == 1:  
+        cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE = torch.nn.functional.rdKUTGbMBZTNIXamcnkpRlWsmbXvStaN(cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE, (0,1,0,0))
+    return cbvuxLJlTEiYpJEoytPnUgMhAcRHRwIE
+def liYZHxYGwkXhuYdMFrAtaIVIwKaEIKPp(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb*torch.sigmoid(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+def HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(EbKSIFxpyCpzycRDApduouVsxspHzkTj, num_groups=32):
+    return torch.nn.GroupNorm(num_groups=num_groups, num_channels=EbKSIFxpyCpzycRDApduouVsxspHzkTj, VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv=1e-6, affine=True)
+class kjruhryvXAQxnjJDeOXqTJbBrTkRFQSk(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, EbKSIFxpyCpzycRDApduouVsxspHzkTj, with_conv):
         super().__init__()
-        self.with_conv = with_conv
-        if self.with_conv:
-            self.conv = quasar.ops.Conv2d(in_channels,
-                                        in_channels,
-                                        kernel_size=3,
-                                        stride=1,
-                                        padding=1)
-
-    def forward(self, x):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.with_conv = with_conv
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.with_conv:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
         try:
-            x = torch.nn.functional.interpolate(x, scale_factor=2.0, mode="nearest")
-        except: #operation not implemented for bf16
-            b, c, h, w = x.shape
-            out = torch.empty((b, c, h*2, w*2), dtype=x.dtype, layout=x.layout, device=x.device)
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = torch.nn.functional.interpolate(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, scale_factor=2.0, bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC="nearest")
+        except: 
+            b, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = torch.empty((b, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab*2, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu*2), DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, layout=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.layout, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
             split = 8
-            l = out.shape[1] // split
-            for i in range(0, out.shape[1], l):
-                out[:,i:i+l] = torch.nn.functional.interpolate(x[:,i:i+l].to(torch.float32), scale_factor=2.0, mode="nearest").to(x.dtype)
-            del x
-            x = out
-
-        if self.with_conv:
-            x = self.conv(x)
-        return x
-
-
-class Downsample(nn.Module):
-    def __init__(self, in_channels, with_conv):
+            QBYRnCrsHIHjuDAPBxgVhibLQMjOwjJW = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] // split
+            for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(0, iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1], QBYRnCrsHIHjuDAPBxgVhibLQMjOwjJW):
+                iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[:,HCXmerBqIMuTscBONzTGKYapYSxWTYHo:HCXmerBqIMuTscBONzTGKYapYSxWTYHo+QBYRnCrsHIHjuDAPBxgVhibLQMjOwjJW] = torch.nn.functional.interpolate(NECAaWUrFGIXcLimrerEYmxYIykQBfXb[:,HCXmerBqIMuTscBONzTGKYapYSxWTYHo:HCXmerBqIMuTscBONzTGKYapYSxWTYHo+QBYRnCrsHIHjuDAPBxgVhibLQMjOwjJW].sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(torch.float32), scale_factor=2.0, bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC="nearest").sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(NECAaWUrFGIXcLimrerEYmxYIykQBfXb.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
+            del NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.with_conv:
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class LpwKTfRyOAITGEdvwhtCdMnNRMEQUkUG(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, EbKSIFxpyCpzycRDApduouVsxspHzkTj, with_conv):
         super().__init__()
-        self.with_conv = with_conv
-        if self.with_conv:
-            # no asymmetric padding in torch conv, must do it ourselves
-            self.conv = quasar.ops.Conv2d(in_channels,
-                                        in_channels,
-                                        kernel_size=3,
-                                        stride=2,
-                                        padding=0)
-
-    def forward(self, x):
-        if self.with_conv:
-            pad = (0,1,0,1)
-            x = torch.nn.functional.pad(x, pad, mode="constant", value=0)
-            x = self.conv(x)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.with_conv = with_conv
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.with_conv:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=2,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.with_conv:
+            rdKUTGbMBZTNIXamcnkpRlWsmbXvStaN = (0,1,0,1)
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = torch.nn.functional.rdKUTGbMBZTNIXamcnkpRlWsmbXvStaN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, rdKUTGbMBZTNIXamcnkpRlWsmbXvStaN, bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC="constant", GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=0)
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         else:
-            x = torch.nn.functional.avg_pool2d(x, kernel_size=2, stride=2)
-        return x
-
-
-class ResnetBlock(nn.Module):
-    def __init__(self, *, in_channels, out_channels=None, conv_shortcut=False,
-                 dropout, temb_channels=512):
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = torch.nn.functional.avg_pool2d(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, aBEJjpEOpoRJYkulwSmukddEYErxRnAG=2, NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=2)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *, EbKSIFxpyCpzycRDApduouVsxspHzkTj, DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=None, conv_shortcut=False,
+                 kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA, hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=512):
         super().__init__()
-        self.in_channels = in_channels
-        out_channels = in_channels if out_channels is None else out_channels
-        self.out_channels = out_channels
-        self.use_conv_shortcut = conv_shortcut
-
-        self.swish = torch.nn.SiLU(inplace=True)
-        self.norm1 = Normalize(in_channels)
-        self.conv1 = quasar.ops.Conv2d(in_channels,
-                                     out_channels,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
-        if temb_channels > 0:
-            self.temb_proj = quasar.ops.Linear(temb_channels,
-                                             out_channels)
-        self.norm2 = Normalize(out_channels)
-        self.dropout = torch.nn.Dropout(dropout, inplace=True)
-        self.conv2 = quasar.ops.Conv2d(out_channels,
-                                     out_channels,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
-        if self.in_channels != self.out_channels:
-            if self.use_conv_shortcut:
-                self.conv_shortcut = quasar.ops.Conv2d(in_channels,
-                                                     out_channels,
-                                                     kernel_size=3,
-                                                     stride=1,
-                                                     padding=1)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho = EbKSIFxpyCpzycRDApduouVsxspHzkTj if DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho is None else DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho = DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.use_conv_shortcut = conv_shortcut
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.swish = torch.nn.XHAfRvdQzGhVBUIWzxCQjrhAiQInnRoY(inplace=True)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm1 = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv1 = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                     DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho,
+                                     aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                     NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                     sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+        if hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm > 0:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_proj = quasar.ops.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm,
+                                             DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm2 = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA = torch.nn.Dropout(kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA, inplace=True)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv2 = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho,
+                                     DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho,
+                                     aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                     NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                     sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho:
+            if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.use_conv_shortcut:
+                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_shortcut = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                                     DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho,
+                                                     aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                                     NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                                     sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
             else:
-                self.nin_shortcut = quasar.ops.Conv2d(in_channels,
-                                                    out_channels,
-                                                    kernel_size=1,
-                                                    stride=1,
-                                                    padding=0)
-
-    def forward(self, x, temb):
-        h = x
-        h = self.norm1(h)
-        h = self.swish(h)
-        h = self.conv1(h)
-
-        if temb is not None:
-            h = h + self.temb_proj(self.swish(temb))[:,:,None,None]
-
-        h = self.norm2(h)
-        h = self.swish(h)
-        h = self.dropout(h)
-        h = self.conv2(h)
-
-        if self.in_channels != self.out_channels:
-            if self.use_conv_shortcut:
-                x = self.conv_shortcut(x)
+                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.nin_shortcut = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                                    DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho,
+                                                    aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                                    NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                                    sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT):
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.swish(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        if sXAWsqVPxctAEwLmvNZmqxpDglMjciIT is not None:
+            xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_proj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.swish(sXAWsqVPxctAEwLmvNZmqxpDglMjciIT))[:,:,None,None]
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.swish(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho:
+            if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.use_conv_shortcut:
+                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_shortcut(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
             else:
-                x = self.nin_shortcut(x)
-
-        return x+h
-
-def slice_attention(q, k, v):
-    r1 = torch.zeros_like(k, device=q.device)
-    scale = (int(q.shape[-1])**(-0.5))
-
-    mem_free_total = model_management.get_free_memory(q.device)
-
-    gb = 1024 ** 3
-    tensor_size = q.shape[0] * q.shape[1] * k.shape[2] * q.element_size()
-    modifier = 3 if q.element_size() == 2 else 2.5
-    mem_required = tensor_size * modifier
-    steps = 1
-
-    if mem_required > mem_free_total:
-        steps = 2**(math.ceil(math.log(mem_required / mem_free_total, 2)))
-
+                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.nin_shortcut(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb+xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
+def NocniVfiTbOkToiCFFQzSIFScSqfKTeX(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl):
+    apACmNWgYmlQTXHPQlhMzlFpreaoNbwW = torch.zeros_like(EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+    xmbXivThLFnawFPAJvIDBztziWsaDyEE = (int(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[-1])**(-0.5))
+    GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL = model_management.pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+    phzLQGCUmzLbVFGkMTvzdkdzRosviliv = 1024 ** 3
+    zFHMWWyGvdkMWuoMhXMvojVdQBgrBFJN = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] * mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] * EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] * mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.element_size()
+    uagghsEwpSSqmsjyWKQSfwSRZBLmwawS = 3 if mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.element_size() == 2 else 2.5
+    tTsKDmbmbyaWMYgSLHQnRfOIRMuZWWXp = zFHMWWyGvdkMWuoMhXMvojVdQBgrBFJN * uagghsEwpSSqmsjyWKQSfwSRZBLmwawS
+    TMepbhrhtxHODfHDPkWDjgPPPikciJwm = 1
+    if tTsKDmbmbyaWMYgSLHQnRfOIRMuZWWXp > GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL:
+        TMepbhrhtxHODfHDPkWDjgPPPikciJwm = 2**(math.ceil(math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(tTsKDmbmbyaWMYgSLHQnRfOIRMuZWWXp / GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL, 2)))
     while True:
         try:
-            slice_size = q.shape[1] // steps if (q.shape[1] % steps) == 0 else q.shape[1]
-            for i in range(0, q.shape[1], slice_size):
-                end = i + slice_size
-                s1 = torch.bmm(q[:, i:end], k) * scale
-
-                s2 = torch.nn.functional.softmax(s1, dim=2).permute(0,2,1)
-                del s1
-
-                r1[:, :, i:end] = torch.bmm(v, s2)
-                del s2
+            foSXFEftRhafROZSdfioWvUHDRtUeRyD = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] // TMepbhrhtxHODfHDPkWDjgPPPikciJwm if (mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] % TMepbhrhtxHODfHDPkWDjgPPPikciJwm) == 0 else mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1]
+            for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(0, mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1], foSXFEftRhafROZSdfioWvUHDRtUeRyD):
+                lGLYgANCchGMWZfAOSVuiBulTGaEVaQM = HCXmerBqIMuTscBONzTGKYapYSxWTYHo + foSXFEftRhafROZSdfioWvUHDRtUeRyD
+                XauksjEFAUvtInEaALXIwUhurkUuooOF = torch.bmm(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh[:, HCXmerBqIMuTscBONzTGKYapYSxWTYHo:lGLYgANCchGMWZfAOSVuiBulTGaEVaQM], EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm) * xmbXivThLFnawFPAJvIDBztziWsaDyEE
+                orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa = torch.nn.functional.softmax(XauksjEFAUvtInEaALXIwUhurkUuooOF, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=2).permute(0,2,1)
+                del XauksjEFAUvtInEaALXIwUhurkUuooOF
+                apACmNWgYmlQTXHPQlhMzlFpreaoNbwW[:, :, HCXmerBqIMuTscBONzTGKYapYSxWTYHo:lGLYgANCchGMWZfAOSVuiBulTGaEVaQM] = torch.bmm(powGafreWfwlSAqPpTpUhFgpFVqCPavl, orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa)
+                del orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa
             break
-        except model_management.OOM_EXCEPTION as e:
-            model_management.soft_empty_cache(True)
-            steps *= 2
-            if steps > 128:
-                raise e
-            print("out of memory error, increasing steps and trying again", steps)
-
-    return r1
-
-class AttnBlock(nn.Module):
-    def __init__(self, in_channels):
+        except model_management.uiFxRFoacIkrFnuAQlLvqBYROTajCRaW as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
+            model_management.sIeWDNiYvNWPLHobyjQHaTvlWZnazsHi(True)
+            TMepbhrhtxHODfHDPkWDjgPPPikciJwm *= 2
+            if TMepbhrhtxHODfHDPkWDjgPPPikciJwm > 128:
+                raise dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO
+            print("out of memory error, increasing steps and trying again", TMepbhrhtxHODfHDPkWDjgPPPikciJwm)
+    return apACmNWgYmlQTXHPQlhMzlFpreaoNbwW
+class eHXBSfnHAaGpWFgNmODAIYNswTKSTBje(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, EbKSIFxpyCpzycRDApduouVsxspHzkTj):
         super().__init__()
-        self.in_channels = in_channels
-
-        self.norm = Normalize(in_channels)
-        self.q = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.k = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.v = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.proj_out = quasar.ops.Conv2d(in_channels,
-                                        in_channels,
-                                        kernel_size=1,
-                                        stride=1,
-                                        padding=0)
-
-    def forward(self, x):
-        h_ = x
-        h_ = self.norm(h_)
-        q = self.q(h_)
-        k = self.k(h_)
-        v = self.v(h_)
-
-        # compute attention
-        b,c,h,w = q.shape
-
-        q = q.reshape(b,c,h*w)
-        q = q.permute(0,2,1)   # b,hw,c
-        k = k.reshape(b,c,h*w) # b,c,hw
-        v = v.reshape(b,c,h*w)
-
-        r1 = slice_attention(q, k, v)
-        h_ = r1.reshape(b,c,h,w)
-        del r1
-        h_ = self.proj_out(h_)
-
-        return x+h_
-
-class MemoryEfficientAttnBlock(nn.Module):
-    """
-        Uses xformers efficient implementation,
-        see https://github.com/MatthieuTPHR/diffusers/blob/d80b531ff8060ec1ea982b65a1b8df70f73aa67c/src/diffusers/models/attention.py#L223
-        Note: this is a single-head self-attention operation
-    """
-    #
-    def __init__(self, in_channels):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.powGafreWfwlSAqPpTpUhFgpFVqCPavl = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj_out = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.powGafreWfwlSAqPpTpUhFgpFVqCPavl(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        b,cjHIelcAqVoHWdLcgzuZiBumKNTVADsY,xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab,AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.reshape(b,cjHIelcAqVoHWdLcgzuZiBumKNTVADsY,xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab*AeIrbRXDkpZlClJGwzMknCltTQQdmhvu)
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.permute(0,2,1)   
+        EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm.reshape(b,cjHIelcAqVoHWdLcgzuZiBumKNTVADsY,xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab*AeIrbRXDkpZlClJGwzMknCltTQQdmhvu) 
+        powGafreWfwlSAqPpTpUhFgpFVqCPavl = powGafreWfwlSAqPpTpUhFgpFVqCPavl.reshape(b,cjHIelcAqVoHWdLcgzuZiBumKNTVADsY,xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab*AeIrbRXDkpZlClJGwzMknCltTQQdmhvu)
+        apACmNWgYmlQTXHPQlhMzlFpreaoNbwW = NocniVfiTbOkToiCFFQzSIFScSqfKTeX(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl)
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = apACmNWgYmlQTXHPQlhMzlFpreaoNbwW.reshape(b,cjHIelcAqVoHWdLcgzuZiBumKNTVADsY,xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab,AeIrbRXDkpZlClJGwzMknCltTQQdmhvu)
+        del apACmNWgYmlQTXHPQlhMzlFpreaoNbwW
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj_out(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb+vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw
+class ldnyNYWgddBWpHIfAwydTddRkkFRiqhj(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, EbKSIFxpyCpzycRDApduouVsxspHzkTj):
         super().__init__()
-        self.in_channels = in_channels
-
-        self.norm = Normalize(in_channels)
-        self.q = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.k = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.v = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.proj_out = quasar.ops.Conv2d(in_channels,
-                                        in_channels,
-                                        kernel_size=1,
-                                        stride=1,
-                                        padding=0)
-        self.attention_op: Optional[Any] = None
-
-    def forward(self, x):
-        h_ = x
-        h_ = self.norm(h_)
-        q = self.q(h_)
-        k = self.k(h_)
-        v = self.v(h_)
-
-        # compute attention
-        B, C, H, W = q.shape
-        q, k, v = map(
-            lambda t: t.view(B, C, -1).transpose(1, 2).contiguous(),
-            (q, k, v),
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.powGafreWfwlSAqPpTpUhFgpFVqCPavl = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj_out = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attention_op: Optional[Any] = None
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.powGafreWfwlSAqPpTpUhFgpFVqCPavl(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl = map(
+            lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, -1).transpose(1, 2).contiguous(),
+            (mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl),
         )
-
         try:
-            out = xformers.ops.memory_efficient_attention(q, k, v, attn_bias=None, op=self.attention_op)
-            out = out.transpose(1, 2).reshape(B, C, H, W)
-        except NotImplementedError as e:
-            out = slice_attention(q.view(B, -1, C), k.view(B, -1, C).transpose(1, 2), v.view(B, -1, C).transpose(1, 2)).reshape(B, C, H, W)
-
-        out = self.proj_out(out)
-        return x+out
-
-class MemoryEfficientAttnBlockPytorch(nn.Module):
-    def __init__(self, in_channels):
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = xformers.ops.memory_efficient_attention(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl, attn_bias=None, bjtPzNLsLxvykINbAtlMwKlGJQooJtzI=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attention_op)
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.transpose(1, 2).reshape(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ)
+        except NotImplementedError as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = NocniVfiTbOkToiCFFQzSIFScSqfKTeX(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, -1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh), EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, -1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh).transpose(1, 2), powGafreWfwlSAqPpTpUhFgpFVqCPavl.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, -1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh).transpose(1, 2)).reshape(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ)
+        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj_out(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb+iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
+class pCvQubQjWEJoxMrxbzCNTANcTYbnMyrc(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, EbKSIFxpyCpzycRDApduouVsxspHzkTj):
         super().__init__()
-        self.in_channels = in_channels
-
-        self.norm = Normalize(in_channels)
-        self.q = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.k = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.v = quasar.ops.Conv2d(in_channels,
-                                 in_channels,
-                                 kernel_size=1,
-                                 stride=1,
-                                 padding=0)
-        self.proj_out = quasar.ops.Conv2d(in_channels,
-                                        in_channels,
-                                        kernel_size=1,
-                                        stride=1,
-                                        padding=0)
-        self.attention_op: Optional[Any] = None
-
-    def forward(self, x):
-        h_ = x
-        h_ = self.norm(h_)
-        q = self.q(h_)
-        k = self.k(h_)
-        v = self.v(h_)
-
-        # compute attention
-        B, C, H, W = q.shape
-        q, k, v = map(
-            lambda t: t.view(B, 1, C, -1).transpose(2, 3).contiguous(),
-            (q, k, v),
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.powGafreWfwlSAqPpTpUhFgpFVqCPavl = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                 aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                 NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                 sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj_out = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=1,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attention_op: Optional[Any] = None
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+        vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.powGafreWfwlSAqPpTpUhFgpFVqCPavl(vCjLIHrnXRniEvZiWnGuQBAcFdDANZRw)
+        oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl = map(
+            lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, 1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, -1).transpose(2, 3).contiguous(),
+            (mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl),
         )
-
         try:
-            out = torch.nn.functional.scaled_dot_product_attention(q, k, v, attn_mask=None, dropout_p=0.0, is_causal=False)
-            out = out.transpose(2, 3).reshape(B, C, H, W)
-        except model_management.OOM_EXCEPTION as e:
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = torch.nn.functional.scaled_dot_product_attention(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl, attn_mask=None, dropout_p=0.0, is_causal=False)
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.transpose(2, 3).reshape(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ)
+        except model_management.uiFxRFoacIkrFnuAQlLvqBYROTajCRaW as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
             print("scaled_dot_product_attention OOMed: switched to slice attention")
-            out = slice_attention(q.view(B, -1, C), k.view(B, -1, C).transpose(1, 2), v.view(B, -1, C).transpose(1, 2)).reshape(B, C, H, W)
-
-        out = self.proj_out(out)
-        return x+out
-
-class MemoryEfficientCrossAttentionWrapper(MemoryEfficientCrossAttention):
-    def forward(self, x, context=None, mask=None):
-        b, c, h, w = x.shape
-        x = rearrange(x, 'b c h w -> b (h w) c')
-        out = super().forward(x, context=context, mask=mask)
-        out = rearrange(out, 'b (h w) c -> b c h w', h=h, w=w, c=c)
-        return x + out
-
-
-def make_attn(in_channels, attn_type="vanilla", attn_kwargs=None):
-    assert attn_type in ["vanilla", "vanilla-xformers", "memory-efficient-cross-attn", "linear", "none"], f'attn_type {attn_type} unknown'
-    if model_management.xformers_enabled_vae() and attn_type == "vanilla":
-        attn_type = "vanilla-xformers"
-    if model_management.pytorch_attention_enabled() and attn_type == "vanilla":
-        attn_type = "vanilla-pytorch"
-    print(f"making attention of type '{attn_type}' with {in_channels} in_channels")
-    if attn_type == "vanilla":
+            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = NocniVfiTbOkToiCFFQzSIFScSqfKTeX(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, -1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh), EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, -1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh).transpose(1, 2), powGafreWfwlSAqPpTpUhFgpFVqCPavl.view(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, -1, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh).transpose(1, 2)).reshape(oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ)
+        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj_out(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb+iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
+class fMrKutSZHikVqhjSzkLcubyqOIslrzfe(jfuIbfkFdWANZYpHZjuHkfnjaHCwdire):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
+        b, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rearrange(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'b c h w -> b (h w) c')
+        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = super().lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, KHpRlHOzblljQyskecSxzUuWZtneWwta=KHpRlHOzblljQyskecSxzUuWZtneWwta)
+        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = rearrange(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz, 'b (h w) c -> b c h w', xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab=xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu=AeIrbRXDkpZlClJGwzMknCltTQQdmhvu, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY=cjHIelcAqVoHWdLcgzuZiBumKNTVADsY)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb + iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
+def qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(EbKSIFxpyCpzycRDApduouVsxspHzkTj, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf="vanilla", attn_kwargs=None):
+    assert FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf in ["vanilla", "vanilla-xformers", "memory-efficient-cross-attn", "linear", "none"], f'attn_type {attn_type} unknown'
+    if model_management.tifElOLkamgDCGAybMmNngkxKANHIbzS() and FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf == "vanilla":
+        FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf = "vanilla-xformers"
+    if model_management.kQDSfcrSuHTuIBtYUKBNyIxOCqzlxNlm() and FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf == "vanilla":
+        FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf = "vanilla-pytorch"
+    print(f"making attention of type '{FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf}' with {in_channels} in_channels")
+    if FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf == "vanilla":
         assert attn_kwargs is None
-        return AttnBlock(in_channels)
-    elif attn_type == "vanilla-xformers":
+        return eHXBSfnHAaGpWFgNmODAIYNswTKSTBje(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
+    elif FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf == "vanilla-xformers":
         print(f"building MemoryEfficientAttnBlock with {in_channels} in_channels...")
-        return MemoryEfficientAttnBlock(in_channels)
-    elif attn_type == "vanilla-pytorch":
-        return MemoryEfficientAttnBlockPytorch(in_channels)
+        return ldnyNYWgddBWpHIfAwydTddRkkFRiqhj(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
+    elif FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf == "vanilla-pytorch":
+        return pCvQubQjWEJoxMrxbzCNTANcTYbnMyrc(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
     elif type == "memory-efficient-cross-attn":
-        attn_kwargs["query_dim"] = in_channels
-        return MemoryEfficientCrossAttentionWrapper(**attn_kwargs)
-    elif attn_type == "none":
-        return nn.Identity(in_channels)
+        attn_kwargs["query_dim"] = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        return fMrKutSZHikVqhjSzkLcubyqOIslrzfe(**attn_kwargs)
+    elif FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf == "none":
+        return nn.Identity(EbKSIFxpyCpzycRDApduouVsxspHzkTj)
     else:
         raise NotImplementedError()
-
-
-class Model(nn.Module):
-    def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
-                 attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
-                 resolution, use_timestep=True, use_linear_attn=False, attn_type="vanilla"):
+class NOzDEVJVmkXCBbrgeucbWnojtgGvnSHf(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *, PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ, VAkEsdMDwAEDPzAuJymQaRUNIxlnDSEu, ch_mult=(1,2,4,8), CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB,
+                 SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0.0, resamp_with_conv=True, EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                 BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr, CJffilbwILRpyJZXwstdSKcmbtdBZCgF=True, use_linear_attn=False, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf="vanilla"):
         super().__init__()
-        if use_linear_attn: attn_type = "linear"
-        self.ch = ch
-        self.temb_ch = self.ch*4
-        self.num_resolutions = len(ch_mult)
-        self.num_res_blocks = num_res_blocks
-        self.resolution = resolution
-        self.in_channels = in_channels
-
-        self.use_timestep = use_timestep
-        if self.use_timestep:
-            # timestep embedding
-            self.temb = nn.Module()
-            self.temb.dense = nn.ModuleList([
-                quasar.ops.Linear(self.ch,
-                                self.temb_ch),
-                quasar.ops.Linear(self.temb_ch,
-                                self.temb_ch),
+        if use_linear_attn: FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf = "linear"
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*4
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions = len(ch_mult)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB = CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr = BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CJffilbwILRpyJZXwstdSKcmbtdBZCgF = CJffilbwILRpyJZXwstdSKcmbtdBZCgF
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CJffilbwILRpyJZXwstdSKcmbtdBZCgF:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = nn.Module()
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sXAWsqVPxctAEwLmvNZmqxpDglMjciIT.dense = nn.ModuleList([
+                quasar.ops.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ,
+                                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch),
+                quasar.ops.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch),
             ])
-
-        # downsampling
-        self.conv_in = quasar.ops.Conv2d(in_channels,
-                                       self.ch,
-                                       kernel_size=3,
-                                       stride=1,
-                                       padding=1)
-
-        curr_res = resolution
-        in_ch_mult = (1,)+tuple(ch_mult)
-        self.down = nn.ModuleList()
-        for i_level in range(self.num_resolutions):
-            block = nn.ModuleList()
-            attn = nn.ModuleList()
-            block_in = ch*in_ch_mult[i_level]
-            block_out = ch*ch_mult[i_level]
-            for i_block in range(self.num_res_blocks):
-                block.append(ResnetBlock(in_channels=block_in,
-                                         out_channels=block_out,
-                                         temb_channels=self.temb_ch,
-                                         dropout=dropout))
-                block_in = block_out
-                if curr_res in attn_resolutions:
-                    attn.append(make_attn(block_in, attn_type=attn_type))
-            down = nn.Module()
-            down.block = block
-            down.attn = attn
-            if i_level != self.num_resolutions-1:
-                down.downsample = Downsample(block_in, resamp_with_conv)
-                curr_res = curr_res // 2
-            self.down.append(down)
-
-        # middle
-        self.mid = nn.Module()
-        self.mid.block_1 = ResnetBlock(in_channels=block_in,
-                                       out_channels=block_in,
-                                       temb_channels=self.temb_ch,
-                                       dropout=dropout)
-        self.mid.attn_1 = make_attn(block_in, attn_type=attn_type)
-        self.mid.block_2 = ResnetBlock(in_channels=block_in,
-                                       out_channels=block_in,
-                                       temb_channels=self.temb_ch,
-                                       dropout=dropout)
-
-        # upsampling
-        self.up = nn.ModuleList()
-        for i_level in reversed(range(self.num_resolutions)):
-            block = nn.ModuleList()
-            attn = nn.ModuleList()
-            block_out = ch*ch_mult[i_level]
-            skip_in = ch*ch_mult[i_level]
-            for i_block in range(self.num_res_blocks+1):
-                if i_block == self.num_res_blocks:
-                    skip_in = ch*in_ch_mult[i_level]
-                block.append(ResnetBlock(in_channels=block_in+skip_in,
-                                         out_channels=block_out,
-                                         temb_channels=self.temb_ch,
-                                         dropout=dropout))
-                block_in = block_out
-                if curr_res in attn_resolutions:
-                    attn.append(make_attn(block_in, attn_type=attn_type))
-            up = nn.Module()
-            up.block = block
-            up.attn = attn
-            if i_level != 0:
-                up.upsample = Upsample(block_in, resamp_with_conv)
-                curr_res = curr_res * 2
-            self.up.insert(0, up) # prepend to get consistent order
-
-        # end
-        self.norm_out = Normalize(block_in)
-        self.conv_out = quasar.ops.Conv2d(block_in,
-                                        out_ch,
-                                        kernel_size=3,
-                                        stride=1,
-                                        padding=1)
-
-    def forward(self, x, t=None, context=None):
-        #assert x.shape[2] == x.shape[3] == self.resolution
-        if context is not None:
-            # assume aligned context, cat along channel axis
-            x = torch.cat((x, context), dim=1)
-        if self.use_timestep:
-            # timestep embedding
-            assert t is not None
-            temb = get_timestep_embedding(t, self.ch)
-            temb = self.temb.dense[0](temb)
-            temb = nonlinearity(temb)
-            temb = self.temb.dense[1](temb)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                       rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ,
+                                       aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                       NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                       sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+        WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr
+        KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ = (1,)+tuple(ch_mult)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn = nn.ModuleList()
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions):
+            lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = nn.ModuleList()
+            tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = nn.ModuleList()
+            AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            SFZANSjeQRuDmejNulCUPGLUGdwWWwIa = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*ch_mult[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB):
+                lPmJfojDSUTFirrgKPryiJRYyZOFajzZ.append(ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                         DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=SFZANSjeQRuDmejNulCUPGLUGdwWWwIa,
+                                         hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                         kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA))
+                AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = SFZANSjeQRuDmejNulCUPGLUGdwWWwIa
+                if WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY in SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc:
+                    tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW.append(qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf))
+            PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn = nn.Module()
+            PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = lPmJfojDSUTFirrgKPryiJRYyZOFajzZ
+            PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions-1:
+                PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.FNdFYgmARbySAmYyEvSINcVrOJlCpKfW = LpwKTfRyOAITGEdvwhtCdMnNRMEQUkUG(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, resamp_with_conv)
+                WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY // 2
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.append(PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr = nn.Module()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_1 = ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                       kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.attn_1 = qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_2 = ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                       kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS = nn.ModuleList()
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in reversed(range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions)):
+            lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = nn.ModuleList()
+            tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = nn.ModuleList()
+            SFZANSjeQRuDmejNulCUPGLUGdwWWwIa = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*ch_mult[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            ywKgRImchIHWvJXlMDzoGWEZwZuXkxOC = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*ch_mult[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB+1):
+                if zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp == rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB:
+                    ywKgRImchIHWvJXlMDzoGWEZwZuXkxOC = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+                lPmJfojDSUTFirrgKPryiJRYyZOFajzZ.append(ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA+ywKgRImchIHWvJXlMDzoGWEZwZuXkxOC,
+                                         DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=SFZANSjeQRuDmejNulCUPGLUGdwWWwIa,
+                                         hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                         kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA))
+                AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = SFZANSjeQRuDmejNulCUPGLUGdwWWwIa
+                if WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY in SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc:
+                    tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW.append(qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf))
+            kvJZslyswPMVzCnLtIoKrkpdfusdzxSS = nn.Module()
+            kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = lPmJfojDSUTFirrgKPryiJRYyZOFajzZ
+            kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != 0:
+                kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.upsample = kjruhryvXAQxnjJDeOXqTJbBrTkRFQSk(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, resamp_with_conv)
+                WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY * 2
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.insert(0, kvJZslyswPMVzCnLtIoKrkpdfusdzxSS) 
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm_out = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                        VAkEsdMDwAEDPzAuJymQaRUNIxlnDSEu,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz=None, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None):
+        if tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS is not None:
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = torch.cat((NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS), yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CJffilbwILRpyJZXwstdSKcmbtdBZCgF:
+            assert XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz is not None
+            sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = FBGIyMBfRymrmsEWcEPIkRwuaTeBVITr(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ)
+            sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sXAWsqVPxctAEwLmvNZmqxpDglMjciIT.dense[0](sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+            sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = liYZHxYGwkXhuYdMFrAtaIVIwKaEIKPp(sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+            sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sXAWsqVPxctAEwLmvNZmqxpDglMjciIT.dense[1](sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
         else:
-            temb = None
-
-        # downsampling
-        hs = [self.conv_in(x)]
-        for i_level in range(self.num_resolutions):
-            for i_block in range(self.num_res_blocks):
-                h = self.down[i_level].block[i_block](hs[-1], temb)
-                if len(self.down[i_level].attn) > 0:
-                    h = self.down[i_level].attn[i_block](h)
-                hs.append(h)
-            if i_level != self.num_resolutions-1:
-                hs.append(self.down[i_level].downsample(hs[-1]))
-
-        # middle
-        h = hs[-1]
-        h = self.mid.block_1(h, temb)
-        h = self.mid.attn_1(h)
-        h = self.mid.block_2(h, temb)
-
-        # upsampling
-        for i_level in reversed(range(self.num_resolutions)):
-            for i_block in range(self.num_res_blocks+1):
-                h = self.up[i_level].block[i_block](
-                    torch.cat([h, hs.pop()], dim=1), temb)
-                if len(self.up[i_level].attn) > 0:
-                    h = self.up[i_level].attn[i_block](h)
-            if i_level != 0:
-                h = self.up[i_level].upsample(h)
-
-        # end
-        h = self.norm_out(h)
-        h = nonlinearity(h)
-        h = self.conv_out(h)
-        return h
-
-    def get_last_layer(self):
-        return self.conv_out.weight
-
-
-class Encoder(nn.Module):
-    def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
-                 attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
-                 resolution, z_channels, double_z=True, use_linear_attn=False, attn_type="vanilla",
+            sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = None
+        omGAnSaAXbgvwNbvtUsYicLqgJqNBgst = [rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)]
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions):
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB):
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].lPmJfojDSUTFirrgKPryiJRYyZOFajzZ[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](omGAnSaAXbgvwNbvtUsYicLqgJqNBgst[-1], sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+                if len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW) > 0:
+                    xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+                omGAnSaAXbgvwNbvtUsYicLqgJqNBgst.append(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions-1:
+                omGAnSaAXbgvwNbvtUsYicLqgJqNBgst.append(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].FNdFYgmARbySAmYyEvSINcVrOJlCpKfW(omGAnSaAXbgvwNbvtUsYicLqgJqNBgst[-1]))
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = omGAnSaAXbgvwNbvtUsYicLqgJqNBgst[-1]
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.attn_1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in reversed(range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions)):
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB+1):
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].lPmJfojDSUTFirrgKPryiJRYyZOFajzZ[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](
+                    torch.cat([xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, omGAnSaAXbgvwNbvtUsYicLqgJqNBgst.pop()], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1), sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+                if len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW) > 0:
+                    xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != 0:
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].upsample(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm_out(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = liYZHxYGwkXhuYdMFrAtaIVIwKaEIKPp(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
+    def jAbQXzbRQmhDdUPexMZJhBfggMNexRBj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out.RXBOtvKSHQkBvdKDbckmnlphvVygYURP
+class HAhRJZDsPfbaJIpLwjOXFEkHqjueFULJ(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *, PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ, VAkEsdMDwAEDPzAuJymQaRUNIxlnDSEu, ch_mult=(1,2,4,8), CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB,
+                 SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0.0, resamp_with_conv=True, EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                 BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr, dwRTcGdsCuBbMrwBzRJcZGczJdBPIxiA, rTIStVRWjZuwLBUuZUMVolrWVNgRvzZH=True, use_linear_attn=False, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf="vanilla",
                  **ignore_kwargs):
         super().__init__()
-        if use_linear_attn: attn_type = "linear"
-        self.ch = ch
-        self.temb_ch = 0
-        self.num_resolutions = len(ch_mult)
-        self.num_res_blocks = num_res_blocks
-        self.resolution = resolution
-        self.in_channels = in_channels
-
-        # downsampling
-        self.conv_in = quasar.ops.Conv2d(in_channels,
-                                       self.ch,
-                                       kernel_size=3,
-                                       stride=1,
-                                       padding=1)
-
-        curr_res = resolution
-        in_ch_mult = (1,)+tuple(ch_mult)
-        self.in_ch_mult = in_ch_mult
-        self.down = nn.ModuleList()
-        for i_level in range(self.num_resolutions):
-            block = nn.ModuleList()
-            attn = nn.ModuleList()
-            block_in = ch*in_ch_mult[i_level]
-            block_out = ch*ch_mult[i_level]
-            for i_block in range(self.num_res_blocks):
-                block.append(ResnetBlock(in_channels=block_in,
-                                         out_channels=block_out,
-                                         temb_channels=self.temb_ch,
-                                         dropout=dropout))
-                block_in = block_out
-                if curr_res in attn_resolutions:
-                    attn.append(make_attn(block_in, attn_type=attn_type))
-            down = nn.Module()
-            down.block = block
-            down.attn = attn
-            if i_level != self.num_resolutions-1:
-                down.downsample = Downsample(block_in, resamp_with_conv)
-                curr_res = curr_res // 2
-            self.down.append(down)
-
-        # middle
-        self.mid = nn.Module()
-        self.mid.block_1 = ResnetBlock(in_channels=block_in,
-                                       out_channels=block_in,
-                                       temb_channels=self.temb_ch,
-                                       dropout=dropout)
-        self.mid.attn_1 = make_attn(block_in, attn_type=attn_type)
-        self.mid.block_2 = ResnetBlock(in_channels=block_in,
-                                       out_channels=block_in,
-                                       temb_channels=self.temb_ch,
-                                       dropout=dropout)
-
-        # end
-        self.norm_out = Normalize(block_in)
-        self.conv_out = quasar.ops.Conv2d(block_in,
-                                        2*z_channels if double_z else z_channels,
-                                        kernel_size=3,
-                                        stride=1,
-                                        padding=1)
-
-    def forward(self, x):
-        # timestep embedding
-        temb = None
-        # downsampling
-        h = self.conv_in(x)
-        for i_level in range(self.num_resolutions):
-            for i_block in range(self.num_res_blocks):
-                h = self.down[i_level].block[i_block](h, temb)
-                if len(self.down[i_level].attn) > 0:
-                    h = self.down[i_level].attn[i_block](h)
-            if i_level != self.num_resolutions-1:
-                h = self.down[i_level].downsample(h)
-
-        # middle
-        h = self.mid.block_1(h, temb)
-        h = self.mid.attn_1(h)
-        h = self.mid.block_2(h, temb)
-
-        # end
-        h = self.norm_out(h)
-        h = nonlinearity(h)
-        h = self.conv_out(h)
-        return h
-
-
-class Decoder(nn.Module):
-    def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
-                 attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
-                 resolution, z_channels, give_pre_end=False, tanh_out=False, use_linear_attn=False,
-                 attn_type="vanilla", **ignorekwargs):
+        if use_linear_attn: FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf = "linear"
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch = 0
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions = len(ch_mult)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB = CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr = BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                                       rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ,
+                                       aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                       NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                       sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+        WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr
+        KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ = (1,)+tuple(ch_mult)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ = KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn = nn.ModuleList()
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions):
+            lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = nn.ModuleList()
+            tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = nn.ModuleList()
+            AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            SFZANSjeQRuDmejNulCUPGLUGdwWWwIa = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*ch_mult[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB):
+                lPmJfojDSUTFirrgKPryiJRYyZOFajzZ.append(ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                         DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=SFZANSjeQRuDmejNulCUPGLUGdwWWwIa,
+                                         hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                         kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA))
+                AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = SFZANSjeQRuDmejNulCUPGLUGdwWWwIa
+                if WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY in SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc:
+                    tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW.append(qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf))
+            PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn = nn.Module()
+            PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = lPmJfojDSUTFirrgKPryiJRYyZOFajzZ
+            PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions-1:
+                PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.FNdFYgmARbySAmYyEvSINcVrOJlCpKfW = LpwKTfRyOAITGEdvwhtCdMnNRMEQUkUG(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, resamp_with_conv)
+                WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY // 2
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn.append(PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr = nn.Module()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_1 = ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                       kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.attn_1 = qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_2 = ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                       kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm_out = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                        2*dwRTcGdsCuBbMrwBzRJcZGczJdBPIxiA if rTIStVRWjZuwLBUuZUMVolrWVNgRvzZH else dwRTcGdsCuBbMrwBzRJcZGczJdBPIxiA,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = None
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions):
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB):
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].lPmJfojDSUTFirrgKPryiJRYyZOFajzZ[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+                if len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW) > 0:
+                    xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions-1:
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].FNdFYgmARbySAmYyEvSINcVrOJlCpKfW(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.attn_1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm_out(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = liYZHxYGwkXhuYdMFrAtaIVIwKaEIKPp(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
+class KfKIubLWuMYndZytaOVMUrnTLHiwPiVV(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *, PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ, VAkEsdMDwAEDPzAuJymQaRUNIxlnDSEu, ch_mult=(1,2,4,8), CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB,
+                 SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0.0, resamp_with_conv=True, EbKSIFxpyCpzycRDApduouVsxspHzkTj,
+                 BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr, dwRTcGdsCuBbMrwBzRJcZGczJdBPIxiA, AkDeslgfXSBVSvrenRQZoNDfcUqMZnbc=False, tanh_out=False, use_linear_attn=False,
+                 FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf="vanilla", **ignorekwargs):
         super().__init__()
-        if use_linear_attn: attn_type = "linear"
-        self.ch = ch
-        self.temb_ch = 0
-        self.num_resolutions = len(ch_mult)
-        self.num_res_blocks = num_res_blocks
-        self.resolution = resolution
-        self.in_channels = in_channels
-        self.give_pre_end = give_pre_end
-        self.tanh_out = tanh_out
-
-        # compute in_ch_mult, block_in and curr_res at lowest res
-        in_ch_mult = (1,)+tuple(ch_mult)
-        block_in = ch*ch_mult[self.num_resolutions-1]
-        curr_res = resolution // 2**(self.num_resolutions-1)
-        self.z_shape = (1,z_channels,curr_res,curr_res)
+        if use_linear_attn: FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf = "linear"
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch = 0
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions = len(ch_mult)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB = CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr = BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AkDeslgfXSBVSvrenRQZoNDfcUqMZnbc = AkDeslgfXSBVSvrenRQZoNDfcUqMZnbc
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.tanh_out = tanh_out
+        KpITumKUkWAggHnDiNqKSkoTtPMTnyuQ = (1,)+tuple(ch_mult)
+        AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*ch_mult[rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions-1]
+        WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = BcSwNQTmUGuqaESGKyPNIfMVGtVTPcEr // 2**(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions-1)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.z_shape = (1,dwRTcGdsCuBbMrwBzRJcZGczJdBPIxiA,WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY,WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY)
         print("Working with z of shape {} = {} dimensions.".format(
-            self.z_shape, np.prod(self.z_shape)))
-
-        # z to block_in
-        self.conv_in = quasar.ops.Conv2d(z_channels,
-                                       block_in,
-                                       kernel_size=3,
-                                       stride=1,
-                                       padding=1)
-
-        # middle
-        self.mid = nn.Module()
-        self.mid.block_1 = ResnetBlock(in_channels=block_in,
-                                       out_channels=block_in,
-                                       temb_channels=self.temb_ch,
-                                       dropout=dropout)
-        self.mid.attn_1 = make_attn(block_in, attn_type=attn_type)
-        self.mid.block_2 = ResnetBlock(in_channels=block_in,
-                                       out_channels=block_in,
-                                       temb_channels=self.temb_ch,
-                                       dropout=dropout)
-
-        # upsampling
-        self.up = nn.ModuleList()
-        for i_level in reversed(range(self.num_resolutions)):
-            block = nn.ModuleList()
-            attn = nn.ModuleList()
-            block_out = ch*ch_mult[i_level]
-            for i_block in range(self.num_res_blocks+1):
-                block.append(ResnetBlock(in_channels=block_in,
-                                         out_channels=block_out,
-                                         temb_channels=self.temb_ch,
-                                         dropout=dropout))
-                block_in = block_out
-                if curr_res in attn_resolutions:
-                    attn.append(make_attn(block_in, attn_type=attn_type))
-            up = nn.Module()
-            up.block = block
-            up.attn = attn
-            if i_level != 0:
-                up.upsample = Upsample(block_in, resamp_with_conv)
-                curr_res = curr_res * 2
-            self.up.insert(0, up) # prepend to get consistent order
-
-        # end
-        self.norm_out = Normalize(block_in)
-        self.conv_out = quasar.ops.Conv2d(block_in,
-                                        out_ch,
-                                        kernel_size=3,
-                                        stride=1,
-                                        padding=1)
-
-    def forward(self, z):
-        #assert z.shape[1:] == self.z_shape[1:]
-        self.last_z_shape = z.shape
-
-        # timestep embedding
-        temb = None
-
-        # z to block_in
-        h = self.conv_in(z)
-
-        # middle
-        h = self.mid.block_1(h, temb)
-        h = self.mid.attn_1(h)
-        h = self.mid.block_2(h, temb)
-
-        # upsampling
-        for i_level in reversed(range(self.num_resolutions)):
-            for i_block in range(self.num_res_blocks+1):
-                h = self.up[i_level].block[i_block](h, temb)
-                if len(self.up[i_level].attn) > 0:
-                    h = self.up[i_level].attn[i_block](h)
-            if i_level != 0:
-                h = self.up[i_level].upsample(h)
-
-        # end
-        if self.give_pre_end:
-            return h
-
-        h = self.norm_out(h)
-        h = nonlinearity(h)
-        h = self.conv_out(h)
-        if self.tanh_out:
-            h = torch.tanh(h)
-        return h
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.z_shape, np.AxEOibCbRjeUvRwvVNaXLXCBIIzXUnBD(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.z_shape)))
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(dwRTcGdsCuBbMrwBzRJcZGczJdBPIxiA,
+                                       AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                       NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                       sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr = nn.Module()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_1 = ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                       kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.attn_1 = qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_2 = ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                       hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                       kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS = nn.ModuleList()
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in reversed(range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions)):
+            lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = nn.ModuleList()
+            tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = nn.ModuleList()
+            SFZANSjeQRuDmejNulCUPGLUGdwWWwIa = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ*ch_mult[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu]
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB+1):
+                lPmJfojDSUTFirrgKPryiJRYyZOFajzZ.append(ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(EbKSIFxpyCpzycRDApduouVsxspHzkTj=AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                         DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=SFZANSjeQRuDmejNulCUPGLUGdwWWwIa,
+                                         hMSVpTuyPHmoxFcPWurjMXzUcTNEpKNm=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.temb_ch,
+                                         kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA))
+                AkBFPvJWpORRGVppZZKLviMdeWBRZNeA = SFZANSjeQRuDmejNulCUPGLUGdwWWwIa
+                if WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY in SVFgWZmLHyBDIohemjJyxOqQDTKUSaYc:
+                    tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW.append(qXfIkuZrNfESJcZDYMxfgdGOBPOHmKaF(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf=FFkRWmQHKPdMiLiCPdiuVVUNvNEEvZkf))
+            kvJZslyswPMVzCnLtIoKrkpdfusdzxSS = nn.Module()
+            kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.lPmJfojDSUTFirrgKPryiJRYyZOFajzZ = lPmJfojDSUTFirrgKPryiJRYyZOFajzZ
+            kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != 0:
+                kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.upsample = kjruhryvXAQxnjJDeOXqTJbBrTkRFQSk(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA, resamp_with_conv)
+                WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY = WPrMyJZpYZhKJnvzZBeozEExkNgnAmVY * 2
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS.insert(0, kvJZslyswPMVzCnLtIoKrkpdfusdzxSS) 
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm_out = HSnGePyLrgZhiiSoMOwJmgVPBjIpItDD(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out = quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(AkBFPvJWpORRGVppZZKLviMdeWBRZNeA,
+                                        VAkEsdMDwAEDPzAuJymQaRUNIxlnDSEu,
+                                        aBEJjpEOpoRJYkulwSmukddEYErxRnAG=3,
+                                        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=1,
+                                        sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, AVjwZelSxiiANPDkDuRKTIIJYnqgQaTi):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.last_z_shape = AVjwZelSxiiANPDkDuRKTIIJYnqgQaTi.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+        sXAWsqVPxctAEwLmvNZmqxpDglMjciIT = None
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in(AVjwZelSxiiANPDkDuRKTIIJYnqgQaTi)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.attn_1(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.rnBVwgYeGkHoRDXjLPBaCTIXNAZYBHGr.block_2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+        for OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu in reversed(range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_resolutions)):
+            for zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CCAXgmpIWICHAxdXRCbCjrvfPSDecjrB+1):
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].lPmJfojDSUTFirrgKPryiJRYyZOFajzZ[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, sXAWsqVPxctAEwLmvNZmqxpDglMjciIT)
+                if len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW) > 0:
+                    xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW[zmRdsMNKEDpECOVrJyNRRisrgWkYZnmp](xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+            if OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu != 0:
+                xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kvJZslyswPMVzCnLtIoKrkpdfusdzxSS[OpFlKMYGKpWqrQclNkbQJOyQGzPHDYJu].upsample(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AkDeslgfXSBVSvrenRQZoNDfcUqMZnbc:
+            return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.norm_out(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = liYZHxYGwkXhuYdMFrAtaIVIwKaEIKPp(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_out(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.tanh_out:
+            xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = torch.tanh(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab

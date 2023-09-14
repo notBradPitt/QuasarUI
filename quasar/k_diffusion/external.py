@@ -1,190 +1,109 @@
-import math
-
-import torch
-from torch import nn
-
-from . import sampling, utils
-
-
-class VDenoiser(nn.Module):
-    """A v-diffusion-pytorch model wrapper for k-diffusion."""
-
-    def __init__(self, inner_model):
-        super().__init__()
-        self.inner_model = inner_model
-        self.sigma_data = 1.
-
-    def get_scalings(self, sigma):
-        c_skip = self.sigma_data ** 2 / (sigma ** 2 + self.sigma_data ** 2)
-        c_out = -sigma * self.sigma_data / (sigma ** 2 + self.sigma_data ** 2) ** 0.5
-        c_in = 1 / (sigma ** 2 + self.sigma_data ** 2) ** 0.5
-        return c_skip, c_out, c_in
-
-    def sigma_to_t(self, sigma):
-        return sigma.atan() / math.pi * 2
-
-    def t_to_sigma(self, t):
-        return (t * math.pi / 2).tan()
-
-    def loss(self, input, noise, sigma, **kwargs):
-        c_skip, c_out, c_in = [utils.append_dims(x, input.ndim) for x in self.get_scalings(sigma)]
-        noised_input = input + noise * utils.append_dims(sigma, input.ndim)
-        model_output = self.inner_model(noised_input * c_in, self.sigma_to_t(sigma), **kwargs)
-        target = (input - c_skip * noised_input) / c_out
-        return (model_output - target).pow(2).flatten(1).mean(1)
-
-    def forward(self, input, sigma, **kwargs):
-        c_skip, c_out, c_in = [utils.append_dims(x, input.ndim) for x in self.get_scalings(sigma)]
-        return self.inner_model(input * c_in, self.sigma_to_t(sigma), **kwargs) * c_out + input * c_skip
-
-
-class DiscreteSchedule(nn.Module):
-    """A mapping between continuous noise levels (sigmas) and a list of discrete noise
     levels."""
-
-    def __init__(self, sigmas, quantize):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs):
         super().__init__()
-        self.register_buffer('sigmas', sigmas)
-        self.register_buffer('log_sigmas', sigmas.log())
-        self.quantize = quantize
-
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj('sigmas', ywkdEDhpSPXHYARENdFhpYnCzsLhiORy)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj('log_sigmas', ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL())
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs = igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs
     @property
-    def sigma_min(self):
-        return self.sigmas[0]
-
+    def FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[0]
     @property
-    def sigma_max(self):
-        return self.sigmas[-1]
-
-    def get_sigmas(self, n=None):
-        if n is None:
-            return sampling.append_zero(self.sigmas.flip(0))
-        t_max = len(self.sigmas) - 1
-        t = torch.linspace(t_max, 0, n, device=self.sigmas.device)
-        return sampling.append_zero(self.t_to_sigma(t))
-
-    def sigma_to_discrete_timestep(self, sigma):
-        log_sigma = sigma.log()
-        dists = log_sigma.to(self.log_sigmas.device) - self.log_sigmas[:, None]
-        return dists.abs().argmin(dim=0).view(sigma.shape)
-
-    def sigma_to_t(self, sigma, quantize=None):
-        quantize = self.quantize if quantize is None else quantize
-        if quantize:
-            return self.sigma_to_discrete_timestep(sigma)
-        log_sigma = sigma.log()
-        dists = log_sigma.to(self.log_sigmas.device) - self.log_sigmas[:, None]
-        low_idx = dists.ge(0).cumsum(dim=0).argmax(dim=0).clamp(max=self.log_sigmas.shape[0] - 2)
-        high_idx = low_idx + 1
-        low, high = self.log_sigmas[low_idx], self.log_sigmas[high_idx]
-        w = (low - log_sigma) / (low - high)
-        w = w.clamp(0, 1)
-        t = (1 - w) * low_idx + w * high_idx
-        return t.view(sigma.shape)
-
-    def t_to_sigma(self, t):
-        t = t.float()
-        low_idx = t.floor().long()
-        high_idx = t.ceil().long()
-        w = t-low_idx if t.device.type == 'mps' else t.frac()
-        log_sigma = (1 - w) * self.log_sigmas[low_idx] + w * self.log_sigmas[high_idx]
-        return log_sigma.exp()
-
-    def predict_eps_discrete_timestep(self, input, t, **kwargs):
-        if t.dtype != torch.int64 and t.dtype != torch.int32:
-            t = t.round()
-        sigma = self.t_to_sigma(t)
-        input = input * ((utils.append_dims(sigma, input.ndim) ** 2 + 1.0) ** 0.5)
-        return  (input - self(input, sigma, **kwargs)) / utils.append_dims(sigma, input.ndim)
-
-class DiscreteEpsDDPMDenoiser(DiscreteSchedule):
-    """A wrapper for discrete schedule DDPM models that output eps (the predicted
-    noise)."""
-
-    def __init__(self, model, alphas_cumprod, quantize):
-        super().__init__(((1 - alphas_cumprod) / alphas_cumprod) ** 0.5, quantize)
-        self.inner_model = model
-        self.sigma_data = 1.
-
-    def get_scalings(self, sigma):
-        c_out = -sigma
-        c_in = 1 / (sigma ** 2 + self.sigma_data ** 2) ** 0.5
-        return c_out, c_in
-
-    def get_eps(self, *args, **kwargs):
-        return self.inner_model(*args, **kwargs)
-
-    def loss(self, input, noise, sigma, **kwargs):
-        c_out, c_in = [utils.append_dims(x, input.ndim) for x in self.get_scalings(sigma)]
-        noised_input = input + noise * utils.append_dims(sigma, input.ndim)
-        eps = self.get_eps(noised_input * c_in, self.sigma_to_t(sigma), **kwargs)
-        return (eps - noise).pow(2).flatten(1).mean(1)
-
-    def forward(self, input, sigma, **kwargs):
-        c_out, c_in = [utils.append_dims(x, input.ndim) for x in self.get_scalings(sigma)]
-        eps = self.get_eps(input * c_in, self.sigma_to_t(sigma), **kwargs)
-        return input + eps * c_out
-
-
-class OpenAIDenoiser(DiscreteEpsDDPMDenoiser):
-    """A wrapper for OpenAI diffusion models."""
-
-    def __init__(self, model, diffusion, quantize=False, has_learned_sigmas=True, device='cpu'):
-        alphas_cumprod = torch.tensor(diffusion.alphas_cumprod, device=device, dtype=torch.float32)
-        super().__init__(model, alphas_cumprod, quantize=quantize)
-        self.has_learned_sigmas = has_learned_sigmas
-
-    def get_eps(self, *args, **kwargs):
-        model_output = self.inner_model(*args, **kwargs)
-        if self.has_learned_sigmas:
-            return model_output.chunk(2, dim=1)[0]
-        return model_output
-
-
-class CompVisDenoiser(DiscreteEpsDDPMDenoiser):
-    """A wrapper for CompVis diffusion models."""
-
-    def __init__(self, model, quantize=False, device='cpu'):
-        super().__init__(model, model.alphas_cumprod, quantize=quantize)
-
-    def get_eps(self, *args, **kwargs):
-        return self.inner_model.apply_model(*args, **kwargs)
-
-
-class DiscreteVDDPMDenoiser(DiscreteSchedule):
-    """A wrapper for discrete schedule DDPM models that output v."""
-
-    def __init__(self, model, alphas_cumprod, quantize):
-        super().__init__(((1 - alphas_cumprod) / alphas_cumprod) ** 0.5, quantize)
-        self.inner_model = model
-        self.sigma_data = 1.
-
-    def get_scalings(self, sigma):
-        c_skip = self.sigma_data ** 2 / (sigma ** 2 + self.sigma_data ** 2)
-        c_out = -sigma * self.sigma_data / (sigma ** 2 + self.sigma_data ** 2) ** 0.5
-        c_in = 1 / (sigma ** 2 + self.sigma_data ** 2) ** 0.5
-        return c_skip, c_out, c_in
-
-    def get_v(self, *args, **kwargs):
-        return self.inner_model(*args, **kwargs)
-
-    def loss(self, input, noise, sigma, **kwargs):
-        c_skip, c_out, c_in = [utils.append_dims(x, input.ndim) for x in self.get_scalings(sigma)]
-        noised_input = input + noise * utils.append_dims(sigma, input.ndim)
-        model_output = self.get_v(noised_input * c_in, self.sigma_to_t(sigma), **kwargs)
-        target = (input - c_skip * noised_input) / c_out
-        return (model_output - target).pow(2).flatten(1).mean(1)
-
-    def forward(self, input, sigma, **kwargs):
-        c_skip, c_out, c_in = [utils.append_dims(x, input.ndim) for x in self.get_scalings(sigma)]
-        return self.get_v(input * c_in, self.sigma_to_t(sigma), **kwargs) * c_out + input * c_skip
-
-
-class CompVisVDenoiser(DiscreteVDDPMDenoiser):
-    """A wrapper for CompVis diffusion models that output v."""
-
-    def __init__(self, model, quantize=False, device='cpu'):
-        super().__init__(model, model.alphas_cumprod, quantize=quantize)
-
-    def get_v(self, x, t, cond, **kwargs):
-        return self.inner_model.apply_model(x, t, cond)
+    def SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[-1]
+    def wVVRvRNoIakaDqBEwKRESVcrnFkSqDYo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK=None):
+        if zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK is None:
+            return sampling.yzfXtlbWultmkvsrGijiuFyhqWQceWau(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.hAHyMhlDympwYBnEsaNWPsolDQrxyovx(0))
+        CEkqHkFLLmHVqzoSlafzyzdEXpdFemrG = len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1
+        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = torch.linspace(CEkqHkFLLmHVqzoSlafzyzdEXpdFemrG, 0, zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+        return sampling.yzfXtlbWultmkvsrGijiuFyhqWQceWau(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CfxBXaSvLIObDojYrRigtlHxjKBnZeeU(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz))
+    def liftKapFvUeDzzsJkrLhurdXWIUPgNdm(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, njuvAJFseAnTpNXMmovFtOzaohoePSQs):
+        XgvQIPQoJBynBpZChYksVDrEUSuTuahG = njuvAJFseAnTpNXMmovFtOzaohoePSQs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL()
+        BagdWRkgBQVMRVFiYAroFDSbSINFixOg = XgvQIPQoJBynBpZChYksVDrEUSuTuahG.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc) - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas[:, None]
+        return BagdWRkgBQVMRVFiYAroFDSbSINFixOg.abs().argmin(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=0).view(njuvAJFseAnTpNXMmovFtOzaohoePSQs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg)
+    def SSWWsUGloBvdVjqeLznefALUddyyuHxU(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, njuvAJFseAnTpNXMmovFtOzaohoePSQs, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=None):
+        igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs if igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs is None else igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs
+        if igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs:
+            return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.liftKapFvUeDzzsJkrLhurdXWIUPgNdm(njuvAJFseAnTpNXMmovFtOzaohoePSQs)
+        XgvQIPQoJBynBpZChYksVDrEUSuTuahG = njuvAJFseAnTpNXMmovFtOzaohoePSQs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL()
+        BagdWRkgBQVMRVFiYAroFDSbSINFixOg = XgvQIPQoJBynBpZChYksVDrEUSuTuahG.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc) - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas[:, None]
+        SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy = BagdWRkgBQVMRVFiYAroFDSbSINFixOg.ge(0).cumsum(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=0).argmax(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=0).clamp(max=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] - 2)
+        FtgCPEsOtdVzUhCeWUDfmZlYkqoqRgar = SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy + 1
+        qhrPfWHHguZsdybYFXXZDBCQneSrrgLl, UiDqFCiSJAZBfzjyBxfVSPBumDLtHUWB = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas[SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy], rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas[FtgCPEsOtdVzUhCeWUDfmZlYkqoqRgar]
+        AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = (qhrPfWHHguZsdybYFXXZDBCQneSrrgLl - XgvQIPQoJBynBpZChYksVDrEUSuTuahG) / (qhrPfWHHguZsdybYFXXZDBCQneSrrgLl - UiDqFCiSJAZBfzjyBxfVSPBumDLtHUWB)
+        AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = AeIrbRXDkpZlClJGwzMknCltTQQdmhvu.clamp(0, 1)
+        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = (1 - AeIrbRXDkpZlClJGwzMknCltTQQdmhvu) * SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy + AeIrbRXDkpZlClJGwzMknCltTQQdmhvu * FtgCPEsOtdVzUhCeWUDfmZlYkqoqRgar
+        return XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.view(njuvAJFseAnTpNXMmovFtOzaohoePSQs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg)
+    def CfxBXaSvLIObDojYrRigtlHxjKBnZeeU(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz):
+        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.float()
+        SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.floor().long()
+        FtgCPEsOtdVzUhCeWUDfmZlYkqoqRgar = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.ceil().long()
+        AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz-SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy if XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type == 'mps' else XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.frac()
+        XgvQIPQoJBynBpZChYksVDrEUSuTuahG = (1 - AeIrbRXDkpZlClJGwzMknCltTQQdmhvu) * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas[SXyLeeAwcxYPOnNZwycgcGDvvCifZUWy] + AeIrbRXDkpZlClJGwzMknCltTQQdmhvu * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.log_sigmas[FtgCPEsOtdVzUhCeWUDfmZlYkqoqRgar]
+        return XgvQIPQoJBynBpZChYksVDrEUSuTuahG.exp()
+    def MVlCVibKurynyagCGdRXsWkCtnQsfhAL(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, input, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, **kwargs):
+        if XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv != torch.int64 and XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv != torch.int32:
+            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.round()
+        njuvAJFseAnTpNXMmovFtOzaohoePSQs = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CfxBXaSvLIObDojYrRigtlHxjKBnZeeU(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
+        input = input * ((utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(njuvAJFseAnTpNXMmovFtOzaohoePSQs, input.ndim) ** 2 + 1.0) ** 0.5)
+        return  (input - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS(input, njuvAJFseAnTpNXMmovFtOzaohoePSQs, **kwargs)) / utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(njuvAJFseAnTpNXMmovFtOzaohoePSQs, input.ndim)
+class sKmMAqoxIEhjiiGjAPyPllMRojwnMgFi(DiscreteSchedule):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs):
+        super().__init__(((1 - IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN) / IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN) ** 0.5, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data = 1.
+    def NBVEFpVcbpopkUyJuSndCuJoNvyOgyPq(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, njuvAJFseAnTpNXMmovFtOzaohoePSQs):
+        FuhMUiCLoNniwaHplspgIEFPoSqnHAds = -njuvAJFseAnTpNXMmovFtOzaohoePSQs
+        dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv = 1 / (njuvAJFseAnTpNXMmovFtOzaohoePSQs ** 2 + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data ** 2) ** 0.5
+        return FuhMUiCLoNniwaHplspgIEFPoSqnHAds, dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv
+    def SrfFsjTInyoJFWEiUReuiJBNuDcfvWJO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+    def GtnkLyvfmiRPrwSQJfyYiKxybcBdUius(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, input, jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD, njuvAJFseAnTpNXMmovFtOzaohoePSQs, **kwargs):
+        FuhMUiCLoNniwaHplspgIEFPoSqnHAds, dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv = [utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, input.ndim) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.NBVEFpVcbpopkUyJuSndCuJoNvyOgyPq(njuvAJFseAnTpNXMmovFtOzaohoePSQs)]
+        YDWGSRhwifVKGsQUMKrWxIzCBPlZQSwT = input + jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD * utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(njuvAJFseAnTpNXMmovFtOzaohoePSQs, input.ndim)
+        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SrfFsjTInyoJFWEiUReuiJBNuDcfvWJO(YDWGSRhwifVKGsQUMKrWxIzCBPlZQSwT * dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SSWWsUGloBvdVjqeLznefALUddyyuHxU(njuvAJFseAnTpNXMmovFtOzaohoePSQs), **kwargs)
+        return (VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv - jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD).pow(2).flatten(1).mean(1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, input, njuvAJFseAnTpNXMmovFtOzaohoePSQs, **kwargs):
+        FuhMUiCLoNniwaHplspgIEFPoSqnHAds, dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv = [utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, input.ndim) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.NBVEFpVcbpopkUyJuSndCuJoNvyOgyPq(njuvAJFseAnTpNXMmovFtOzaohoePSQs)]
+        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SrfFsjTInyoJFWEiUReuiJBNuDcfvWJO(input * dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SSWWsUGloBvdVjqeLznefALUddyyuHxU(njuvAJFseAnTpNXMmovFtOzaohoePSQs), **kwargs)
+        return input + VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv * FuhMUiCLoNniwaHplspgIEFPoSqnHAds
+class NeeQSuNGktmFrfUlOGbJHxSHGkkCuXvN(sKmMAqoxIEhjiiGjAPyPllMRojwnMgFi):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, diffusion, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=False, has_learned_sigmas=True, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
+        IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN = torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(diffusion.IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32)
+        super().__init__(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.has_learned_sigmas = has_learned_sigmas
+    def SrfFsjTInyoJFWEiUReuiJBNuDcfvWJO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
+        JAGgHAhaDmWtkIWKZFBIaPOFvCpZlupj = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.has_learned_sigmas:
+            return JAGgHAhaDmWtkIWKZFBIaPOFvCpZlupj.ebMwMGDmpDsmyMtCQfGxUhZuVHvTpavF(2, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)[0]
+        return JAGgHAhaDmWtkIWKZFBIaPOFvCpZlupj
+class rVXbscAxFMXIqxpMaTpOVxSiUSVmBkXw(sKmMAqoxIEhjiiGjAPyPllMRojwnMgFi):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=False, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
+        super().__init__(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs)
+    def SrfFsjTInyoJFWEiUReuiJBNuDcfvWJO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model.MuUKKVVLhPOQUuXCLkPqFOcgOkyciNHd(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+class kwUZqfVoazIyUmydLGgGNUMfFBLnxzBc(DiscreteSchedule):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs):
+        super().__init__(((1 - IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN) / IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN) ** 0.5, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data = 1.
+    def NBVEFpVcbpopkUyJuSndCuJoNvyOgyPq(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, njuvAJFseAnTpNXMmovFtOzaohoePSQs):
+        MIjILIelbeOviFgrNeRlNIqKbvJuYkum = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data ** 2 / (njuvAJFseAnTpNXMmovFtOzaohoePSQs ** 2 + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data ** 2)
+        FuhMUiCLoNniwaHplspgIEFPoSqnHAds = -njuvAJFseAnTpNXMmovFtOzaohoePSQs * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data / (njuvAJFseAnTpNXMmovFtOzaohoePSQs ** 2 + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data ** 2) ** 0.5
+        dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv = 1 / (njuvAJFseAnTpNXMmovFtOzaohoePSQs ** 2 + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sigma_data ** 2) ** 0.5
+        return MIjILIelbeOviFgrNeRlNIqKbvJuYkum, FuhMUiCLoNniwaHplspgIEFPoSqnHAds, dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv
+    def kGbRUeNFlWiJBVjYwcQWjtscYvzdCAgJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+    def GtnkLyvfmiRPrwSQJfyYiKxybcBdUius(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, input, jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD, njuvAJFseAnTpNXMmovFtOzaohoePSQs, **kwargs):
+        MIjILIelbeOviFgrNeRlNIqKbvJuYkum, FuhMUiCLoNniwaHplspgIEFPoSqnHAds, dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv = [utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, input.ndim) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.NBVEFpVcbpopkUyJuSndCuJoNvyOgyPq(njuvAJFseAnTpNXMmovFtOzaohoePSQs)]
+        YDWGSRhwifVKGsQUMKrWxIzCBPlZQSwT = input + jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD * utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(njuvAJFseAnTpNXMmovFtOzaohoePSQs, input.ndim)
+        JAGgHAhaDmWtkIWKZFBIaPOFvCpZlupj = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kGbRUeNFlWiJBVjYwcQWjtscYvzdCAgJ(YDWGSRhwifVKGsQUMKrWxIzCBPlZQSwT * dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SSWWsUGloBvdVjqeLznefALUddyyuHxU(njuvAJFseAnTpNXMmovFtOzaohoePSQs), **kwargs)
+        GaEZlYKiAryhWRjBEPreKAKYPxvvvvNo = (input - MIjILIelbeOviFgrNeRlNIqKbvJuYkum * YDWGSRhwifVKGsQUMKrWxIzCBPlZQSwT) / FuhMUiCLoNniwaHplspgIEFPoSqnHAds
+        return (JAGgHAhaDmWtkIWKZFBIaPOFvCpZlupj - GaEZlYKiAryhWRjBEPreKAKYPxvvvvNo).pow(2).flatten(1).mean(1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, input, njuvAJFseAnTpNXMmovFtOzaohoePSQs, **kwargs):
+        MIjILIelbeOviFgrNeRlNIqKbvJuYkum, FuhMUiCLoNniwaHplspgIEFPoSqnHAds, dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv = [utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, input.ndim) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.NBVEFpVcbpopkUyJuSndCuJoNvyOgyPq(njuvAJFseAnTpNXMmovFtOzaohoePSQs)]
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.kGbRUeNFlWiJBVjYwcQWjtscYvzdCAgJ(input * dfJKHENBxSWlCdWWoJqBdANPeXpCQuEv, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SSWWsUGloBvdVjqeLznefALUddyyuHxU(njuvAJFseAnTpNXMmovFtOzaohoePSQs), **kwargs) * FuhMUiCLoNniwaHplspgIEFPoSqnHAds + input * MIjILIelbeOviFgrNeRlNIqKbvJuYkum
+class MLJTrvGbChJqnyxfUfvJeCdvzwnxXgyS(kwUZqfVoazIyUmydLGgGNUMfFBLnxzBc):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=False, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
+        super().__init__(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN, igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs=igozXCsnhgCZQmnoJMlyfcgGnTBaMSfs)
+    def kGbRUeNFlWiJBVjYwcQWjtscYvzdCAgJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf, **kwargs):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.inner_model.MuUKKVVLhPOQUuXCLkPqFOcgOkyciNHd(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf)

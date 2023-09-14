@@ -1,36 +1,27 @@
 import json
 import os
-
 import quasar.sd
-
-def first_file(path, filenames):
-    for f in filenames:
-        p = os.path.join(path, f)
-        if os.path.exists(p):
-            return p
+def RTpwZjasJmjYbnUyTfFslqkPjEffxgWL(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, mkvCrqyejrekyuWxgtHkShApwhhCDyMu):
+    for f in mkvCrqyejrekyuWxgtHkShApwhhCDyMu:
+        HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, f)
+        if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj):
+            return HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj
     return None
-
-def load_diffusers(model_path, output_vae=True, output_clip=True, embedding_directory=None):
-    diffusion_model_names = ["diffusion_pytorch_model.fp16.safetensors", "diffusion_pytorch_model.safetensors", "diffusion_pytorch_model.fp16.bin", "diffusion_pytorch_model.bin"]
-    unet_path = first_file(os.path.join(model_path, "unet"), diffusion_model_names)
-    vae_path = first_file(os.path.join(model_path, "vae"), diffusion_model_names)
-
-    text_encoder_model_names = ["model.fp16.safetensors", "model.safetensors", "pytorch_model.fp16.bin", "pytorch_model.bin"]
-    text_encoder1_path = first_file(os.path.join(model_path, "text_encoder"), text_encoder_model_names)
-    text_encoder2_path = first_file(os.path.join(model_path, "text_encoder_2"), text_encoder_model_names)
-
-    text_encoder_paths = [text_encoder1_path]
-    if text_encoder2_path is not None:
-        text_encoder_paths.append(text_encoder2_path)
-
-    unet = quasar.sd.load_unet(unet_path)
-
-    clip = None
+def DzQIxZSOpGriDumdVTpwrMDmDIiYkfvv(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=True, output_clip=True, embedding_directory=None):
+    toKfhCdSDwHZAjDWthqTtNeThDYgRtyU = ["diffusion_pytorch_model.fp16.safetensors", "diffusion_pytorch_model.safetensors", "diffusion_pytorch_model.fp16.bin", "diffusion_pytorch_model.bin"]
+    lUdVoyBhqRkFznaNCaHtBXrzPIxGdAef = RTpwZjasJmjYbnUyTfFslqkPjEffxgWL(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, "unet"), toKfhCdSDwHZAjDWthqTtNeThDYgRtyU)
+    SukNRPIFHgQMbRbMnWQLBnsTPeBwANmJ = RTpwZjasJmjYbnUyTfFslqkPjEffxgWL(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, "vae"), toKfhCdSDwHZAjDWthqTtNeThDYgRtyU)
+    UfDhQIjsagkjiJhRPrrLSClLSeFbZeqS = ["model.fp16.safetensors", "model.safetensors", "pytorch_model.fp16.bin", "pytorch_model.bin"]
+    rdcDlMZdfwuwWnrcVKOGZLiELbowqExJ = RTpwZjasJmjYbnUyTfFslqkPjEffxgWL(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, "text_encoder"), UfDhQIjsagkjiJhRPrrLSClLSeFbZeqS)
+    RZZwNKfZbVTNVqaSeDOqmmXDGiIpHScL = RTpwZjasJmjYbnUyTfFslqkPjEffxgWL(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, "text_encoder_2"), UfDhQIjsagkjiJhRPrrLSClLSeFbZeqS)
+    bQyJGOgIfGVTZYcwLXgLqSFCTnKkJPCp = [rdcDlMZdfwuwWnrcVKOGZLiELbowqExJ]
+    if RZZwNKfZbVTNVqaSeDOqmmXDGiIpHScL is not None:
+        bQyJGOgIfGVTZYcwLXgLqSFCTnKkJPCp.append(RZZwNKfZbVTNVqaSeDOqmmXDGiIpHScL)
+    MYuypJGBIXBwaSBpEIVjrFgfKFXohioC = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.dtZfLtBphxBRLHJpIPTIxSOaPKOoVyHs(lUdVoyBhqRkFznaNCaHtBXrzPIxGdAef)
+    WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ = None
     if output_clip:
-        clip = quasar.sd.load_clip(text_encoder_paths, embedding_directory=embedding_directory)
-
-    vae = None
+        WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.lUJkDFeJtgkghWfgvfOCiPlafTOuBTLh(bQyJGOgIfGVTZYcwLXgLqSFCTnKkJPCp, embedding_directory=embedding_directory)
+    PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi = None
     if output_vae:
-        vae = quasar.sd.VAE(ckpt_path=vae_path)
-
-    return (unet, clip, vae)
+        PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.VAE(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA=SukNRPIFHgQMbRbMnWQLBnsTPeBwANmJ)
+    return (MYuypJGBIXBwaSBpEIVjrFgfKFXohioC, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ, PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi)

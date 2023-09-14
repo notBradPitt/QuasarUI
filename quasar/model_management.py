@@ -1,687 +1,553 @@
 import psutil
 from enum import Enum
-from quasar.cli_args import args
+from quasar.cli_args import DukiculvUpjhZIVvaGinshRSKLSTgVVl
 import quasar.utils
 import torch
 import sys
-
-class VRAMState(Enum):
-    DISABLED = 0    #No vram present: no need to move models to vram
-    NO_VRAM = 1     #Very low vram: enable all the options to save vram
-    LOW_VRAM = 2
-    NORMAL_VRAM = 3
-    HIGH_VRAM = 4
-    SHARED = 5      #No dedicated vram: memory shared between CPU and GPU but models still need to be moved between both.
-
-class CPUState(Enum):
-    GPU = 0
-    CPU = 1
-    MPS = 2
-
-# Determine VRAM State
-vram_state = VRAMState.NORMAL_VRAM
-set_vram_to = VRAMState.NORMAL_VRAM
-cpu_state = CPUState.GPU
-
-total_vram = 0
-
-lowvram_available = True
-xpu_available = False
-
-directml_enabled = False
-if args.directml is not None:
+class bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP(Enum):
+    UFZDvMQkHyQtFgyaiLMMYzebzwjzKbnN = 0    
+    sZuTEjYlLsSpGlAgsvokhLKtJWGXtBSt = 1     
+    VVfVZDrXgnSkeTCCsEZSDrsgdvoNXCjZ = 2
+    xmfoFlkMIlumPovjAHlmdldLqjMICkUt = 3
+    UgFpkYwkZWeRlPVDTDYbfGJbKZebAxwU = 4
+    fUORddVDjBLaHdhUZCahKFgidvhsDIPi = 5      
+class ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd(Enum):
+    cgDhUViYUOcOuMDteCWBWTptzTvpxlxZ = 0
+    amvcnbTgIfYErScizhLPObRvsCqqoxLu = 1
+    hNmmVuyKkHcBszNhVyKhRBcIvpDkVwUd = 2
+XWcfUReeNuYAHgWXiaGMksnQlevFLcTW = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.xmfoFlkMIlumPovjAHlmdldLqjMICkUt
+LJPIyadMglCGcXCbArwGhXyoJxFGdhyB = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.xmfoFlkMIlumPovjAHlmdldLqjMICkUt
+juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ = ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.cgDhUViYUOcOuMDteCWBWTptzTvpxlxZ
+veKSzIFEKTXWuBNHlaLkijsXuLHLIqID = 0
+uenKiAwaCaBygEScZqNFFJcCmPIQjOxl = True
+IOVuQmaDimDpoaWsackoJZhURAqJgGHp = False
+ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY = False
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.directml is not None:
     import torch_directml
-    directml_enabled = True
-    device_index = args.directml
-    if device_index < 0:
-        directml_device = torch_directml.device()
+    ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY = True
+    rOAXCYCqopGIxRiDeWhjPHWOJKKoPMfT = DukiculvUpjhZIVvaGinshRSKLSTgVVl.directml
+    if rOAXCYCqopGIxRiDeWhjPHWOJKKoPMfT < 0:
+        sUHCqHCSbRpERmfmIenceBcDyeETWvqj = torch_directml.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc()
     else:
-        directml_device = torch_directml.device(device_index)
-    print("Using directml with device:", torch_directml.device_name(device_index))
-    # torch_directml.disable_tiled_resources(True)
-    lowvram_available = False #TODO: need to find a way to get free memory in directml before this can be enabled by default.
-
+        sUHCqHCSbRpERmfmIenceBcDyeETWvqj = torch_directml.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc(rOAXCYCqopGIxRiDeWhjPHWOJKKoPMfT)
+    print("Using directml with device:", torch_directml.LKGttefzMHbQsSCFJjKbAWGhbIpBWTal(rOAXCYCqopGIxRiDeWhjPHWOJKKoPMfT))
+    uenKiAwaCaBygEScZqNFFJcCmPIQjOxl = False 
 try:
     import intel_extension_for_pytorch as ipex
     if torch.xpu.is_available():
-        xpu_available = True
+        IOVuQmaDimDpoaWsackoJZhURAqJgGHp = True
 except:
     pass
-
 try:
     if torch.backends.mps.is_available():
-        cpu_state = CPUState.MPS
+        juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ = ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.hNmmVuyKkHcBszNhVyKhRBcIvpDkVwUd
         import torch.mps
 except:
     pass
-
-if args.cpu:
-    cpu_state = CPUState.CPU
-
-def is_intel_xpu():
-    global cpu_state
-    global xpu_available
-    if cpu_state == CPUState.GPU:
-        if xpu_available:
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.cpu:
+    juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ = ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.amvcnbTgIfYErScizhLPObRvsCqqoxLu
+def KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    global IOVuQmaDimDpoaWsackoJZhURAqJgGHp
+    if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.cgDhUViYUOcOuMDteCWBWTptzTvpxlxZ:
+        if IOVuQmaDimDpoaWsackoJZhURAqJgGHp:
             return True
     return False
-
-def get_torch_device():
-    global directml_enabled
-    global cpu_state
-    if directml_enabled:
-        global directml_device
-        return directml_device
-    if cpu_state == CPUState.MPS:
-        return torch.device("mps")
-    if cpu_state == CPUState.CPU:
-        return torch.device("cpu")
+def aIQypJefEzoiiobeXriYBEHMJwDTvZWS():
+    global ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    if ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY:
+        global sUHCqHCSbRpERmfmIenceBcDyeETWvqj
+        return sUHCqHCSbRpERmfmIenceBcDyeETWvqj
+    if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.hNmmVuyKkHcBszNhVyKhRBcIvpDkVwUd:
+        return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("mps")
+    if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.amvcnbTgIfYErScizhLPObRvsCqqoxLu:
+        return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
     else:
-        if is_intel_xpu():
-            return torch.device("xpu")
+        if KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
+            return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("xpu")
         else:
-            return torch.device(torch.cuda.current_device())
-
-def get_total_memory(dev=None, torch_total_too=False):
-    global directml_enabled
-    if dev is None:
-        dev = get_torch_device()
-
-    if hasattr(dev, 'type') and (dev.type == 'cpu' or dev.type == 'mps'):
-        mem_total = psutil.virtual_memory().total
-        mem_total_torch = mem_total
+            return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc(torch.cuda.current_device())
+def vJrdZOBBaEUjLkobsDWKZVCBOAICHZyg(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE=None, torch_total_too=False):
+    global ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY
+    if ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE is None:
+        ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE = aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
+    if hasattr(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE, 'type') and (ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE.type == 'cpu' or ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE.type == 'mps'):
+        pOnYuedIKRPotKGLeyhBElrmAyUTLfmv = psutil.virtual_memory().total
+        vMpioSWBxKjOQrgisIamMlxKJVjYOaHf = pOnYuedIKRPotKGLeyhBElrmAyUTLfmv
     else:
-        if directml_enabled:
-            mem_total = 1024 * 1024 * 1024 #TODO
-            mem_total_torch = mem_total
-        elif is_intel_xpu():
-            stats = torch.xpu.memory_stats(dev)
-            mem_reserved = stats['reserved_bytes.all.current']
-            mem_total = torch.xpu.get_device_properties(dev).total_memory
-            mem_total_torch = mem_reserved
+        if ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY:
+            pOnYuedIKRPotKGLeyhBElrmAyUTLfmv = 1024 * 1024 * 1024 
+            vMpioSWBxKjOQrgisIamMlxKJVjYOaHf = pOnYuedIKRPotKGLeyhBElrmAyUTLfmv
+        elif KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
+            jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh = torch.xpu.memory_stats(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE)
+            tclmftGFRtKnFiydynBHNEmEqcODJwxu = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['reserved_bytes.all.current']
+            pOnYuedIKRPotKGLeyhBElrmAyUTLfmv = torch.xpu.get_device_properties(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE).total_memory
+            vMpioSWBxKjOQrgisIamMlxKJVjYOaHf = tclmftGFRtKnFiydynBHNEmEqcODJwxu
         else:
-            stats = torch.cuda.memory_stats(dev)
-            mem_reserved = stats['reserved_bytes.all.current']
-            _, mem_total_cuda = torch.cuda.mem_get_info(dev)
-            mem_total_torch = mem_reserved
-            mem_total = mem_total_cuda
-
+            jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh = torch.cuda.memory_stats(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE)
+            tclmftGFRtKnFiydynBHNEmEqcODJwxu = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['reserved_bytes.all.current']
+            _, xyODYNYecjUPUhoYbggALGqCgPeoExzF = torch.cuda.mem_get_info(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE)
+            vMpioSWBxKjOQrgisIamMlxKJVjYOaHf = tclmftGFRtKnFiydynBHNEmEqcODJwxu
+            pOnYuedIKRPotKGLeyhBElrmAyUTLfmv = xyODYNYecjUPUhoYbggALGqCgPeoExzF
     if torch_total_too:
-        return (mem_total, mem_total_torch)
+        return (pOnYuedIKRPotKGLeyhBElrmAyUTLfmv, vMpioSWBxKjOQrgisIamMlxKJVjYOaHf)
     else:
-        return mem_total
-
-total_vram = get_total_memory(get_torch_device()) / (1024 * 1024)
-total_ram = psutil.virtual_memory().total / (1024 * 1024)
-print("Total VRAM {:0.0f} MB, total RAM {:0.0f} MB".format(total_vram, total_ram))
-if not args.normalvram and not args.cpu:
-    if lowvram_available and total_vram <= 4096:
-        print("Trying to enable lowvram mode because your GPU seems to have 4GB or less. If you don't want this use: --normalvram")
-        set_vram_to = VRAMState.LOW_VRAM
-
+        return pOnYuedIKRPotKGLeyhBElrmAyUTLfmv
+veKSzIFEKTXWuBNHlaLkijsXuLHLIqID = vJrdZOBBaEUjLkobsDWKZVCBOAICHZyg(aIQypJefEzoiiobeXriYBEHMJwDTvZWS()) / (1024 * 1024)
+OVMYylabuSsLfTJDTHAaNxBUHEzJIuun = psutil.virtual_memory().total / (1024 * 1024)
+print("Total VRAM {:0.0f} MB, total RAM {:0.0f} MB".format(veKSzIFEKTXWuBNHlaLkijsXuLHLIqID, OVMYylabuSsLfTJDTHAaNxBUHEzJIuun))
+if not DukiculvUpjhZIVvaGinshRSKLSTgVVl.normalvram and not DukiculvUpjhZIVvaGinshRSKLSTgVVl.cpu:
+    if uenKiAwaCaBygEScZqNFFJcCmPIQjOxl and veKSzIFEKTXWuBNHlaLkijsXuLHLIqID <= 4096:
+        print("Trying to enable lowvram mode because your GPU seems to have 4GB or less. If you don'XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz want this use: --normalvram")
+        LJPIyadMglCGcXCbArwGhXyoJxFGdhyB = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.VVfVZDrXgnSkeTCCsEZSDrsgdvoNXCjZ
 try:
-    OOM_EXCEPTION = torch.cuda.OutOfMemoryError
+    uiFxRFoacIkrFnuAQlLvqBYROTajCRaW = torch.cuda.OutOfMemoryError
 except:
-    OOM_EXCEPTION = Exception
-
-XFORMERS_VERSION = ""
-XFORMERS_ENABLED_VAE = True
-if args.disable_xformers:
-    XFORMERS_IS_AVAILABLE = False
+    uiFxRFoacIkrFnuAQlLvqBYROTajCRaW = Exception
+eRNchFEQjWOMOILGbPEmvchpGnDSszsx = ""
+JVsRrAvxuVrkOSZJAuikfuJHUFpwCjOl = True
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.disable_xformers:
+    vcboklnCXZjBmAHPGChuylVSoiqHJRJr = False
 else:
     try:
         import xformers
         import xformers.ops
-        XFORMERS_IS_AVAILABLE = True
+        vcboklnCXZjBmAHPGChuylVSoiqHJRJr = True
         try:
-            XFORMERS_VERSION = xformers.version.__version__
-            print("xformers version:", XFORMERS_VERSION)
-            if XFORMERS_VERSION.startswith("0.0.18"):
+            eRNchFEQjWOMOILGbPEmvchpGnDSszsx = xformers.AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ.__version__
+            print("xformers version:", eRNchFEQjWOMOILGbPEmvchpGnDSszsx)
+            if eRNchFEQjWOMOILGbPEmvchpGnDSszsx.startswith("0.0.18"):
                 print()
                 print("WARNING: This version of xformers has a major bug where you will get black images when generating high resolution images.")
                 print("Please downgrade or upgrade xformers to a different version.")
                 print()
-                XFORMERS_ENABLED_VAE = False
+                JVsRrAvxuVrkOSZJAuikfuJHUFpwCjOl = False
         except:
             pass
     except:
-        XFORMERS_IS_AVAILABLE = False
-
-def is_nvidia():
-    global cpu_state
-    if cpu_state == CPUState.GPU:
-        if torch.version.cuda:
+        vcboklnCXZjBmAHPGChuylVSoiqHJRJr = False
+def DVqffYgSzWmxuhVYAcPeksRgsBxTPaac():
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.cgDhUViYUOcOuMDteCWBWTptzTvpxlxZ:
+        if torch.AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ.cuda:
             return True
     return False
-
-ENABLE_PYTORCH_ATTENTION = args.use_pytorch_cross_attention
-VAE_DTYPE = torch.float32
-
+DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp = DukiculvUpjhZIVvaGinshRSKLSTgVVl.use_pytorch_cross_attention
+qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF = torch.float32
 try:
-    if is_nvidia():
-        torch_version = torch.version.__version__
-        if int(torch_version[0]) >= 2:
-            if ENABLE_PYTORCH_ATTENTION == False and XFORMERS_IS_AVAILABLE == False and args.use_split_cross_attention == False and args.use_quad_cross_attention == False:
-                ENABLE_PYTORCH_ATTENTION = True
+    if DVqffYgSzWmxuhVYAcPeksRgsBxTPaac():
+        ZPClPSxxFNAMrlYlFwDWDrhqqTDPMQnh = torch.AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ.__version__
+        if int(ZPClPSxxFNAMrlYlFwDWDrhqqTDPMQnh[0]) >= 2:
+            if DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp == False and vcboklnCXZjBmAHPGChuylVSoiqHJRJr == False and DukiculvUpjhZIVvaGinshRSKLSTgVVl.use_split_cross_attention == False and DukiculvUpjhZIVvaGinshRSKLSTgVVl.use_quad_cross_attention == False:
+                DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp = True
             if torch.cuda.is_bf16_supported():
-                VAE_DTYPE = torch.bfloat16
+                qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF = torch.bfloat16
 except:
     pass
-
-if is_intel_xpu():
-    VAE_DTYPE = torch.bfloat16
-
-if args.fp16_vae:
-    VAE_DTYPE = torch.float16
-elif args.bf16_vae:
-    VAE_DTYPE = torch.bfloat16
-elif args.fp32_vae:
-    VAE_DTYPE = torch.float32
-
-
-if ENABLE_PYTORCH_ATTENTION:
+if KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
+    qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF = torch.bfloat16
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.fp16_vae:
+    qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF = torch.float16
+elif DukiculvUpjhZIVvaGinshRSKLSTgVVl.bf16_vae:
+    qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF = torch.bfloat16
+elif DukiculvUpjhZIVvaGinshRSKLSTgVVl.fp32_vae:
+    qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF = torch.float32
+if DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp:
     torch.backends.cuda.enable_math_sdp(True)
     torch.backends.cuda.enable_flash_sdp(True)
     torch.backends.cuda.enable_mem_efficient_sdp(True)
-    XFORMERS_IS_AVAILABLE = False
-
-if args.lowvram:
-    set_vram_to = VRAMState.LOW_VRAM
-    lowvram_available = True
-elif args.novram:
-    set_vram_to = VRAMState.NO_VRAM
-elif args.highvram or args.gpu_only:
-    vram_state = VRAMState.HIGH_VRAM
-
-FORCE_FP32 = False
-FORCE_FP16 = False
-if args.force_fp32:
+    vcboklnCXZjBmAHPGChuylVSoiqHJRJr = False
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.lowvram:
+    LJPIyadMglCGcXCbArwGhXyoJxFGdhyB = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.VVfVZDrXgnSkeTCCsEZSDrsgdvoNXCjZ
+    uenKiAwaCaBygEScZqNFFJcCmPIQjOxl = True
+elif DukiculvUpjhZIVvaGinshRSKLSTgVVl.novram:
+    LJPIyadMglCGcXCbArwGhXyoJxFGdhyB = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.sZuTEjYlLsSpGlAgsvokhLKtJWGXtBSt
+elif DukiculvUpjhZIVvaGinshRSKLSTgVVl.highvram or DukiculvUpjhZIVvaGinshRSKLSTgVVl.gpu_only:
+    XWcfUReeNuYAHgWXiaGMksnQlevFLcTW = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.UgFpkYwkZWeRlPVDTDYbfGJbKZebAxwU
+lCuoOVqdrEfSVpWTEosmhRdVLdBiqWjv = False
+YdSuSQhzpUBLjGBadREIsEKqDLsEYINV = False
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.force_fp32:
     print("Forcing FP32, if this improves things please report it.")
-    FORCE_FP32 = True
-
-if args.force_fp16:
+    lCuoOVqdrEfSVpWTEosmhRdVLdBiqWjv = True
+if DukiculvUpjhZIVvaGinshRSKLSTgVVl.force_fp16:
     print("Forcing FP16.")
-    FORCE_FP16 = True
-
-if lowvram_available:
+    YdSuSQhzpUBLjGBadREIsEKqDLsEYINV = True
+if uenKiAwaCaBygEScZqNFFJcCmPIQjOxl:
     try:
         import accelerate
-        if set_vram_to in (VRAMState.LOW_VRAM, VRAMState.NO_VRAM):
-            vram_state = set_vram_to
-    except Exception as e:
+        if LJPIyadMglCGcXCbArwGhXyoJxFGdhyB in (bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.VVfVZDrXgnSkeTCCsEZSDrsgdvoNXCjZ, bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.sZuTEjYlLsSpGlAgsvokhLKtJWGXtBSt):
+            XWcfUReeNuYAHgWXiaGMksnQlevFLcTW = LJPIyadMglCGcXCbArwGhXyoJxFGdhyB
+    except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
         import traceback
         print(traceback.format_exc())
         print("ERROR: LOW VRAM MODE NEEDS accelerate.")
-        lowvram_available = False
-
-
-if cpu_state != CPUState.GPU:
-    vram_state = VRAMState.DISABLED
-
-if cpu_state == CPUState.MPS:
-    vram_state = VRAMState.SHARED
-
+        uenKiAwaCaBygEScZqNFFJcCmPIQjOxl = False
+if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ != ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.cgDhUViYUOcOuMDteCWBWTptzTvpxlxZ:
+    XWcfUReeNuYAHgWXiaGMksnQlevFLcTW = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.UFZDvMQkHyQtFgyaiLMMYzebzwjzKbnN
+if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.hNmmVuyKkHcBszNhVyKhRBcIvpDkVwUd:
+    XWcfUReeNuYAHgWXiaGMksnQlevFLcTW = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.fUORddVDjBLaHdhUZCahKFgidvhsDIPi
 print(f"Set vram state to: {vram_state.name}")
-
-DISABLE_SMART_MEMORY = args.disable_smart_memory
-
-if DISABLE_SMART_MEMORY:
+NjIEdxRqdpqXlUcDlXRnvqpbxQblNfhR = DukiculvUpjhZIVvaGinshRSKLSTgVVl.disable_smart_memory
+if NjIEdxRqdpqXlUcDlXRnvqpbxQblNfhR:
     print("Disabling smart memory management")
-
-def get_torch_device_name(device):
-    if hasattr(device, 'type'):
-        if device.type == "cuda":
+def CIUMTWevcFrsyhsNplwosYXuEZxYMCyJ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
+    if hasattr(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, 'type'):
+        if fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type == "cuda":
             try:
-                allocator_backend = torch.cuda.get_allocator_backend()
+                hVHRBRuqcIiMHSgcToHpoKDoVGBTqaDF = torch.cuda.get_allocator_backend()
             except:
-                allocator_backend = ""
-            return "{} {} : {}".format(device, torch.cuda.get_device_name(device), allocator_backend)
+                hVHRBRuqcIiMHSgcToHpoKDoVGBTqaDF = ""
+            return "{} {} : {}".format(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, torch.cuda.get_device_name(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), hVHRBRuqcIiMHSgcToHpoKDoVGBTqaDF)
         else:
-            return "{}".format(device.type)
-    elif is_intel_xpu():
-        return "{} {}".format(device, torch.xpu.get_device_name(device))
+            return "{}".format(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type)
+    elif KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
+        return "{} {}".format(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, torch.xpu.get_device_name(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
     else:
-        return "CUDA {}: {}".format(device, torch.cuda.get_device_name(device))
-
+        return "CUDA {}: {}".format(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, torch.cuda.get_device_name(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
 try:
-    print("Device:", get_torch_device_name(get_torch_device()))
+    print("Device:", CIUMTWevcFrsyhsNplwosYXuEZxYMCyJ(aIQypJefEzoiiobeXriYBEHMJwDTvZWS()))
 except:
     print("Could not pick default device.")
-
-print("VAE dtype:", VAE_DTYPE)
-
-current_loaded_models = []
-
-class LoadedModel:
-    def __init__(self, model):
-        self.model = model
-        self.model_accelerated = False
-        self.device = model.load_device
-
-    def model_memory(self):
-        return self.model.model_size()
-
-    def model_memory_required(self, device):
-        if device == self.model.current_device:
+print("VAE dtype:", qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF)
+FfkeYsDSxglNPQNTExpnnOwBEXWBaUly = []
+class FfbXlBqXzExOIBrKBYDHAPLLLbxJXNmn:
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_accelerated = False
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.load_device
+    def AMIceNNlHUikbbcFMVQYJJUvVsvzXHLM(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV()
+    def MQQtGLLsyroAcMAWroBCfCzRdISZtAns(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
+        if fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc == rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.current_device:
             return 0
         else:
-            return self.model_memory()
-
-    def model_load(self, lowvram_model_memory=0):
-        patch_model_to = None
-        if lowvram_model_memory == 0:
-            patch_model_to = self.device
-
-        self.model.model_patches_to(self.device)
-        self.model.model_patches_to(self.model.model_dtype())
-
+            return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.AMIceNNlHUikbbcFMVQYJJUvVsvzXHLM()
+    def EIyhhhygqxldOESswsKbqPZzmKJaZZAy(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, tDBLIWwBGFohuhaQQPiONjckHLCZrnys=0):
+        APCyVYcCZTRmHvFLJJgTqjyloWYqwQIg = None
+        if tDBLIWwBGFohuhaQQPiONjckHLCZrnys == 0:
+            APCyVYcCZTRmHvFLJJgTqjyloWYqwQIg = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.RDTOrwmBjfxGxlZjvgtcnLQViOIXZSlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.RDTOrwmBjfxGxlZjvgtcnLQViOIXZSlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.LnVirSCOJainsBkOCuBFzVkpVqINXQDh())
         try:
-            self.real_model = self.model.patch_model(device_to=patch_model_to) #TODO: do something with loras and offloading to CPU
-        except Exception as e:
-            self.model.unpatch_model(self.model.offload_device)
-            self.model_unload()
-            raise e
-
-        if lowvram_model_memory > 0:
-            print("loading in lowvram mode", lowvram_model_memory/(1024 * 1024))
-            device_map = accelerate.infer_auto_device_map(self.real_model, max_memory={0: "{}MiB".format(lowvram_model_memory // (1024 * 1024)), "cpu": "16GiB"})
-            accelerate.dispatch_model(self.real_model, device_map=device_map, main_device=self.device)
-            self.model_accelerated = True
-
-        if is_intel_xpu() and not args.disable_ipex_optimize:
-            self.real_model = torch.xpu.optimize(self.real_model.eval(), inplace=True, auto_kernel_selection=True, graph_mode=True)
-
-        return self.real_model
-
-    def model_unload(self):
-        if self.model_accelerated:
-            accelerate.hooks.remove_hook_from_submodules(self.real_model)
-            self.model_accelerated = False
-
-        self.model.unpatch_model(self.model.offload_device)
-        self.model.model_patches_to(self.model.offload_device)
-
-    def __eq__(self, other):
-        return self.model is other.model
-
-def minimum_inference_memory():
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.QbcJNaFyswYsDxKtpcxHQUBPsPaTuJFs(device_to=APCyVYcCZTRmHvFLJJgTqjyloWYqwQIg) 
+        except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.IPVijuJuWpDdBNNaJrYLjziBbaCAwYlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.SlzENmVKreawuuvgrVSmYHZXOypOtbgl)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.JxSLzJAiqMKUkNJmPjXqPfYEUoOfxhic()
+            raise dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO
+        if tDBLIWwBGFohuhaQQPiONjckHLCZrnys > 0:
+            print("loading in lowvram mode", tDBLIWwBGFohuhaQQPiONjckHLCZrnys/(1024 * 1024))
+            HqRsyLUujJHpnCSDMCsQhdJbIegGHwGT = accelerate.infer_auto_device_map(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model, max_memory={0: "{}MiB".format(tDBLIWwBGFohuhaQQPiONjckHLCZrnys // (1024 * 1024)), "cpu": "16GiB"})
+            accelerate.dispatch_model(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model, HqRsyLUujJHpnCSDMCsQhdJbIegGHwGT=HqRsyLUujJHpnCSDMCsQhdJbIegGHwGT, main_device=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_accelerated = True
+        if KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE() and not DukiculvUpjhZIVvaGinshRSKLSTgVVl.disable_ipex_optimize:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model = torch.xpu.optimize(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model.eval(), inplace=True, auto_kernel_selection=True, graph_mode=True)
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model
+    def JxSLzJAiqMKUkNJmPjXqPfYEUoOfxhic(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_accelerated:
+            accelerate.hooks.remove_hook_from_submodules(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.real_model)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_accelerated = False
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.IPVijuJuWpDdBNNaJrYLjziBbaCAwYlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.SlzENmVKreawuuvgrVSmYHZXOypOtbgl)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.RDTOrwmBjfxGxlZjvgtcnLQViOIXZSlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.SlzENmVKreawuuvgrVSmYHZXOypOtbgl)
+    def __eq__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, other):
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM is other.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
+def BhZEdLwSnzaDJwUfESecuJfraxpORxNr():
     return (1024 * 1024 * 1024)
-
-def unload_model_clones(model):
-    to_unload = []
-    for i in range(len(current_loaded_models)):
-        if model.is_clone(current_loaded_models[i].model):
-            to_unload = [i] + to_unload
-
-    for i in to_unload:
-        print("unload clone", i)
-        current_loaded_models.pop(i).model_unload()
-
-def free_memory(memory_required, device, keep_loaded=[]):
-    unloaded_model = False
-    for i in range(len(current_loaded_models) -1, -1, -1):
-        if not DISABLE_SMART_MEMORY:
-            if get_free_memory(device) > memory_required:
+def tBKfYbOgStwAHAAAacRAmyKTgbFKBaRV(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM):
+    malLBWIDASxmsaybIieZrAScTgrYitEw = []
+    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(FfkeYsDSxglNPQNTExpnnOwBEXWBaUly)):
+        if VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.hlsUPEbCDylvHBJIhHotpulFhpPyOFlW(FfkeYsDSxglNPQNTExpnnOwBEXWBaUly[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM):
+            malLBWIDASxmsaybIieZrAScTgrYitEw = [HCXmerBqIMuTscBONzTGKYapYSxWTYHo] + malLBWIDASxmsaybIieZrAScTgrYitEw
+    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in malLBWIDASxmsaybIieZrAScTgrYitEw:
+        print("unload clone", HCXmerBqIMuTscBONzTGKYapYSxWTYHo)
+        FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.pop(HCXmerBqIMuTscBONzTGKYapYSxWTYHo).JxSLzJAiqMKUkNJmPjXqPfYEUoOfxhic()
+def ewXbUsuAHcVJiRjpgfinHdaPAjSTrzud(memory_required, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, keep_loaded=[]):
+    kLwkHghjFhLFLxlzmvgTrccqSwVTJxjE = False
+    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(FfkeYsDSxglNPQNTExpnnOwBEXWBaUly) -1, -1, -1):
+        if not NjIEdxRqdpqXlUcDlXRnvqpbxQblNfhR:
+            if pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc) > memory_required:
                 break
-        shift_model = current_loaded_models[i]
-        if shift_model.device == device:
-            if shift_model not in keep_loaded:
-                m = current_loaded_models.pop(i)
-                m.model_unload()
-                del m
-                unloaded_model = True
-
-    if unloaded_model:
-        soft_empty_cache()
-
-
-def load_models_gpu(models, memory_required=0):
-    global vram_state
-
-    inference_memory = minimum_inference_memory()
-    extra_mem = max(inference_memory, memory_required)
-
-    models_to_load = []
-    models_already_loaded = []
-    for x in models:
-        loaded_model = LoadedModel(x)
-
-        if loaded_model in current_loaded_models:
-            index = current_loaded_models.index(loaded_model)
-            current_loaded_models.insert(0, current_loaded_models.pop(index))
-            models_already_loaded.append(loaded_model)
+        aabRFCTveTbJRpDAvKtyLupehsGxrhzo = FfkeYsDSxglNPQNTExpnnOwBEXWBaUly[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
+        if aabRFCTveTbJRpDAvKtyLupehsGxrhzo.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc == fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc:
+            if aabRFCTveTbJRpDAvKtyLupehsGxrhzo not in keep_loaded:
+                FTosLGldclAzaiNbwuLMIEtXfrZQpTnU = FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.pop(HCXmerBqIMuTscBONzTGKYapYSxWTYHo)
+                FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.JxSLzJAiqMKUkNJmPjXqPfYEUoOfxhic()
+                del FTosLGldclAzaiNbwuLMIEtXfrZQpTnU
+                kLwkHghjFhLFLxlzmvgTrccqSwVTJxjE = True
+    if kLwkHghjFhLFLxlzmvgTrccqSwVTJxjE:
+        sIeWDNiYvNWPLHobyjQHaTvlWZnazsHi()
+def hePDtJntacOxTjWwcIlTXDXxmfFUQfAv(models, memory_required=0):
+    global XWcfUReeNuYAHgWXiaGMksnQlevFLcTW
+    UUeNmHFjiQneVUrtuVohCNrZuwVSBMwU = BhZEdLwSnzaDJwUfESecuJfraxpORxNr()
+    TfqgUQfWXdgBSgLRImcDRraFZVBPvcrm = max(UUeNmHFjiQneVUrtuVohCNrZuwVSBMwU, memory_required)
+    lzhSOHhRZjuoYIjVoFUCdpBRfHPXFMHG = []
+    eBdcMwLRfjvyvypYAKnhRuKNFiUTFfKU = []
+    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in models:
+        gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ = FfbXlBqXzExOIBrKBYDHAPLLLbxJXNmn(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        if gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ in FfkeYsDSxglNPQNTExpnnOwBEXWBaUly:
+            index = FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.index(gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ)
+            FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.insert(0, FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.pop(index))
+            eBdcMwLRfjvyvypYAKnhRuKNFiUTFfKU.append(gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ)
         else:
-            models_to_load.append(loaded_model)
-
-    if len(models_to_load) == 0:
-        devs = set(map(lambda a: a.device, models_already_loaded))
-        for d in devs:
-            if d != torch.device("cpu"):
-                free_memory(extra_mem, d, models_already_loaded)
+            lzhSOHhRZjuoYIjVoFUCdpBRfHPXFMHG.append(gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ)
+    if len(lzhSOHhRZjuoYIjVoFUCdpBRfHPXFMHG) == 0:
+        erJCGJYZvjbZGXOEIGerBgbEFXzxkqrA = set(map(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: GlZreLQjBCiBptpFgmbsMbhjFlMgPVav.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, eBdcMwLRfjvyvypYAKnhRuKNFiUTFfKU))
+        for TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo in erJCGJYZvjbZGXOEIGerBgbEFXzxkqrA:
+            if TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo != torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu"):
+                ewXbUsuAHcVJiRjpgfinHdaPAjSTrzud(TfqgUQfWXdgBSgLRImcDRraFZVBPvcrm, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo, eBdcMwLRfjvyvypYAKnhRuKNFiUTFfKU)
         return
-
     print("loading new")
-
-    total_memory_required = {}
-    for loaded_model in models_to_load:
-        unload_model_clones(loaded_model.model)
-        total_memory_required[loaded_model.device] = total_memory_required.get(loaded_model.device, 0) + loaded_model.model_memory_required(loaded_model.device)
-
-    for device in total_memory_required:
-        if device != torch.device("cpu"):
-            free_memory(total_memory_required[device] * 1.3 + extra_mem, device, models_already_loaded)
-
-    for loaded_model in models_to_load:
-        model = loaded_model.model
-        torch_dev = model.load_device
-        if is_device_cpu(torch_dev):
-            vram_set_state = VRAMState.DISABLED
+    FoUrwyqDTyFueQmwmIQernGktGVEkvwi = {}
+    for gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ in lzhSOHhRZjuoYIjVoFUCdpBRfHPXFMHG:
+        tBKfYbOgStwAHAAAacRAmyKTgbFKBaRV(gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM)
+        FoUrwyqDTyFueQmwmIQernGktGVEkvwi[gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc] = FoUrwyqDTyFueQmwmIQernGktGVEkvwi.get(gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, 0) + gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.MQQtGLLsyroAcMAWroBCfCzRdISZtAns(gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+    for fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc in FoUrwyqDTyFueQmwmIQernGktGVEkvwi:
+        if fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc != torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu"):
+            ewXbUsuAHcVJiRjpgfinHdaPAjSTrzud(FoUrwyqDTyFueQmwmIQernGktGVEkvwi[fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc] * 1.3 + TfqgUQfWXdgBSgLRImcDRraFZVBPvcrm, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, eBdcMwLRfjvyvypYAKnhRuKNFiUTFfKU)
+    for gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ in lzhSOHhRZjuoYIjVoFUCdpBRfHPXFMHG:
+        VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM = gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
+        qxChBbXgmHGvShWfrlkAlcJfGoosKGEU = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.load_device
+        if ioAiXxCftMnqgaPIIDsVtFGXZzkoBTeS(qxChBbXgmHGvShWfrlkAlcJfGoosKGEU):
+            wwegoDAYvCMyEVzJyKsZSJLrJpAJSwMU = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.UFZDvMQkHyQtFgyaiLMMYzebzwjzKbnN
         else:
-            vram_set_state = vram_state
-        lowvram_model_memory = 0
-        if lowvram_available and (vram_set_state == VRAMState.LOW_VRAM or vram_set_state == VRAMState.NORMAL_VRAM):
-            model_size = loaded_model.model_memory_required(torch_dev)
-            current_free_mem = get_free_memory(torch_dev)
-            lowvram_model_memory = int(max(256 * (1024 * 1024), (current_free_mem - 1024 * (1024 * 1024)) / 1.3 ))
-            if model_size > (current_free_mem - inference_memory): #only switch to lowvram if really necessary
-                vram_set_state = VRAMState.LOW_VRAM
+            wwegoDAYvCMyEVzJyKsZSJLrJpAJSwMU = XWcfUReeNuYAHgWXiaGMksnQlevFLcTW
+        tDBLIWwBGFohuhaQQPiONjckHLCZrnys = 0
+        if uenKiAwaCaBygEScZqNFFJcCmPIQjOxl and (wwegoDAYvCMyEVzJyKsZSJLrJpAJSwMU == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.VVfVZDrXgnSkeTCCsEZSDrsgdvoNXCjZ or wwegoDAYvCMyEVzJyKsZSJLrJpAJSwMU == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.xmfoFlkMIlumPovjAHlmdldLqjMICkUt):
+            ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV = gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.MQQtGLLsyroAcMAWroBCfCzRdISZtAns(qxChBbXgmHGvShWfrlkAlcJfGoosKGEU)
+            xllbafDFdXuZQfvbPcIaHikKQYibetEj = pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(qxChBbXgmHGvShWfrlkAlcJfGoosKGEU)
+            tDBLIWwBGFohuhaQQPiONjckHLCZrnys = int(max(256 * (1024 * 1024), (xllbafDFdXuZQfvbPcIaHikKQYibetEj - 1024 * (1024 * 1024)) / 1.3 ))
+            if ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV > (xllbafDFdXuZQfvbPcIaHikKQYibetEj - UUeNmHFjiQneVUrtuVohCNrZuwVSBMwU): 
+                wwegoDAYvCMyEVzJyKsZSJLrJpAJSwMU = bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.VVfVZDrXgnSkeTCCsEZSDrsgdvoNXCjZ
             else:
-                lowvram_model_memory = 0
-
-        if vram_set_state == VRAMState.NO_VRAM:
-            lowvram_model_memory = 256 * 1024 * 1024
-
-        cur_loaded_model = loaded_model.model_load(lowvram_model_memory)
-        current_loaded_models.insert(0, loaded_model)
+                tDBLIWwBGFohuhaQQPiONjckHLCZrnys = 0
+        if wwegoDAYvCMyEVzJyKsZSJLrJpAJSwMU == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.sZuTEjYlLsSpGlAgsvokhLKtJWGXtBSt:
+            tDBLIWwBGFohuhaQQPiONjckHLCZrnys = 256 * 1024 * 1024
+        SDFdGXgNPWXQtDcfwAWRDdOuUlYtuPmn = gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ.EIyhhhygqxldOESswsKbqPZzmKJaZZAy(tDBLIWwBGFohuhaQQPiONjckHLCZrnys)
+        FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.insert(0, gWMlsETwCGEtQCScMJUfCpbQDgoVkgTJ)
     return
-
-
-def load_model_gpu(model):
-    return load_models_gpu([model])
-
-def cleanup_models():
-    to_delete = []
-    for i in range(len(current_loaded_models)):
-        print(sys.getrefcount(current_loaded_models[i].model))
-        if sys.getrefcount(current_loaded_models[i].model) <= 2:
-            to_delete = [i] + to_delete
-
-    for i in to_delete:
-        x = current_loaded_models.pop(i)
-        x.model_unload()
-        del x
-
-def dtype_size(dtype):
-    dtype_size = 4
-    if dtype == torch.float16 or dtype == torch.bfloat16:
-        dtype_size = 2
-    return dtype_size
-
-def unet_offload_device():
-    if vram_state == VRAMState.HIGH_VRAM:
-        return get_torch_device()
+def kXOGaMSSvphjyezwWWyYPLRGDFntsRVH(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM):
+    return hePDtJntacOxTjWwcIlTXDXxmfFUQfAv([VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM])
+def swGRFPugxSKWuFFSumUDzRojyZMqyytZ():
+    HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ = []
+    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(FfkeYsDSxglNPQNTExpnnOwBEXWBaUly)):
+        print(sys.getrefcount(FfkeYsDSxglNPQNTExpnnOwBEXWBaUly[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM))
+        if sys.getrefcount(FfkeYsDSxglNPQNTExpnnOwBEXWBaUly[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM) <= 2:
+            HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ = [HCXmerBqIMuTscBONzTGKYapYSxWTYHo] + HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ
+    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ:
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = FfkeYsDSxglNPQNTExpnnOwBEXWBaUly.pop(HCXmerBqIMuTscBONzTGKYapYSxWTYHo)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb.JxSLzJAiqMKUkNJmPjXqPfYEUoOfxhic()
+        del NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+def YtdGBnIPnrvLkEwWTnnTACWnmoKQkWef(DDRQlhrNSGpwTrokWitkZipdfbAqBFxv):
+    YtdGBnIPnrvLkEwWTnnTACWnmoKQkWef = 4
+    if DDRQlhrNSGpwTrokWitkZipdfbAqBFxv == torch.float16 or DDRQlhrNSGpwTrokWitkZipdfbAqBFxv == torch.bfloat16:
+        YtdGBnIPnrvLkEwWTnnTACWnmoKQkWef = 2
+    return YtdGBnIPnrvLkEwWTnnTACWnmoKQkWef
+def NPYgJTJBLTgTpVRGASjizjQOHZYHkGwk():
+    if XWcfUReeNuYAHgWXiaGMksnQlevFLcTW == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.UgFpkYwkZWeRlPVDTDYbfGJbKZebAxwU:
+        return aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
     else:
-        return torch.device("cpu")
-
-def unet_inital_load_device(parameters, dtype):
-    torch_dev = get_torch_device()
-    if vram_state == VRAMState.HIGH_VRAM:
-        return torch_dev
-
-    cpu_dev = torch.device("cpu")
-    if DISABLE_SMART_MEMORY:
-        return cpu_dev
-
-    model_size = dtype_size(dtype) * parameters
-
-    mem_dev = get_free_memory(torch_dev)
-    mem_cpu = get_free_memory(cpu_dev)
-    if mem_dev > mem_cpu and model_size < mem_dev:
-        return torch_dev
+        return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
+def BwkFoHezUkMdKklCWJzPKpCSLQiPHevU(parameters, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv):
+    qxChBbXgmHGvShWfrlkAlcJfGoosKGEU = aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
+    if XWcfUReeNuYAHgWXiaGMksnQlevFLcTW == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.UgFpkYwkZWeRlPVDTDYbfGJbKZebAxwU:
+        return qxChBbXgmHGvShWfrlkAlcJfGoosKGEU
+    vEthuWaYJODGuiLIhVoxiboQwhYEFQTC = torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
+    if NjIEdxRqdpqXlUcDlXRnvqpbxQblNfhR:
+        return vEthuWaYJODGuiLIhVoxiboQwhYEFQTC
+    ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV = YtdGBnIPnrvLkEwWTnnTACWnmoKQkWef(DDRQlhrNSGpwTrokWitkZipdfbAqBFxv) * parameters
+    TzPJJUtOrNSCDAUBlGOZDiuVffcoAOOT = pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(qxChBbXgmHGvShWfrlkAlcJfGoosKGEU)
+    FHkzgnCZhlsbsReoOBOIbOPRTlIcbzyP = pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(vEthuWaYJODGuiLIhVoxiboQwhYEFQTC)
+    if TzPJJUtOrNSCDAUBlGOZDiuVffcoAOOT > FHkzgnCZhlsbsReoOBOIbOPRTlIcbzyP and ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV < TzPJJUtOrNSCDAUBlGOZDiuVffcoAOOT:
+        return qxChBbXgmHGvShWfrlkAlcJfGoosKGEU
     else:
-        return cpu_dev
-
-def text_encoder_offload_device():
-    if args.gpu_only:
-        return get_torch_device()
+        return vEthuWaYJODGuiLIhVoxiboQwhYEFQTC
+def dqLuwFxiusOelmbvAEJTDqSGYtVhBvgP():
+    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.gpu_only:
+        return aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
     else:
-        return torch.device("cpu")
-
-def text_encoder_device():
-    if args.gpu_only:
-        return get_torch_device()
-    elif vram_state == VRAMState.HIGH_VRAM or vram_state == VRAMState.NORMAL_VRAM:
-        if should_use_fp16(prioritize_performance=False):
-            return get_torch_device()
+        return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
+def sJVlxAzjdIdFAWAuvdyJGHtFVXvPbtas():
+    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.gpu_only:
+        return aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
+    elif XWcfUReeNuYAHgWXiaGMksnQlevFLcTW == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.UgFpkYwkZWeRlPVDTDYbfGJbKZebAxwU or XWcfUReeNuYAHgWXiaGMksnQlevFLcTW == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.xmfoFlkMIlumPovjAHlmdldLqjMICkUt:
+        if LlPEFQdsyRQPhjrfArraPsqqOdqUiGhQ(prioritize_performance=False):
+            return aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
         else:
-            return torch.device("cpu")
+            return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
     else:
-        return torch.device("cpu")
-
-def vae_device():
-    return get_torch_device()
-
-def vae_offload_device():
-    if args.gpu_only:
-        return get_torch_device()
+        return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
+def zuJfaIVUVTEmsdCoRWVPlHBmxypRJNsM():
+    return aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
+def rbjCHbLylizwDImHfhIiyuDrPiLxESxv():
+    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.gpu_only:
+        return aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
     else:
-        return torch.device("cpu")
-
-def vae_dtype():
-    global VAE_DTYPE
-    return VAE_DTYPE
-
-def get_autocast_device(dev):
-    if hasattr(dev, 'type'):
-        return dev.type
+        return torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("cpu")
+def ZqDDNItYkrDACxJojECjSvkCxXbdyHhx():
+    global qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF
+    return qCowljuzAdxdgKVbAjBcdFMhaoJzUJWF
+def wnvxDevQWKlbjTSkvEgnuqaeEwzNgHXB(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE):
+    if hasattr(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE, 'type'):
+        return ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE.type
     return "cuda"
-
-
-def xformers_enabled():
-    global directml_enabled
-    global cpu_state
-    if cpu_state != CPUState.GPU:
+def fpzqQPwQsgljpVXCeYPLnjVJExRYKmpM():
+    global ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ != ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.cgDhUViYUOcOuMDteCWBWTptzTvpxlxZ:
         return False
-    if is_intel_xpu():
+    if KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
         return False
-    if directml_enabled:
+    if ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY:
         return False
-    return XFORMERS_IS_AVAILABLE
-
-
-def xformers_enabled_vae():
-    enabled = xformers_enabled()
-    if not enabled:
+    return vcboklnCXZjBmAHPGChuylVSoiqHJRJr
+def tifElOLkamgDCGAybMmNngkxKANHIbzS():
+    ClvYjtcXylmicwCwVQPykJTWmcwImVEP = fpzqQPwQsgljpVXCeYPLnjVJExRYKmpM()
+    if not ClvYjtcXylmicwCwVQPykJTWmcwImVEP:
         return False
-
-    return XFORMERS_ENABLED_VAE
-
-def pytorch_attention_enabled():
-    global ENABLE_PYTORCH_ATTENTION
-    return ENABLE_PYTORCH_ATTENTION
-
-def pytorch_attention_flash_attention():
-    global ENABLE_PYTORCH_ATTENTION
-    if ENABLE_PYTORCH_ATTENTION:
-        #TODO: more reliable way of checking for flash attention?
-        if is_nvidia(): #pytorch flash attention only works on Nvidia
+    return JVsRrAvxuVrkOSZJAuikfuJHUFpwCjOl
+def kQDSfcrSuHTuIBtYUKBNyIxOCqzlxNlm():
+    global DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp
+    return DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp
+def LmHUtOnHEobaJRMzJJQyCSrAdMSLaYpO():
+    global DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp
+    if DZvIzvjAkqkpJkswFRHqtaZvinqJTGYp:
+        if DVqffYgSzWmxuhVYAcPeksRgsBxTPaac(): 
             return True
     return False
-
-def get_free_memory(dev=None, torch_free_too=False):
-    global directml_enabled
-    if dev is None:
-        dev = get_torch_device()
-
-    if hasattr(dev, 'type') and (dev.type == 'cpu' or dev.type == 'mps'):
-        mem_free_total = psutil.virtual_memory().available
-        mem_free_torch = mem_free_total
+def pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE=None, torch_free_too=False):
+    global ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY
+    if ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE is None:
+        ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE = aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
+    if hasattr(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE, 'type') and (ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE.type == 'cpu' or ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE.type == 'mps'):
+        GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL = psutil.virtual_memory().available
+        AGGPItzIimskEiuQBFJsAxXDSPwlOIrM = GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL
     else:
-        if directml_enabled:
-            mem_free_total = 1024 * 1024 * 1024 #TODO
-            mem_free_torch = mem_free_total
-        elif is_intel_xpu():
-            stats = torch.xpu.memory_stats(dev)
-            mem_active = stats['active_bytes.all.current']
-            mem_allocated = stats['allocated_bytes.all.current']
-            mem_reserved = stats['reserved_bytes.all.current']
-            mem_free_torch = mem_reserved - mem_active
-            mem_free_total = torch.xpu.get_device_properties(dev).total_memory - mem_allocated
+        if ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY:
+            GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL = 1024 * 1024 * 1024 
+            AGGPItzIimskEiuQBFJsAxXDSPwlOIrM = GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL
+        elif KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
+            jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh = torch.xpu.memory_stats(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE)
+            uSOBDJEyVeWZeclOGZGRFLcMdGPcgkrg = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['active_bytes.all.current']
+            NlACvCKDuohzrqdGJVQwtGYoIFWtXkeL = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['allocated_bytes.all.current']
+            tclmftGFRtKnFiydynBHNEmEqcODJwxu = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['reserved_bytes.all.current']
+            AGGPItzIimskEiuQBFJsAxXDSPwlOIrM = tclmftGFRtKnFiydynBHNEmEqcODJwxu - uSOBDJEyVeWZeclOGZGRFLcMdGPcgkrg
+            GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL = torch.xpu.get_device_properties(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE).total_memory - NlACvCKDuohzrqdGJVQwtGYoIFWtXkeL
         else:
-            stats = torch.cuda.memory_stats(dev)
-            mem_active = stats['active_bytes.all.current']
-            mem_reserved = stats['reserved_bytes.all.current']
-            mem_free_cuda, _ = torch.cuda.mem_get_info(dev)
-            mem_free_torch = mem_reserved - mem_active
-            mem_free_total = mem_free_cuda + mem_free_torch
-
+            jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh = torch.cuda.memory_stats(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE)
+            uSOBDJEyVeWZeclOGZGRFLcMdGPcgkrg = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['active_bytes.all.current']
+            tclmftGFRtKnFiydynBHNEmEqcODJwxu = jnfIHeLvMhRAslhkREQLmMNJsXQjQGQh['reserved_bytes.all.current']
+            bLdRlCbdaeBYOyHpjSfQFxRMMEURpZTX, _ = torch.cuda.mem_get_info(ZclsJeyZNkbLbpqNgnNOPEMMNHesUkIE)
+            AGGPItzIimskEiuQBFJsAxXDSPwlOIrM = tclmftGFRtKnFiydynBHNEmEqcODJwxu - uSOBDJEyVeWZeclOGZGRFLcMdGPcgkrg
+            GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL = bLdRlCbdaeBYOyHpjSfQFxRMMEURpZTX + AGGPItzIimskEiuQBFJsAxXDSPwlOIrM
     if torch_free_too:
-        return (mem_free_total, mem_free_torch)
+        return (GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL, AGGPItzIimskEiuQBFJsAxXDSPwlOIrM)
     else:
-        return mem_free_total
-
-def batch_area_memory(area):
-    if xformers_enabled() or pytorch_attention_flash_attention():
-        #TODO: these formulas are copied from maximum_batch_area below
-        return (area / 20) * (1024 * 1024)
+        return GPfGQFkmkbPdFypYtapiuNmsHHdeiLUL
+def lxwarqEuDMRDmYdMwbHDlziRlGulMSMD(PwhgTrGNWmGcxauFNPvZUzwrMxrcaDHR):
+    if fpzqQPwQsgljpVXCeYPLnjVJExRYKmpM() or LmHUtOnHEobaJRMzJJQyCSrAdMSLaYpO():
+        return (PwhgTrGNWmGcxauFNPvZUzwrMxrcaDHR / 20) * (1024 * 1024)
     else:
-        return (((area * 0.6) / 0.9) + 1024) * (1024 * 1024)
-
-def maximum_batch_area():
-    global vram_state
-    if vram_state == VRAMState.NO_VRAM:
+        return (((PwhgTrGNWmGcxauFNPvZUzwrMxrcaDHR * 0.6) / 0.9) + 1024) * (1024 * 1024)
+def ftPVzCnUTasFvGiQpnGOOcDKmxXmWOAb():
+    global XWcfUReeNuYAHgWXiaGMksnQlevFLcTW
+    if XWcfUReeNuYAHgWXiaGMksnQlevFLcTW == bsSIGhSsMwfAaUYcCeSPPMJpGwJitrWP.sZuTEjYlLsSpGlAgsvokhLKtJWGXtBSt:
         return 0
-
-    memory_free = get_free_memory() / (1024 * 1024)
-    if xformers_enabled() or pytorch_attention_flash_attention():
-        #TODO: this needs to be tweaked
-        area = 20 * memory_free
+    IXTWcznOcZKXpZEMTEEOHcQTIWQVdnyI = pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI() / (1024 * 1024)
+    if fpzqQPwQsgljpVXCeYPLnjVJExRYKmpM() or LmHUtOnHEobaJRMzJJQyCSrAdMSLaYpO():
+        PwhgTrGNWmGcxauFNPvZUzwrMxrcaDHR = 20 * IXTWcznOcZKXpZEMTEEOHcQTIWQVdnyI
     else:
-        #TODO: this formula is because AMD sucks and has memory management issues which might be fixed in the future
-        area = ((memory_free - 1024) * 0.9) / (0.6)
-    return int(max(area, 0))
-
-def cpu_mode():
-    global cpu_state
-    return cpu_state == CPUState.CPU
-
-def mps_mode():
-    global cpu_state
-    return cpu_state == CPUState.MPS
-
-def is_device_cpu(device):
-    if hasattr(device, 'type'):
-        if (device.type == 'cpu'):
+        PwhgTrGNWmGcxauFNPvZUzwrMxrcaDHR = ((IXTWcznOcZKXpZEMTEEOHcQTIWQVdnyI - 1024) * 0.9) / (0.6)
+    return int(max(PwhgTrGNWmGcxauFNPvZUzwrMxrcaDHR, 0))
+def YLsTZtHbHfkBglTAIMHWtMKYRdphevCa():
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    return juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.amvcnbTgIfYErScizhLPObRvsCqqoxLu
+def SAwmFeRpGeYWXQgcdsAGvsnMQYGkubrw():
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    return juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.hNmmVuyKkHcBszNhVyKhRBcIvpDkVwUd
+def ioAiXxCftMnqgaPIIDsVtFGXZzkoBTeS(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
+    if hasattr(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, 'type'):
+        if (fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type == 'cpu'):
             return True
     return False
-
-def is_device_mps(device):
-    if hasattr(device, 'type'):
-        if (device.type == 'mps'):
+def QwMlZFtdFFPZWYeJfMWWfpZthldmgRri(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
+    if hasattr(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, 'type'):
+        if (fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type == 'mps'):
             return True
     return False
-
-def should_use_fp16(device=None, model_params=0, prioritize_performance=True):
-    global directml_enabled
-
-    if device is not None:
-        if is_device_cpu(device):
+def LlPEFQdsyRQPhjrfArraPsqqOdqUiGhQ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, PdGWiWNrDwHLuxVqHGwwISTXDvUzkDgP=0, prioritize_performance=True):
+    global ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY
+    if fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc is not None:
+        if ioAiXxCftMnqgaPIIDsVtFGXZzkoBTeS(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
             return False
-
-    if FORCE_FP16:
+    if YdSuSQhzpUBLjGBadREIsEKqDLsEYINV:
         return True
-
-    if device is not None: #TODO
-        if is_device_mps(device):
+    if fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc is not None: 
+        if QwMlZFtdFFPZWYeJfMWWfpZthldmgRri(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
             return False
-
-    if FORCE_FP32:
+    if lCuoOVqdrEfSVpWTEosmhRdVLdBiqWjv:
         return False
-
-    if directml_enabled:
+    if ZnhsFYXiDrJhDvSRdTZbdswNjfAVNkiY:
         return False
-
-    if cpu_mode() or mps_mode():
-        return False #TODO ?
-
-    if is_intel_xpu():
+    if YLsTZtHbHfkBglTAIMHWtMKYRdphevCa() or SAwmFeRpGeYWXQgcdsAGvsnMQYGkubrw():
+        return False 
+    if KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
         return True
-
     if torch.cuda.is_bf16_supported():
         return True
-
-    props = torch.cuda.get_device_properties("cuda")
-    if props.major < 6:
+    cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe = torch.cuda.get_device_properties("cuda")
+    if cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.major < 6:
         return False
-
-    fp16_works = False
-    #FP16 is confirmed working on a 1080 (GP104) but it's a bit slower than FP32 so it should only be enabled
-    #when the model doesn't actually fit on the card
-    #TODO: actually test if GP106 and others have the same type of behavior
-    nvidia_10_series = ["1080", "1070", "titan x", "p3000", "p3200", "p4000", "p4200", "p5000", "p5200", "p6000", "1060", "1050"]
-    for x in nvidia_10_series:
-        if x in props.name.lower():
-            fp16_works = True
-
-    if fp16_works:
-        free_model_memory = (get_free_memory() * 0.9 - minimum_inference_memory())
-        if (not prioritize_performance) or model_params * 4 > free_model_memory:
+    TybTfjccLYlRrmjrblOlIJZQgUgZmlBM = False
+    OiNVyiywgURbgOHSjdnIYNDIIaJjOJre = ["1080", "1070", "titan x", "p3000", "p3200", "p4000", "p4200", "p5000", "p5200", "p6000", "1060", "1050"]
+    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in OiNVyiywgURbgOHSjdnIYNDIIaJjOJre:
+        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb in cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ.lower():
+            TybTfjccLYlRrmjrblOlIJZQgUgZmlBM = True
+    if TybTfjccLYlRrmjrblOlIJZQgUgZmlBM:
+        sGVNGqMDbfOiItaBylfOUWpFtkYLRfBF = (pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI() * 0.9 - BhZEdLwSnzaDJwUfESecuJfraxpORxNr())
+        if (not prioritize_performance) or PdGWiWNrDwHLuxVqHGwwISTXDvUzkDgP * 4 > sGVNGqMDbfOiItaBylfOUWpFtkYLRfBF:
             return True
-
-    if props.major < 7:
+    if cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.major < 7:
         return False
-
-    #FP16 is just broken on these cards
-    nvidia_16_series = ["1660", "1650", "1630", "T500", "T550", "T600", "MX550", "MX450", "CMP 30HX"]
-    for x in nvidia_16_series:
-        if x in props.name:
+    BXOksMoCymLVRejnmYFCcWFrzgWLVtuJ = ["1660", "1650", "1630", "T500", "T550", "T600", "MX550", "MX450", "CMP 30HX"]
+    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in BXOksMoCymLVRejnmYFCcWFrzgWLVtuJ:
+        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb in cQvoHpxzlKBypKSOHIlIcyjpjLnzphFe.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ:
             return False
-
     return True
-
-def soft_empty_cache(force=False):
-    global cpu_state
-    if cpu_state == CPUState.MPS:
+def sIeWDNiYvNWPLHobyjQHaTvlWZnazsHi(force=False):
+    global juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ
+    if juiVBlpYUtLrUBmtDEGztlteWPsvLbZQ == ZnzMTovtbNqIZyGLmHCGwrCzxBPhBddd.hNmmVuyKkHcBszNhVyKhRBcIvpDkVwUd:
         torch.mps.empty_cache()
-    elif is_intel_xpu():
+    elif KwVMPUvXTcrLXlMbtZUohDhciWKSVHEE():
         torch.xpu.empty_cache()
     elif torch.cuda.is_available():
-        if force or is_nvidia(): #This seems to make things worse on ROCm so I only do it for cuda
+        if force or DVqffYgSzWmxuhVYAcPeksRgsBxTPaac(): 
             torch.cuda.empty_cache()
             torch.cuda.ipc_collect()
-
-def resolve_lowvram_weight(weight, model, key):
-    if weight.device == torch.device("meta"): #lowvram NOTE: this depends on the inner working of the accelerate library so it might break.
-        key_split = key.split('.')              # I have no idea why they don't just leave the weight there instead of using the meta device.
-        op = quasar.utils.get_attr(model, '.'.join(key_split[:-1]))
-        weight = op._hf_hook.weights_map[key_split[-1]]
-    return weight
-
-#TODO: might be cleaner to put this somewhere else
+def fJSttSHgRmTiJkiWezuwVxBkdvWTIAvw(RXBOtvKSHQkBvdKDbckmnlphvVygYURP, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, nyrzKxQtioheHIZujafABgijbCjrWhBU):
+    if RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc == torch.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc("meta"): 
+        LzoAloNRhZjLeevNrYoyQqisMYXZbMuT = nyrzKxQtioheHIZujafABgijbCjrWhBU.split('.')              
+        bjtPzNLsLxvykINbAtlMwKlGJQooJtzI = quasar.utils.get_attr(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, '.'.join(LzoAloNRhZjLeevNrYoyQqisMYXZbMuT[:-1]))
+        RXBOtvKSHQkBvdKDbckmnlphvVygYURP = bjtPzNLsLxvykINbAtlMwKlGJQooJtzI._hf_hook.weights_map[LzoAloNRhZjLeevNrYoyQqisMYXZbMuT[-1]]
+    return RXBOtvKSHQkBvdKDbckmnlphvVygYURP
 import threading
-
-class InterruptProcessingException(Exception):
+class FcmhbKAfUbwHtuUFKflJjsPfbobaJqvP(Exception):
     pass
-
-interrupt_processing_mutex = threading.RLock()
-
-interrupt_processing = False
-def interrupt_current_processing(value=True):
-    global interrupt_processing
-    global interrupt_processing_mutex
-    with interrupt_processing_mutex:
-        interrupt_processing = value
-
-def processing_interrupted():
-    global interrupt_processing
-    global interrupt_processing_mutex
-    with interrupt_processing_mutex:
-        return interrupt_processing
-
-def throw_exception_if_processing_interrupted():
-    global interrupt_processing
-    global interrupt_processing_mutex
-    with interrupt_processing_mutex:
-        if interrupt_processing:
-            interrupt_processing = False
-            raise InterruptProcessingException()
+TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe = threading.RLock()
+NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM = False
+def ggsUtIbLrBjTjYoMQwfUAZvlFgfjRNAK(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=True):
+    global NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM
+    global TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe
+    with TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe:
+        NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM = GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+def YWJBrEdoGByBmOQFMXiRByRmSfnooCWg():
+    global NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM
+    global TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe
+    with TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe:
+        return NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM
+def cufzYbsmvfzVPCacJuRroKjPAHWqOusW():
+    global NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM
+    global TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe
+    with TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe:
+        if NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM:
+            NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM = False
+            raise FcmhbKAfUbwHtuUFKflJjsPfbobaJqvP()

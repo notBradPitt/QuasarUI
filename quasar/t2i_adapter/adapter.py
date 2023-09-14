@@ -1,293 +1,221 @@
-#taken from https://github.com/TencentARC/T2I-Adapter
 import torch
 import torch.nn as nn
 from collections import OrderedDict
-
-
-def conv_nd(dims, *args, **kwargs):
-    """
-    Create a 1D, 2D, or 3D convolution module.
-    """
-    if dims == 1:
-        return nn.Conv1d(*args, **kwargs)
-    elif dims == 2:
-        return nn.Conv2d(*args, **kwargs)
-    elif dims == 3:
-        return nn.Conv3d(*args, **kwargs)
+def XqmPajboESpTdLShIQpHOQZiwGoVuVAj(ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
+    if ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 1:
+        return nn.Conv1d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 2:
+        return nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 3:
+        return nn.Conv3d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
-
-
-def avg_pool_nd(dims, *args, **kwargs):
-    """
-    Create a 1D, 2D, or 3D average pooling module.
-    """
-    if dims == 1:
-        return nn.AvgPool1d(*args, **kwargs)
-    elif dims == 2:
-        return nn.AvgPool2d(*args, **kwargs)
-    elif dims == 3:
-        return nn.AvgPool3d(*args, **kwargs)
+def ppDrxhPctQxMusBvKAntWykhHyNnAUtv(ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
+    if ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 1:
+        return nn.AvgPool1d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 2:
+        return nn.AvgPool2d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 3:
+        return nn.AvgPool3d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
-
-
-class Downsample(nn.Module):
-    """
-    A downsampling layer with an optional convolution.
-    :param channels: channels in the inputs and outputs.
-    :param use_conv: a bool determining if a convolution is applied.
-    :param dims: determines if the signal is 1D, 2D, or 3D. If 3D, then
-                 downsampling occurs in the inner-two dimensions.
-    """
-
-    def __init__(self, channels, use_conv, dims=2, out_channels=None, padding=1):
+class LpwKTfRyOAITGEdvwhtCdMnNRMEQUkUG(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, channels, BMidABgMadzWxSilVoOpGtdqLSQhQAjN, ipYTWVOPDpfJXeTFApPIgldytQSaUFdk=2, DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho=None, sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1):
         super().__init__()
-        self.channels = channels
-        self.out_channels = out_channels or channels
-        self.use_conv = use_conv
-        self.dims = dims
-        stride = 2 if dims != 3 else (1, 2, 2)
-        if use_conv:
-            self.op = conv_nd(
-                dims, self.channels, self.out_channels, 3, stride=stride, padding=padding
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels = channels
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho = DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho or channels
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BMidABgMadzWxSilVoOpGtdqLSQhQAjN = BMidABgMadzWxSilVoOpGtdqLSQhQAjN
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ipYTWVOPDpfJXeTFApPIgldytQSaUFdk = ipYTWVOPDpfJXeTFApPIgldytQSaUFdk
+        NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd = 2 if ipYTWVOPDpfJXeTFApPIgldytQSaUFdk != 3 else (1, 2, 2)
+        if BMidABgMadzWxSilVoOpGtdqLSQhQAjN:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bjtPzNLsLxvykINbAtlMwKlGJQooJtzI = XqmPajboESpTdLShIQpHOQZiwGoVuVAj(
+                ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho, 3, NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd, sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP
             )
         else:
-            assert self.channels == self.out_channels
-            self.op = avg_pool_nd(dims, kernel_size=stride, stride=stride)
-
-    def forward(self, x):
-        assert x.shape[1] == self.channels
-        if not self.use_conv:
-            padding = [x.shape[2] % 2, x.shape[3] % 2]
-            self.op.padding = padding
-
-        x = self.op(x)
-        return x
-
-
-class ResnetBlock(nn.Module):
-    def __init__(self, in_c, out_c, down, ksize=3, sk=False, use_conv=True):
+            assert rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels == rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bjtPzNLsLxvykINbAtlMwKlGJQooJtzI = ppDrxhPctQxMusBvKAntWykhHyNnAUtv(ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, aBEJjpEOpoRJYkulwSmukddEYErxRnAG=NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd, NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        assert NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] == rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels
+        if not rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BMidABgMadzWxSilVoOpGtdqLSQhQAjN:
+            sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP = [NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] % 2, NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] % 2]
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bjtPzNLsLxvykINbAtlMwKlGJQooJtzI.sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP = sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bjtPzNLsLxvykINbAtlMwKlGJQooJtzI(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, in_c, out_c, PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze=3, sk=False, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=True):
         super().__init__()
-        ps = ksize // 2
+        fsKtHQnFsZEFuvvsSCubTXMmuFUlFFAH = gcxqXDVvHPuehBbNpJwzTveeqNWyZNze // 2
         if in_c != out_c or sk == False:
-            self.in_conv = nn.Conv2d(in_c, out_c, ksize, 1, ps)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.UgSPfpdOjavOkuRHVjJRYOswzqgseqrc = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(in_c, out_c, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze, 1, fsKtHQnFsZEFuvvsSCubTXMmuFUlFFAH)
         else:
-            # print('n_in')
-            self.in_conv = None
-        self.block1 = nn.Conv2d(out_c, out_c, 3, 1, 1)
-        self.act = nn.ReLU()
-        self.block2 = nn.Conv2d(out_c, out_c, ksize, 1, ps)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.UgSPfpdOjavOkuRHVjJRYOswzqgseqrc = None
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block1 = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(out_c, out_c, 3, 1, 1)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.act = nn.ReLU()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block2 = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(out_c, out_c, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze, 1, fsKtHQnFsZEFuvvsSCubTXMmuFUlFFAH)
         if sk == False:
-            self.skep = nn.Conv2d(in_c, out_c, ksize, 1, ps)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.skep = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(in_c, out_c, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze, 1, fsKtHQnFsZEFuvvsSCubTXMmuFUlFFAH)
         else:
-            self.skep = None
-
-        self.down = down
-        if self.down == True:
-            self.down_opt = Downsample(in_c, use_conv=use_conv)
-
-    def forward(self, x):
-        if self.down == True:
-            x = self.down_opt(x)
-        if self.in_conv is not None:  # edit
-            x = self.in_conv(x)
-
-        h = self.block1(x)
-        h = self.act(h)
-        h = self.block2(h)
-        if self.skep is not None:
-            return h + self.skep(x)
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.skep = None
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn = PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn == True:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.down_opt = LpwKTfRyOAITGEdvwhtCdMnNRMEQUkUG(in_c, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=BMidABgMadzWxSilVoOpGtdqLSQhQAjN)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn == True:
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.down_opt(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.UgSPfpdOjavOkuRHVjJRYOswzqgseqrc is not None:  
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.UgSPfpdOjavOkuRHVjJRYOswzqgseqrc(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block1(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.act(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.skep is not None:
+            return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.skep(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         else:
-            return h + x
-
-
-class Adapter(nn.Module):
-    def __init__(self, channels=[320, 640, 1280, 1280], nums_rb=3, cin=64, ksize=3, sk=False, use_conv=True, xl=True):
-        super(Adapter, self).__init__()
-        self.unshuffle_amount = 8
-        resblock_no_downsample = []
-        resblock_downsample = [3, 2, 1]
-        self.xl = xl
-        if self.xl:
-            self.unshuffle_amount = 16
-            resblock_no_downsample = [1]
-            resblock_downsample = [2]
-
-        self.input_channels = cin // (self.unshuffle_amount * self.unshuffle_amount)
-        self.unshuffle = nn.PixelUnshuffle(self.unshuffle_amount)
-        self.channels = channels
-        self.nums_rb = nums_rb
-        self.body = []
-        for i in range(len(channels)):
-            for j in range(nums_rb):
-                if (i in resblock_downsample) and (j == 0):
-                    self.body.append(
-                        ResnetBlock(channels[i - 1], channels[i], down=True, ksize=ksize, sk=sk, use_conv=use_conv))
-                elif (i in resblock_no_downsample) and (j == 0):
-                    self.body.append(
-                        ResnetBlock(channels[i - 1], channels[i], down=False, ksize=ksize, sk=sk, use_conv=use_conv))
+            return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab + NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class ZPOXjvfzXIIyNqBeetwWBnTgzptlxmjU(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, channels=[320, 640, 1280, 1280], nums_rb=3, lZFDQGrsxjmuPKhiBycouNmmtdgourGD=64, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze=3, sk=False, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=True, woDONBBxfEKwjIgxrZSxOuFkXiNJfLMx=True):
+        super(ZPOXjvfzXIIyNqBeetwWBnTgzptlxmjU, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS).__init__()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu = 8
+        gLwBNMSScKJaUfpftZbMpEYHNHQVdEEL = []
+        PrhKctKEjepzbMQXcQBqMwDXNKyZnODL = [3, 2, 1]
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.woDONBBxfEKwjIgxrZSxOuFkXiNJfLMx = woDONBBxfEKwjIgxrZSxOuFkXiNJfLMx
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.woDONBBxfEKwjIgxrZSxOuFkXiNJfLMx:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu = 16
+            gLwBNMSScKJaUfpftZbMpEYHNHQVdEEL = [1]
+            PrhKctKEjepzbMQXcQBqMwDXNKyZnODL = [2]
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.input_channels = lZFDQGrsxjmuPKhiBycouNmmtdgourGD // (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.unshuffle = nn.PixelUnshuffle(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels = channels
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.nums_rb = nums_rb
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body = []
+        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(channels)):
+            for VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ in range(nums_rb):
+                if (HCXmerBqIMuTscBONzTGKYapYSxWTYHo in PrhKctKEjepzbMQXcQBqMwDXNKyZnODL) and (VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ == 0):
+                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body.append(
+                        ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo - 1], channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn=True, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze=gcxqXDVvHPuehBbNpJwzTveeqNWyZNze, sk=sk, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=BMidABgMadzWxSilVoOpGtdqLSQhQAjN))
+                elif (HCXmerBqIMuTscBONzTGKYapYSxWTYHo in gLwBNMSScKJaUfpftZbMpEYHNHQVdEEL) and (VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ == 0):
+                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body.append(
+                        ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo - 1], channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn=False, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze=gcxqXDVvHPuehBbNpJwzTveeqNWyZNze, sk=sk, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=BMidABgMadzWxSilVoOpGtdqLSQhQAjN))
                 else:
-                    self.body.append(
-                        ResnetBlock(channels[i], channels[i], down=False, ksize=ksize, sk=sk, use_conv=use_conv))
-        self.body = nn.ModuleList(self.body)
-        self.conv_in = nn.Conv2d(cin, channels[0], 3, 1, 1)
-
-    def forward(self, x):
-        # unshuffle
-        x = self.unshuffle(x)
-        # extract features
-        features = []
-        x = self.conv_in(x)
-        for i in range(len(self.channels)):
-            for j in range(self.nums_rb):
-                idx = i * self.nums_rb + j
-                x = self.body[idx](x)
-            if self.xl:
-                features.append(None)
-                if i == 0:
-                    features.append(None)
-                    features.append(None)
-                if i == 2:
-                    features.append(None)
+                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body.append(
+                        ompzonOkvRsHNKHceWNmvSNXZeCTwgaf(channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn=False, gcxqXDVvHPuehBbNpJwzTveeqNWyZNze=gcxqXDVvHPuehBbNpJwzTveeqNWyZNze, sk=sk, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=BMidABgMadzWxSilVoOpGtdqLSQhQAjN))
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body = nn.ModuleList(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(lZFDQGrsxjmuPKhiBycouNmmtdgourGD, channels[0], 3, 1, 1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.unshuffle(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        pCLwRAgBLFqTliMnElfbAlRRHMihRlVI = []
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.conv_in(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels)):
+            for VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ in range(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.nums_rb):
+                bgiQlPcatFmgYxScjGTjbwHMfYvijboo = HCXmerBqIMuTscBONzTGKYapYSxWTYHo * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.nums_rb + VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ
+                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body[bgiQlPcatFmgYxScjGTjbwHMfYvijboo](NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+            if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.woDONBBxfEKwjIgxrZSxOuFkXiNJfLMx:
+                pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+                if HCXmerBqIMuTscBONzTGKYapYSxWTYHo == 0:
+                    pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+                    pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+                if HCXmerBqIMuTscBONzTGKYapYSxWTYHo == 2:
+                    pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
             else:
-                features.append(None)
-                features.append(None)
-            features.append(x)
-
-        return features
-
-
-class LayerNorm(nn.LayerNorm):
-    """Subclass torch's LayerNorm to handle fp16."""
-
-    def forward(self, x: torch.Tensor):
-        orig_type = x.dtype
-        ret = super().forward(x.type(torch.float32))
-        return ret.type(orig_type)
-
-
-class QuickGELU(nn.Module):
-
-    def forward(self, x: torch.Tensor):
-        return x * torch.sigmoid(1.702 * x)
-
-
-class ResidualAttentionBlock(nn.Module):
-
-    def __init__(self, d_model: int, n_head: int, attn_mask: torch.Tensor = None):
+                pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+                pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+            pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        return pCLwRAgBLFqTliMnElfbAlRRHMihRlVI
+class SeaDiaiECtgJbgiExWzpSnrizTosOUam(nn.SeaDiaiECtgJbgiExWzpSnrizTosOUam):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb: torch.Tensor):
+        vaQUhMcmnNspgfwIgYwSuzRUigaVCUxS = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv
+        wTKTCkxEtYuHmqLlpcdxLANFEoxUnsLR = super().lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(NECAaWUrFGIXcLimrerEYmxYIykQBfXb.type(torch.float32))
+        return wTKTCkxEtYuHmqLlpcdxLANFEoxUnsLR.type(vaQUhMcmnNspgfwIgYwSuzRUigaVCUxS)
+class GeNhupzNiimxezSARlAnOPrGdhhSOnHB(nn.Module):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb: torch.Tensor):
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb * torch.sigmoid(1.702 * NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+class GgoSrIzZPOGjMeOFIrXVdnpbVQukOSbe(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, d_model: int, n_head: int, attn_mask: torch.Tensor = None):
         super().__init__()
-
-        self.attn = nn.MultiheadAttention(d_model, n_head)
-        self.ln_1 = LayerNorm(d_model)
-        self.mlp = nn.Sequential(
-            OrderedDict([("c_fc", nn.Linear(d_model, d_model * 4)), ("gelu", QuickGELU()),
-                         ("c_proj", nn.Linear(d_model * 4, d_model))]))
-        self.ln_2 = LayerNorm(d_model)
-        self.attn_mask = attn_mask
-
-    def attention(self, x: torch.Tensor):
-        self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
-        return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask)[0]
-
-    def forward(self, x: torch.Tensor):
-        x = x + self.attention(self.ln_1(x))
-        x = x + self.mlp(self.ln_2(x))
-        return x
-
-
-class StyleAdapter(nn.Module):
-
-    def __init__(self, width=1024, context_dim=768, num_head=8, n_layes=3, num_token=4):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW = nn.MultiheadAttention(d_model, n_head)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_1 = SeaDiaiECtgJbgiExWzpSnrizTosOUam(d_model)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mlp = nn.Sequential(
+            OrderedDict([("c_fc", nn.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(d_model, d_model * 4)), ("gelu", GeNhupzNiimxezSARlAnOPrGdhhSOnHB()),
+                         ("c_proj", nn.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(d_model * 4, d_model))]))
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_2 = SeaDiaiECtgJbgiExWzpSnrizTosOUam(d_model)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn_mask = attn_mask
+    def psnGIaaNNBTQhtdDvLAOAncJBcOCafNn(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb: torch.Tensor):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn_mask = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn_mask.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc) if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn_mask is not None else None
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.tUmudCfKVwpeKVqJPkVQAwLriIrTDLbW(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, need_weights=False, attn_mask=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn_mask)[0]
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb: torch.Tensor):
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.psnGIaaNNBTQhtdDvLAOAncJBcOCafNn(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_1(NECAaWUrFGIXcLimrerEYmxYIykQBfXb))
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mlp(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_2(NECAaWUrFGIXcLimrerEYmxYIykQBfXb))
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class lxWVPNdaxUbpuzwEAZgGWGeTDDPkAoFY(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz=1024, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=768, num_head=8, n_layes=3, num_token=4):
         super().__init__()
-
-        scale = width ** -0.5
-        self.transformer_layes = nn.Sequential(*[ResidualAttentionBlock(width, num_head) for _ in range(n_layes)])
-        self.num_token = num_token
-        self.style_embedding = nn.Parameter(torch.randn(1, num_token, width) * scale)
-        self.ln_post = LayerNorm(width)
-        self.ln_pre = LayerNorm(width)
-        self.proj = nn.Parameter(scale * torch.randn(width, context_dim))
-
-    def forward(self, x):
-        # x shape [N, HW+1, C]
-        style_embedding = self.style_embedding + torch.zeros(
-            (x.shape[0], self.num_token, self.style_embedding.shape[-1]), device=x.device)
-        x = torch.cat([x, style_embedding], dim=1)
-        x = self.ln_pre(x)
-        x = x.permute(1, 0, 2)  # NLD -> LND
-        x = self.transformer_layes(x)
-        x = x.permute(1, 0, 2)  # LND -> NLD
-
-        x = self.ln_post(x[:, -self.num_token:, :])
-        x = x @ self.proj
-
-        return x
-
-
-class ResnetBlock_light(nn.Module):
-    def __init__(self, in_c):
+        xmbXivThLFnawFPAJvIDBztziWsaDyEE = QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz ** -0.5
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transformer_layes = nn.Sequential(*[GgoSrIzZPOGjMeOFIrXVdnpbVQukOSbe(QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, num_head) for _ in range(n_layes)])
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_token = num_token
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fstVyJPPUlPlRjSxVKdBhpDfMHdhuUMc = nn.Parameter(torch.randn(1, num_token, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz) * xmbXivThLFnawFPAJvIDBztziWsaDyEE)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_post = SeaDiaiECtgJbgiExWzpSnrizTosOUam(QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_pre = SeaDiaiECtgJbgiExWzpSnrizTosOUam(QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj = nn.Parameter(xmbXivThLFnawFPAJvIDBztziWsaDyEE * torch.randn(QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT))
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        fstVyJPPUlPlRjSxVKdBhpDfMHdhuUMc = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fstVyJPPUlPlRjSxVKdBhpDfMHdhuUMc + torch.zeros(
+            (NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0], rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_token, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fstVyJPPUlPlRjSxVKdBhpDfMHdhuUMc.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[-1]), fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = torch.cat([NECAaWUrFGIXcLimrerEYmxYIykQBfXb, fstVyJPPUlPlRjSxVKdBhpDfMHdhuUMc], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_pre(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.permute(1, 0, 2)  
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transformer_layes(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.permute(1, 0, 2)  
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ln_post(NECAaWUrFGIXcLimrerEYmxYIykQBfXb[:, -rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.num_token:, :])
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb @ rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.proj
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class gvWdzESafylvwQVqXYlgZdSnBxZpueCs(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, in_c):
         super().__init__()
-        self.block1 = nn.Conv2d(in_c, in_c, 3, 1, 1)
-        self.act = nn.ReLU()
-        self.block2 = nn.Conv2d(in_c, in_c, 3, 1, 1)
-
-    def forward(self, x):
-        h = self.block1(x)
-        h = self.act(h)
-        h = self.block2(h)
-
-        return h + x
-
-
-class extractor(nn.Module):
-    def __init__(self, in_c, inter_c, out_c, nums_rb, down=False):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block1 = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(in_c, in_c, 3, 1, 1)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.act = nn.ReLU()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block2 = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(in_c, in_c, 3, 1, 1)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block1(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.act(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.block2(xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
+        return xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab + NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class oomommsZHQWMxaNIGlGepiPZHgBeyHcx(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, in_c, inter_c, out_c, nums_rb, PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn=False):
         super().__init__()
-        self.in_conv = nn.Conv2d(in_c, inter_c, 1, 1, 0)
-        self.body = []
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.UgSPfpdOjavOkuRHVjJRYOswzqgseqrc = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(in_c, inter_c, 1, 1, 0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body = []
         for _ in range(nums_rb):
-            self.body.append(ResnetBlock_light(inter_c))
-        self.body = nn.Sequential(*self.body)
-        self.out_conv = nn.Conv2d(inter_c, out_c, 1, 1, 0)
-        self.down = down
-        if self.down == True:
-            self.down_opt = Downsample(in_c, use_conv=False)
-
-    def forward(self, x):
-        if self.down == True:
-            x = self.down_opt(x)
-        x = self.in_conv(x)
-        x = self.body(x)
-        x = self.out_conv(x)
-
-        return x
-
-
-class Adapter_light(nn.Module):
-    def __init__(self, channels=[320, 640, 1280, 1280], nums_rb=3, cin=64):
-        super(Adapter_light, self).__init__()
-        self.unshuffle_amount = 8
-        self.unshuffle = nn.PixelUnshuffle(self.unshuffle_amount)
-        self.input_channels = cin // (self.unshuffle_amount * self.unshuffle_amount)
-        self.channels = channels
-        self.nums_rb = nums_rb
-        self.body = []
-        self.xl = False
-
-        for i in range(len(channels)):
-            if i == 0:
-                self.body.append(extractor(in_c=cin, inter_c=channels[i]//4, out_c=channels[i], nums_rb=nums_rb, down=False))
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body.append(gvWdzESafylvwQVqXYlgZdSnBxZpueCs(inter_c))
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body = nn.Sequential(*rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.out_conv = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(inter_c, out_c, 1, 1, 0)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn = PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn == True:
+            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.down_opt = LpwKTfRyOAITGEdvwhtCdMnNRMEQUkUG(in_c, BMidABgMadzWxSilVoOpGtdqLSQhQAjN=False)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn == True:
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.down_opt(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.UgSPfpdOjavOkuRHVjJRYOswzqgseqrc(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.out_conv(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+class qgeSgitlrURgBLleGvUEMOpdoielgAYL(nn.Module):
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, channels=[320, 640, 1280, 1280], nums_rb=3, lZFDQGrsxjmuPKhiBycouNmmtdgourGD=64):
+        super(qgeSgitlrURgBLleGvUEMOpdoielgAYL, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS).__init__()
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu = 8
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.unshuffle = nn.PixelUnshuffle(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.input_channels = lZFDQGrsxjmuPKhiBycouNmmtdgourGD // (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RxZmotBdOdFtUFLUWizeTJiDqLkJiiCu)
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels = channels
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.nums_rb = nums_rb
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body = []
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.woDONBBxfEKwjIgxrZSxOuFkXiNJfLMx = False
+        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(channels)):
+            if HCXmerBqIMuTscBONzTGKYapYSxWTYHo == 0:
+                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body.append(oomommsZHQWMxaNIGlGepiPZHgBeyHcx(in_c=lZFDQGrsxjmuPKhiBycouNmmtdgourGD, inter_c=channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]//4, out_c=channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], nums_rb=nums_rb, PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn=False))
             else:
-                self.body.append(extractor(in_c=channels[i-1], inter_c=channels[i]//4, out_c=channels[i], nums_rb=nums_rb, down=True))
-        self.body = nn.ModuleList(self.body)
-
-    def forward(self, x):
-        # unshuffle
-        x = self.unshuffle(x)
-        # extract features
-        features = []
-        for i in range(len(self.channels)):
-            x = self.body[i](x)
-            features.append(None)
-            features.append(None)
-            features.append(x)
-
-        return features
+                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body.append(oomommsZHQWMxaNIGlGepiPZHgBeyHcx(in_c=channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo-1], inter_c=channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]//4, out_c=channels[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], nums_rb=nums_rb, PKmeubCqZPUpSfmqJozYuvYsQsIMTIOn=True))
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body = nn.ModuleList(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body)
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.unshuffle(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        pCLwRAgBLFqTliMnElfbAlRRHMihRlVI = []
+        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.channels)):
+            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.body[HCXmerBqIMuTscBONzTGKYapYSxWTYHo](NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+            pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+            pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(None)
+            pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.append(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        return pCLwRAgBLFqTliMnElfbAlRRHMihRlVI

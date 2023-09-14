@@ -1,13 +1,9 @@
 import pickle
-
-load = pickle.load
-
-class Empty:
+yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz = pickle.yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz
+class OTJPsZnjohgpBWxBfxmKkTqKKWKBRAsD:
     pass
-
-class Unpickler(pickle.Unpickler):
-    def find_class(self, module, name):
-        #TODO: safe unpickle
-        if module.startswith("pytorch_lightning"):
-            return Empty
-        return super().find_class(module, name)
+class FVLfNiMHBBNMLTXozNBgGDEhCAUlCpOY(pickle.FVLfNiMHBBNMLTXozNBgGDEhCAUlCpOY):
+    def IghoOYiXSVFEGFJxMhyGFwvZubOTHydO(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ):
+        if FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.startswith("pytorch_lightning"):
+            return OTJPsZnjohgpBWxBfxmKkTqKKWKBRAsD
+        return super().IghoOYiXSVFEGFJxMhyGFwvZubOTHydO(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
