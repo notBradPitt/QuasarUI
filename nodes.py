@@ -11,7 +11,7 @@ from PIL import Image, ImageOps
 from PIL.PngImagePlugin import PngInfo
 import numpy as np
 import safetensors.torch
-sys.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.insert(0, os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar"))
+sys.paTH.insert(0, os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar"))
 import quasar.diffusers_load
 import quasar.samplers
 import quasar.sample
@@ -319,7 +319,7 @@ class KNkmvkLrAPwddvOOzCKLuJvoplliUlqI:
             "subfolder": EijzAwkTdadIdbBCcDEUbEYNNcstskwi,
             "type": "output"
         })
-        GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts)
+        GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.paTH.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts)
         pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP = {}
         pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP["latent_tensor"] = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"]
         pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP["latent_format_version_0"] = torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla([])
@@ -329,7 +329,7 @@ class VTKGSJncLiFeXyZiGvTCgFXfSARuMFAd:
     @classmethod
     def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
         GhiEkpNFOqhdputxuaWhbKlilzZXSMPs = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f)) and f.endswith(".latent")]
+        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.paTH.isfile(os.paTH.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f)) and f.endswith(".latent")]
         return {"required": {"latent": [sorted(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE), ]}, }
     VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "_for_testing"
     KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT", )
@@ -383,20 +383,20 @@ class bsDPHyAnZXnIosnIiQuPBGqfEMEJIqBd:
     def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(qImTjFfovKitSMWzOmePbprJitutCVKi):
         AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI = []
         for YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE in folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("diffusers"):
-            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
+            if os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
                 for hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, bwnaMndsjqsroDRgNdISmtBdipLvjCoG, DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE in os.walk(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, followlinks=True):
                     if "model_index.json" in DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE:
-                        AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI.append(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.relpath(hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, tUuYqnLjDXuftYgMagGpmrobxWgfcbgq=YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE))
+                        AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI.append(os.paTH.relpath(hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, tUuYqnLjDXuftYgMagGpmrobxWgfcbgq=YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE))
         return {"required": {"model_path": (AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI,), }}
     KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL", "CLIP", "VAE")
     DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_checkpoint"
     VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders/deprecated"
     def LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=True, output_clip=True):
         for YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE in folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("diffusers"):
-            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
-                hxKDuOteESNpOgdClxSsFUWnOOOOTwlR = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU)
-                if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR):
-                    uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU = hxKDuOteESNpOgdClxSsFUWnOOOOTwlR
+            if os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
+                paTH = os.paTH.join(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU)
+                if os.paTH.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(paTH):
+                    uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU = paTH
                     break
         return quasar.diffusers_load.DzQIxZSOpGriDumdVTpwrMDmDIiYkfvv(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=output_vae, output_clip=output_clip, embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
 class qGILltCyOYXZISZAQqJTdClRJVMIyVhd:
@@ -1057,7 +1057,7 @@ class cOwvLoELrBaqKtFDUcUFTaWlGFiYoejW:
                     for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in extra_pnginfo:
                         bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi.add_text(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, json.dumps(extra_pnginfo[NECAaWUrFGIXcLimrerEYmxYIykQBfXb]))
             GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = f"{filename}_{counter:05}_.png"
-            UaFpXseNaoqfcpsDACQmTguYDZsTArhs.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts), pnginfo=bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi, compress_level=4)
+            UaFpXseNaoqfcpsDACQmTguYDZsTArhs.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(os.paTH.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts), pnginfo=bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi, compress_level=4)
             NRctuwUflnRJCsQaTaCNgYJowifAWPqJ.append({
                 "filename": GGrVUpHsMvVvEYhZgyWAlwaKJQserwts,
                 "subfolder": EijzAwkTdadIdbBCcDEUbEYNNcstskwi,
@@ -1080,7 +1080,7 @@ class zyddvzayUcTOalKoSNRLJCQrFGCFpvrU:
     @classmethod
     def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
         GhiEkpNFOqhdputxuaWhbKlilzZXSMPs = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f))]
+        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.paTH.isfile(os.paTH.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f))]
         return {"required":
                     {"image": (sorted(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE), {"image_upload": True})},
                 }
@@ -1117,7 +1117,7 @@ class ZeEjviALyZWDytVVOgXIdcLgXBMXFprt:
     @classmethod
     def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
         GhiEkpNFOqhdputxuaWhbKlilzZXSMPs = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f))]
+        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.paTH.isfile(os.paTH.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f))]
         return {"required":
                     {"image": (sorted(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE), {"image_upload": True}),
                      "channel": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.depiPHfHHXveRYPQjXQESGsHTSNrrUjS, ), }
@@ -1389,23 +1389,23 @@ fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf = {
 }
 OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ = {}
 def VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, ignore=set()):
-    tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.basename(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
-    if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp):
-        YrPeqrQYIiCxLZFaspxcenNGsDJCGTQo = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
+    tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = os.paTH.basename(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
+    if os.paTH.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp):
+        YrPeqrQYIiCxLZFaspxcenNGsDJCGTQo = os.paTH.splitext(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
         tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = YrPeqrQYIiCxLZFaspxcenNGsDJCGTQo[0]
     try:
-        if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp):
+        if os.paTH.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp):
             module_spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
-            mUseerIsvzYRsklATJBKxbxJiqbRUjQq = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.split(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)[0]
+            mUseerIsvzYRsklATJBKxbxJiqbRUjQq = os.paTH.split(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)[0]
         else:
-            module_spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "__init__.py"))
+            module_spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, os.paTH.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "__init__.py"))
             mUseerIsvzYRsklATJBKxbxJiqbRUjQq = XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp
         module = importlib.util.module_from_spec(wFboHlUzaysMqHAXRfCClEiaEHkJKBhv)
         sys.modules[tieEujcveVfDzVXIDWvRBbuhQgiLzcLd] = FRIBQCDfDDxIonplwxvPCicvOmmOgYPC
         wFboHlUzaysMqHAXRfCClEiaEHkJKBhv.loader.exec_module(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC)
         if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY") is not None:
-            YCwPMrCfndvbAsdSRIxJujNhkijrxjqq = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(mUseerIsvzYRsklATJBKxbxJiqbRUjQq, getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY")))
-            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isdir(YCwPMrCfndvbAsdSRIxJujNhkijrxjqq):
+            YCwPMrCfndvbAsdSRIxJujNhkijrxjqq = os.paTH.abspath(os.paTH.join(mUseerIsvzYRsklATJBKxbxJiqbRUjQq, getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY")))
+            if os.paTH.isdir(YCwPMrCfndvbAsdSRIxJujNhkijrxjqq):
                 OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ[tieEujcveVfDzVXIDWvRBbuhQgiLzcLd] = YCwPMrCfndvbAsdSRIxJujNhkijrxjqq
         if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_CLASS_MAPPINGS") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_CLASS_MAPPINGS") is not None:
             for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP:
@@ -1430,8 +1430,8 @@ def dcfAcZtKluJqyIGNEuRjJvrqFDjMRAov():
         if "__pycache__" in HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl:
             HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl.remove("__pycache__")
         for uzcEftlpQdaRTMylsKksTMmyjgzcrlLK in HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl:
-            XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ, uzcEftlpQdaRTMylsKksTMmyjgzcrlLK)
-            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) and os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)[1] != ".py": continue
+            XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp = os.paTH.join(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ, uzcEftlpQdaRTMylsKksTMmyjgzcrlLK)
+            if os.paTH.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) and os.paTH.splitext(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)[1] != ".py": continue
             if XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp.endswith(".disabled"): continue
             NxDTHICOqkfnhyLwtejLSCWiivMDAyZv = time.perf_counter()
             syoCixXNjFxZAimZmlHgvNsypzGRqzuD = VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, xGHXeNMXhwogNiYpBBpsWEKxnckwdywG)
@@ -1446,13 +1446,13 @@ def dcfAcZtKluJqyIGNEuRjJvrqFDjMRAov():
             print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
         print()
 def TfsMRLhzuJSfPYCmvEXkbVNjMGyUQnEL():
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_hypernetwork.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_upscale_model.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_post_processing.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_mask.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_rebatch.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_model_merging.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_tomesd.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_clip_sdxl.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "quasar_extras"), "nodes_canny.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_hypernetwork.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_upscale_model.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_post_processing.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_mask.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_rebatch.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_model_merging.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_tomesd.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_clip_sdxl.py"))
+    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.paTH.join(os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "quasar_extras"), "nodes_canny.py"))
     dcfAcZtKluJqyIGNEuRjJvrqFDjMRAov()

@@ -49,8 +49,8 @@ if not DukiculvUpjhZIVvaGinshRSKLSTgVVl.cuda_malloc:
         AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ = ""
         torch_spec = importlib.util.find_spec("torch")
         for OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX in PLxnvIQJrNKIgGLXkbHsByqljwKQWhHK.submodule_search_locations:
-            EcJWrXyuYpSbSODHsftGXPBsBgruBVuQ = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX, "version.py")
-            if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(EcJWrXyuYpSbSODHsftGXPBsBgruBVuQ):
+            EcJWrXyuYpSbSODHsftGXPBsBgruBVuQ = os.paTH.join(OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX, "version.py")
+            if os.paTH.isfile(EcJWrXyuYpSbSODHsftGXPBsBgruBVuQ):
                 spec = importlib.util.spec_from_file_location("torch_version_import", EcJWrXyuYpSbSODHsftGXPBsBgruBVuQ)
                 module = importlib.util.module_from_spec(tGbdsHvGtwbCVaXZaEuAlbGSnOHDESEH)
                 tGbdsHvGtwbCVaXZaEuAlbGSnOHDESEH.loader.exec_module(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC)

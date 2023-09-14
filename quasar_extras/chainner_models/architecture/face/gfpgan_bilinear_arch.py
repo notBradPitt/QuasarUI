@@ -25,7 +25,7 @@
         out_size (int): The spatial vqDBJgidQufnKyAltPYRqiKGjmztArDJ of TPdbMzICOHVoRDIwYkBuPquOyCZwkKrH.
         num_style_feat (int): Channel FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of style pCLwRAgBLFqTliMnElfbAlRRHMihRlVI. Default: 512.
         channel_multiplier (int): Channel EWOzAFPZCwlkwatzyybUCZgINJrsJyHo for large networks of StyleGAN2. Default: 2.
-        decoder_load_path (str): The hxKDuOteESNpOgdClxSsFUWnOOOOTwlR sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the pre-trained decoder VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM (usually, the StyleGAN2). Default: None.
+        decoder_load_path (str): The paTH sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the pre-trained decoder VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM (usually, the StyleGAN2). Default: None.
         fix_decoder (bool): Whether sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ fix the decoder. Default: True.
         num_mlp (int): Layer FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of MLP style YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv. Default: 8.
         lr_mlp (float): Learning rate EWOzAFPZCwlkwatzyybUCZgINJrsJyHo for mlp YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv. Default: 0.01.

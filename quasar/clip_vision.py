@@ -74,11 +74,11 @@ def wnhYfGTYiyujrYIvhcZwQoVwXjTCJGwx(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa, mAocOLWlg
     if convert_keys:
         ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa = NMKJwcdyCpcNLsZdhlceKXlOSUtDrHGg(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa, mAocOLWlgMJvPYVmSRndfhQdAcKHgPwi)
     if "vision_model.encoder.layers.47.layer_norm1.weight" in ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa:
-        MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "clip_vision_config_g.json")
+        MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "clip_vision_config_g.json")
     elif "vision_model.encoder.layers.30.layer_norm1.weight" in ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa:
-        MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "clip_vision_config_h.json")
+        MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "clip_vision_config_h.json")
     else:
-        MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "clip_vision_config_vitl.json")
+        MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT = os.paTH.join(os.paTH.dirname(os.paTH.realpath(__file__)), "clip_vision_config_vitl.json")
     WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ = UDMMBoGrLrqmRsZRaRazEyUhVBCCbVTY(MfSSUpnUrvQDJXifLaeMQeNHJHLmerhT)
     FTosLGldclAzaiNbwuLMIEtXfrZQpTnU, u = WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.dKOKRasXYJilOmogKRfemsKBLuGqZhnw(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa)
     if len(FTosLGldclAzaiNbwuLMIEtXfrZQpTnU) > 0:
