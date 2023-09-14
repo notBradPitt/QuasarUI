@@ -30,10 +30,10 @@ def gAKoXnrVLIlIxvWCILBMTLkCdBWswcJy(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
     if not isinstance(NECAaWUrFGIXcLimrerEYmxYIykQBfXb,torch.Tensor):
         return False
     return (len(NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) == 4) and (NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] == 3 or NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] == 1)
-def CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
+def exists(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
     return NECAaWUrFGIXcLimrerEYmxYIykQBfXb is not None
 def zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
-    if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
+    if exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
         return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn
     return TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo() if isfunction(TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo) else TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo
 def LQBGcVjMdfNQYPLmVRRnitgdXFeFXNHl(xPmCFphFKpGMpIsczaSKHmMgRPZzJwla):

@@ -24,7 +24,7 @@ def fiAlZuPsdeRSZmhCFsdMbvCbOnmzcmdp():
             if os.path.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp.endswith(".disabled") or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp == "__pycache__":
                 continue
             QvimMcbvePOnJmwCatidzBJmEZiYzzYA = os.path.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "prestartup_script.py")
-            if os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
+            if os.path.exists(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
                 NxDTHICOqkfnhyLwtejLSCWiivMDAyZv = time.perf_counter()
                 syoCixXNjFxZAimZmlHgvNsypzGRqzuD = jwYQYNSSQBHfZtwDIriJhTfttvOkxlrq(QvimMcbvePOnJmwCatidzBJmEZiYzzYA)
                 qAglvKZFHtpKgbAknmdlQpAolXyaYQdS.append((time.perf_counter() - NxDTHICOqkfnhyLwtejLSCWiivMDAyZv, XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, syoCixXNjFxZAimZmlHgvNsypzGRqzuD))
@@ -93,7 +93,7 @@ def HLlvCRPdqgoEmbXuEpDcAJYkJdkyKVNb(REDIKAYZymAzMirxFmomyJtEGktwcqlE):
     quasar.utils.set_progress_bar_global_hook(UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP)
 def NkleSZdBjwAMaearQpaODmfIoMUveLqT():
     CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP = folder_paths.PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
-    if os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP):
+    if os.path.exists(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP):
         shutil.rmtree(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP, ignore_errors=True)
 def zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(yaml_path):
     with open(yaml_path, 'r') as stream:

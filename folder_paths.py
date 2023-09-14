@@ -24,7 +24,7 @@ GtSyetIaLksMxiwaHjRuEDPDczomOxfB = os.path.join(os.path.dirname(os.path.realpath
 sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temp")
 JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input")
 JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM = {}
-if not os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP):
+if not os.path.exists(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP):
     os.makedirs(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP)
 def QaqVOGrCQsMzyJzwFXeqRMUkMfnKwrHp(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh):
     global GtSyetIaLksMxiwaHjRuEDPDczomOxfB
@@ -75,7 +75,7 @@ def LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ):
     if qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ is None:
         qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
     jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ)
-    return os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
+    return os.path.exists(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
 def tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, full_folder_path):
     global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
     if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ in RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG:

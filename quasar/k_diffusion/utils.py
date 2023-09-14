@@ -23,7 +23,7 @@ def PwJzymvvoojavDaJkLCXUcIrPqjaJEwc(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC):
 def jVeqrMSEwOBLsWhruTZzfRzUWRfuZGGQ(path, url, digest=None):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    if not path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH():
+    if not path.exists():
         with urllib.request.urlopen(url) as HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk, open(path, 'wb') as f:
             shutil.copyfileobj(HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk, f)
     if digest is not None:
@@ -158,7 +158,7 @@ class LTcVBrefNeCoZIZODXmBOcDgCFakaESM:
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, columns):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = Path(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.columns = columns
-        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VpsbOZzufynrTFUvvRofTQeRCOCIKJOM.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH():
+        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VpsbOZzufynrTFUvvRofTQeRCOCIKJOM.exists():
             rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = open(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, 'a')
         else:
             rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = open(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, 'w')

@@ -18,12 +18,12 @@ if DukiculvUpjhZIVvaGinshRSKLSTgVVl.dont_upcast_attention:
     JGhGmYoXIfioVVfVVRkJUtotlxRVouBT = "fp16"
 else:
     JGhGmYoXIfioVVfVVRkJUtotlxRVouBT = "fp32"
-def CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
+def exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
     return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn is not None
 def mbvxGTzHRegamxLbMgjoxyrZBBDzHvEV(arr):
     return{qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw: True for qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw in arr}.keys()
 def zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
-    if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
+    if exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
         return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn
     return TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo
 def EhnojrGhJngfjyuBMSfsPyqqacULAQoV(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz):
@@ -285,7 +285,7 @@ class qQrohQXiAITQznFuShydRodggjOWexBZ(nn.Module):
         else:
             CBMGVWLyMSnHAKHGQSLkPoYlFwOOlDBz = einsum('b i d, b j d -> b i j', mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm) * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xmbXivThLFnawFPAJvIDBztziWsaDyEE
         del mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm
-        if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(KHpRlHOzblljQyskecSxzUuWZtneWwta):
+        if exists(KHpRlHOzblljQyskecSxzUuWZtneWwta):
             KHpRlHOzblljQyskecSxzUuWZtneWwta = rearrange(KHpRlHOzblljQyskecSxzUuWZtneWwta, 'b ... -> b (...)')
             EhnojrGhJngfjyuBMSfsPyqqacULAQoV = -torch.finfo(CBMGVWLyMSnHAKHGQSLkPoYlFwOOlDBz.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv).max
             KHpRlHOzblljQyskecSxzUuWZtneWwta = kYXcbCDGZMxtOlIZeOtGMsNePlSickQL(KHpRlHOzblljQyskecSxzUuWZtneWwta, 'b j -> (b h) () j', xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab=xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
@@ -325,7 +325,7 @@ class jfuIbfkFdWANZYpHZjuHkfnjaHCwdire(nn.Module):
             (mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl),
         )
         iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = xformers.ops.memory_efficient_attention(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl, attn_bias=None, bjtPzNLsLxvykINbAtlMwKlGJQooJtzI=rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attention_op)
-        if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(KHpRlHOzblljQyskecSxzUuWZtneWwta):
+        if exists(KHpRlHOzblljQyskecSxzUuWZtneWwta):
             raise NotImplementedError
         iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = (
             iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.unsqueeze(0)
@@ -361,7 +361,7 @@ class vZWIKOyHrbMmYJeCIbyCkrAIYbpZYpRv(nn.Module):
             (mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl),
         )
         iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = torch.nn.functional.scaled_dot_product_attention(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl, attn_mask=None, dropout_p=0.0, is_causal=False)
-        if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(KHpRlHOzblljQyskecSxzUuWZtneWwta):
+        if exists(KHpRlHOzblljQyskecSxzUuWZtneWwta):
             raise NotImplementedError
         iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = (
             iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.transpose(1, 2).reshape(b, -1, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv)
@@ -498,7 +498,7 @@ class CvuNifYqMqjsNqfVaEEpwROqJiOUCfhu(nn.Module):
                  ylReNVtjXdQbeAwJXhTkOjiHrFPToKDa=False, use_linear=False,
                  TkHgGRFhDYRqyKuFvQRlKbpOBXUaEDVU=True, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
-        if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT) and not isinstance(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, list):
+        if exists(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT) and not isinstance(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, list):
             FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = [FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT] * JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.EbKSIFxpyCpzycRDApduouVsxspHzkTj = EbKSIFxpyCpzycRDApduouVsxspHzkTj
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = QJCnIiVfahCOVrhUgUzEjPLvCsBDwnir * SiOpzQSDRgWVXXhLenDXhMYFnSfQmjiy

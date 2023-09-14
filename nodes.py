@@ -383,7 +383,7 @@ class bsDPHyAnZXnIosnIiQuPBGqfEMEJIqBd:
     def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(qImTjFfovKitSMWzOmePbprJitutCVKi):
         AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI = []
         for YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE in folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("diffusers"):
-            if os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
+            if os.path.exists(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
                 for hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, bwnaMndsjqsroDRgNdISmtBdipLvjCoG, DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE in os.walk(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, followlinks=True):
                     if "model_index.json" in DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE:
                         AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI.append(os.path.relpath(hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, tUuYqnLjDXuftYgMagGpmrobxWgfcbgq=YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE))
@@ -393,9 +393,9 @@ class bsDPHyAnZXnIosnIiQuPBGqfEMEJIqBd:
     VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders/deprecated"
     def LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=True, output_clip=True):
         for YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE in folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("diffusers"):
-            if os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
+            if os.path.exists(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
                 path = os.path.join(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU)
-                if os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(path):
+                if os.path.exists(path):
                     uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU = path
                     break
         return quasar.diffusers_load.DzQIxZSOpGriDumdVTpwrMDmDIiYkfvv(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=output_vae, output_clip=output_clip, embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))

@@ -12,7 +12,7 @@ from .util import (
     gjzRLJpCqzjvjCYIlAGlFiFZIQLazZsd,
 )
 from ..attention import CvuNifYqMqjsNqfVaEEpwROqJiOUCfhu
-from quasar.ldm.util import CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH
+from quasar.ldm.util import exists
 import quasar.ops
 class LGJrzWOmnMkUAuAZdNrpyxhOgAHLcaqg(nn.Module):
     @abstractmethod
@@ -321,11 +321,11 @@ class ECDCaNzfsUCStonxUHNJYFmsGbuTLSRS(nn.Module):
                         QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv = num_head_channels
                     if SuXQmVmiJmhBfBymkmQFoPywSBByJxgG:
                         QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ // WbSAuusmaEgbrureofeJezeXtfsVoscC if DqIoTEigRjcjZHmcxxSAedEQXxCjwxFB else num_head_channels
-                    if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(bxZoDuqwYERKHMJbDKvQMoOVzkYUsfEW):
+                    if exists(bxZoDuqwYERKHMJbDKvQMoOVzkYUsfEW):
                         ScYwEbQtDNjWKaCbFCgtVUtLrqNSqQxZ = bxZoDuqwYERKHMJbDKvQMoOVzkYUsfEW[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd]
                     else:
                         ScYwEbQtDNjWKaCbFCgtVUtLrqNSqQxZ = False
-                    if not CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(TRFujbnWxYpAUeZVygnndzXoFNMuTCLb) or QHVHwxnivSirVrVqgJLXXPIBHKHvEzbG < TRFujbnWxYpAUeZVygnndzXoFNMuTCLb[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd]:
+                    if not exists(TRFujbnWxYpAUeZVygnndzXoFNMuTCLb) or QHVHwxnivSirVrVqgJLXXPIBHKHvEzbG < TRFujbnWxYpAUeZVygnndzXoFNMuTCLb[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd]:
                         YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv.append(CvuNifYqMqjsNqfVaEEpwROqJiOUCfhu(
                                 PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ, WbSAuusmaEgbrureofeJezeXtfsVoscC, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv, JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX=mvciuYyNHMqmFhQqZCFnjvXvgTuOnAAU[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd], FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT,
                                 ylReNVtjXdQbeAwJXhTkOjiHrFPToKDa=ScYwEbQtDNjWKaCbFCgtVUtLrqNSqQxZ, use_linear=PRCmYmLASLnRTlacrSLaZCNiipiIjyAo,
@@ -426,11 +426,11 @@ class ECDCaNzfsUCStonxUHNJYFmsGbuTLSRS(nn.Module):
                         QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv = num_head_channels
                     if SuXQmVmiJmhBfBymkmQFoPywSBByJxgG:
                         QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv = PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ // WbSAuusmaEgbrureofeJezeXtfsVoscC if DqIoTEigRjcjZHmcxxSAedEQXxCjwxFB else num_head_channels
-                    if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(bxZoDuqwYERKHMJbDKvQMoOVzkYUsfEW):
+                    if exists(bxZoDuqwYERKHMJbDKvQMoOVzkYUsfEW):
                         ScYwEbQtDNjWKaCbFCgtVUtLrqNSqQxZ = bxZoDuqwYERKHMJbDKvQMoOVzkYUsfEW[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd]
                     else:
                         ScYwEbQtDNjWKaCbFCgtVUtLrqNSqQxZ = False
-                    if not CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(TRFujbnWxYpAUeZVygnndzXoFNMuTCLb) or HCXmerBqIMuTscBONzTGKYapYSxWTYHo < TRFujbnWxYpAUeZVygnndzXoFNMuTCLb[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd]:
+                    if not exists(TRFujbnWxYpAUeZVygnndzXoFNMuTCLb) or HCXmerBqIMuTscBONzTGKYapYSxWTYHo < TRFujbnWxYpAUeZVygnndzXoFNMuTCLb[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd]:
                         YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv.append(
                             CvuNifYqMqjsNqfVaEEpwROqJiOUCfhu(
                                 PCiQtOeHrYsokBqtFxBbpDPnOjZourbJ, WbSAuusmaEgbrureofeJezeXtfsVoscC, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv, JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX=mvciuYyNHMqmFhQqZCFnjvXvgTuOnAAU[QGZhPqtOMdRtNNTWfnQtIxGkLaBzolOd], FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT,

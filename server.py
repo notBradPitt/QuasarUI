@@ -136,14 +136,14 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
                 jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.abspath(os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM))
                 if os.path.commonpath((mylQdErZMSvGLdXwKApSMtgbzVdSovfN, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)) != mylQdErZMSvGLdXwKApSMtgbzVdSovfN:
                     return web.Response(status=400)
-                if not os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(NSnmtWjKbAQhROMkmRknqzSaUCojgOin):
+                if not os.path.exists(NSnmtWjKbAQhROMkmRknqzSaUCojgOin):
                     os.makedirs(NSnmtWjKbAQhROMkmRknqzSaUCojgOin)
                 split = os.path.splitext(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
                 if BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo is not None and (BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo == "true" or BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo == "1"):
                     pass
                 else:
                     HCXmerBqIMuTscBONzTGKYapYSxWTYHo = 1
-                    while os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh):
+                    while os.path.exists(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh):
                         VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = f"{split[0]} ({i}){split[1]}"
                         jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
                         HCXmerBqIMuTscBONzTGKYapYSxWTYHo += 1

@@ -2,12 +2,12 @@ import torch
 from torch import nn, einsum
 from .ldm.modules.attention import qQrohQXiAITQznFuShydRodggjOWexBZ
 from inspect import isfunction
-def CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
+def exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
     return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn is not None
 def mbvxGTzHRegamxLbMgjoxyrZBBDzHvEV(arr):
     return{qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw: True for qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw in arr}.keys()
 def zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
-    if CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
+    if exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
         return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn
     return TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo() if isfunction(TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo) else TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo
 class arWeRcSKaVoQCynVIqZcAcRgBnhxHCvR(nn.Module):

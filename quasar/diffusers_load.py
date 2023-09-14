@@ -4,7 +4,7 @@ import quasar.sd
 def RTpwZjasJmjYbnUyTfFslqkPjEffxgWL(path, mkvCrqyejrekyuWxgtHkShApwhhCDyMu):
     for f in mkvCrqyejrekyuWxgtHkShApwhhCDyMu:
         HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj = os.path.join(path, f)
-        if os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj):
+        if os.path.exists(HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj):
             return HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj
     return None
 def DzQIxZSOpGriDumdVTpwrMDmDIiYkfvv(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=True, output_clip=True, embedding_directory=None):
