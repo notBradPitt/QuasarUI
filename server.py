@@ -37,7 +37,7 @@ async def xorVUCSjBcCTFixHnjvWgKQmsHYbOoVo(function, JWcvhhSkkAOvOUymGHSWwtMPsUY
 @web.middleware
 async def gTdSYsyqSyzZdxppfmfsQjsLzkfgXAWR(request: web.Request, TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk):
     HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk: web.Response = await TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk(request)
-    if request.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.endswith('.js') or request.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.endswith('.css'):
+    if request.path.endswith('.js') or request.path.endswith('.css'):
         HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk.NUSNKSqfxpvkMAXRONBFajOilLgzJzSm.setdefault('Cache-Control', 'no-cache')
     return HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk
 def kVJnBFzyJfOcsuvfeUuXqelGIlFkuGfz(allowed_origin: str):
@@ -68,8 +68,8 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
             ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD.append(kVJnBFzyJfOcsuvfeUuXqelGIlFkuGfz(DukiculvUpjhZIVvaGinshRSKLSTgVVl.enable_cors_header))
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app = web.Application(client_max_size=104857600, ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD=ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets = dict()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.dirname(
-            os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.realpath(__file__)), "web")
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), "web")
         bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP = web.RouteTableDef()
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP = bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.last_node_id = None
@@ -97,20 +97,20 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
             return xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi
         @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/")
         async def FGJeUnySFrmAvzDAPVrFYSXjeWbMRfbH(request):
-            return web.FileResponse(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, "index.html"))
+            return web.FileResponse(os.path.join(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, "index.html"))
         @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/embeddings")
         def hmlvbUOjPqAxkIEFxrNPhdBXMFcIlqYU(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
             CQDUGzeqFbhJuPQwIUXzCwYMkQNapRqX = folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("embeddings")
-            return web.json_response(list(map(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)[0], CQDUGzeqFbhJuPQwIUXzCwYMkQNapRqX)))
+            return web.json_response(list(map(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: os.path.splitext(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)[0], CQDUGzeqFbhJuPQwIUXzCwYMkQNapRqX)))
         @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/extensions")
         async def asqcLFixlaHkeYsvIjaQBKNMuqurkiju(request):
-            DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(
+            DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.path.join(
                 rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, 'extensions/**/*.js'), recursive=True)
-            HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv = list(map(lambda f: "/" + os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.relpath(f, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root).replace("\\", "/"), files))
+            HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv = list(map(lambda f: "/" + os.path.relpath(f, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root).replace("\\", "/"), files))
             for pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
-                DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(dir, '**/*.js'), recursive=True)
+                DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.path.join(dir, '**/*.js'), recursive=True)
                 HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv.extend(list(map(lambda f: "/extensions/" + urllib.parse.quote(
-                    pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ) + "/" + os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.relpath(f, dir).replace("\\", "/"), files)))
+                    pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ) + "/" + os.path.relpath(f, dir).replace("\\", "/"), files)))
             return web.json_response(HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv)
         def mZYpkoTuRffoqoPxsmINFTYRYhLkpbHy(ZYvUveSnZKyFJUuTpSPHWUbByngGqELv):
             if ZYvUveSnZKyFJUuTpSPHWUbByngGqELv is None:
@@ -132,20 +132,20 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
                 if not VpsbOZzufynrTFUvvRofTQeRCOCIKJOM:
                     return web.Response(status=400)
                 EijzAwkTdadIdbBCcDEUbEYNNcstskwi = PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF.get("subfolder", "")
-                NSnmtWjKbAQhROMkmRknqzSaUCojgOin = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(mylQdErZMSvGLdXwKApSMtgbzVdSovfN, os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.normpath(EijzAwkTdadIdbBCcDEUbEYNNcstskwi))
-                jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM))
-                if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.commonpath((mylQdErZMSvGLdXwKApSMtgbzVdSovfN, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)) != mylQdErZMSvGLdXwKApSMtgbzVdSovfN:
+                NSnmtWjKbAQhROMkmRknqzSaUCojgOin = os.path.join(mylQdErZMSvGLdXwKApSMtgbzVdSovfN, os.path.normpath(EijzAwkTdadIdbBCcDEUbEYNNcstskwi))
+                jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.abspath(os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM))
+                if os.path.commonpath((mylQdErZMSvGLdXwKApSMtgbzVdSovfN, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)) != mylQdErZMSvGLdXwKApSMtgbzVdSovfN:
                     return web.Response(status=400)
-                if not os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(NSnmtWjKbAQhROMkmRknqzSaUCojgOin):
+                if not os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(NSnmtWjKbAQhROMkmRknqzSaUCojgOin):
                     os.makedirs(NSnmtWjKbAQhROMkmRknqzSaUCojgOin)
-                split = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
+                split = os.path.splitext(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
                 if BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo is not None and (BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo == "true" or BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo == "1"):
                     pass
                 else:
                     HCXmerBqIMuTscBONzTGKYapYSxWTYHo = 1
-                    while os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh):
+                    while os.path.CzuSRmujwDQnNtuxpiDhURIOWmCdbjjH(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh):
                         VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = f"{split[0]} ({i}){split[1]}"
-                        jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
+                        jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
                         HCXmerBqIMuTscBONzTGKYapYSxWTYHo += 1
                 if xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV is not None:
                     xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV(eLyJtroPthPCROYWyMphoIrGatNOOXCO, PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
@@ -173,12 +173,12 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
                 if DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh is None:
                     return web.Response(status=400)
                 if OOliRAzneaJzEAQSAVWehbKoxVRnGhvj.get("subfolder", "") != "":
-                    sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, OOliRAzneaJzEAQSAVWehbKoxVRnGhvj["subfolder"])
-                    if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.commonpath((os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN), DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
+                    sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, OOliRAzneaJzEAQSAVWehbKoxVRnGhvj["subfolder"])
+                    if os.path.commonpath((os.path.abspath(sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN), DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
                         return web.Response(status=403)
                     DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN
-                GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts):
+                GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
+                if os.path.isfile(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts):
                     with Image.open(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts) as qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA:
                         bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi = PngInfo()
                         if hasattr(qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA,'text'):
@@ -203,13 +203,13 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
                 if DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh is None:
                     return web.Response(status=400)
                 if "subfolder" in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
-                    sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF["subfolder"])
-                    if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.commonpath((os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.abspath(sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN), DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
+                    sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF["subfolder"])
+                    if os.path.commonpath((os.path.abspath(sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN), DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
                         return web.Response(status=403)
                     DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN
-                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.basename(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                if os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.isfile(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts):
+                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.path.basename(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
+                GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
+                if os.path.isfile(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts):
                     if 'preview' in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
                         with Image.open(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts) as UaFpXseNaoqfcpsDACQmTguYDZsTArhs:
                             FEjKaKqRBlOIxhuZQpcgqPPBnnOomKXF = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF['preview'].split(';')
@@ -288,7 +288,7 @@ class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
                 "system": {
                     "os": os.pSfJNVvqLWVlUeHdpahCTGSrSPJYAnEQ,
                     "python_version": sys.AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ,
-                    "embedded_python": os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.split(os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.split(sys.executable)[0])[1] == "python_embeded"
+                    "embedded_python": os.path.split(os.path.split(sys.executable)[0])[1] == "python_embeded"
                 },
                 "devices": [
                     {

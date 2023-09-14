@@ -37,7 +37,7 @@
         channel_multiplier (int): Channel EWOzAFPZCwlkwatzyybUCZgINJrsJyHo for large networks of StyleGAN2. Default: 2.
         resample_kernel (list[int]): A list indicating the 1D CxKbAsloStsYoiQeeuSCHDKbgFVekqWK kernel magnitude. A cross production will be
             applied sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ extent 1D CxKbAsloStsYoiQeeuSCHDKbgFVekqWK kernel sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ 2D CxKbAsloStsYoiQeeuSCHDKbgFVekqWK kernel. Default: (1, 3, 3, 1).
-        decoder_load_path (str): The hxKDuOteESNpOgdClxSsFUWnOOOOTwlR sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the pre-trained decoder VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM (usually, the StyleGAN2). Default: None.
+        decoder_load_path (str): The path sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the pre-trained decoder VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM (usually, the StyleGAN2). Default: None.
         fix_decoder (bool): Whether sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ fix the decoder. Default: True.
         num_mlp (int): Layer FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of MLP style YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv. Default: 8.
         lr_mlp (float): Learning rate EWOzAFPZCwlkwatzyybUCZgINJrsJyHo for mlp YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv. Default: 0.01.

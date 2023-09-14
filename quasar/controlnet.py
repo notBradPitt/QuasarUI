@@ -330,7 +330,7 @@ def efoaRkqBAKlDrlLSRqYEUrVOsSVGKXPb(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA, VrbJByPOr
     if HzaWhAqAbytRDBNdzYQQeTtjNGGUstsT:
         fAZBifOalqUSDAjqeirszagfOSRLKzcX = fAZBifOalqUSDAjqeirszagfOSRLKzcX.XEoZtCUxZMfcPGkBpgLTmSwVAzLKszZq()
     HjruQiHdVrxzTiigTfByhAWcFJXqnpgW = False
-    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.splitext(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA)[0]
+    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.path.splitext(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA)[0]
     if VpsbOZzufynrTFUvvRofTQeRCOCIKJOM.endswith("_shuffle") or VpsbOZzufynrTFUvvRofTQeRCOCIKJOM.endswith("_shuffle_fp16"): 
         HjruQiHdVrxzTiigTfByhAWcFJXqnpgW = True
     lxwsNGReZsRzPAGinnJJBaOYnaZlIssl = ASOhbXLheqZOwyaVCVwziGwCNciSreag(fAZBifOalqUSDAjqeirszagfOSRLKzcX, HjruQiHdVrxzTiigTfByhAWcFJXqnpgW=HjruQiHdVrxzTiigTfByhAWcFJXqnpgW)

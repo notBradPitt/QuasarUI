@@ -41,12 +41,12 @@ class DOVTGYrtwHyLPmYumkCaBmiywgtpSmPp(torch.nn.Module):
             print(f"Keeping EMAs of {len(list(self.model_ema.buffers()))}.")
         if CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA is not None:
             rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.etGiBBXXdQnCKsmLvSHNGrMxDccsFXro(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA, qjPwgJXXCzvQOBUsJGzFEkNxwvIKJJVY=qjPwgJXXCzvQOBUsJGzFEkNxwvIKJJVY)
-    def etGiBBXXdQnCKsmLvSHNGrMxDccsFXro(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, qjPwgJXXCzvQOBUsJGzFEkNxwvIKJJVY=list()):
-        if hxKDuOteESNpOgdClxSsFUWnOOOOTwlR.lower().endswith(".safetensors"):
+    def etGiBBXXdQnCKsmLvSHNGrMxDccsFXro(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, path, qjPwgJXXCzvQOBUsJGzFEkNxwvIKJJVY=list()):
+        if path.lower().endswith(".safetensors"):
             import safetensors.torch
-            ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa = safetensors.torch.load_file(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu")
+            ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa = safetensors.torch.load_file(path, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu")
         else:
-            ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa = torch.yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz(hxKDuOteESNpOgdClxSsFUWnOOOOTwlR, map_location="cpu")["state_dict"]
+            ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa = torch.yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz(path, map_location="cpu")["state_dict"]
         keys = list(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.keys())
         for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in keys:
             for yuzyAejctbCYItZpiXKFoJIMHhxhUHhK in qjPwgJXXCzvQOBUsJGzFEkNxwvIKJJVY:
