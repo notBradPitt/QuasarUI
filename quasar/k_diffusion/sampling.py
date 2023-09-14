@@ -1,550 +1,708 @@
 import math
+
 from scipy import integrate
 import torch
 from torch import nn
 import torchsde
 from tqdm.auto import trange, tqdm
+
 from . import utils
-def yzfXtlbWultmkvsrGijiuFyhqWQceWau(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-    return torch.cat([NECAaWUrFGIXcLimrerEYmxYIykQBfXb, NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_zeros([1])])
-def TvpwQRUBaSfOAvxhavXqmWqPsgPQgUoi(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, rho=7., fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
-    CXURldOtbDrlqtwyOXRPAdpXYbntOGUT = torch.linspace(0, 1, zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-    prEhLQZgexCgVJysAYGrbGyTHjWEkGxM = FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj ** (1 / rho)
-    VrErRHnHSBFbSXockeOQkfffgOvGkwop = SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe ** (1 / rho)
-    ywkdEDhpSPXHYARENdFhpYnCzsLhiORy = (VrErRHnHSBFbSXockeOQkfffgOvGkwop + CXURldOtbDrlqtwyOXRPAdpXYbntOGUT * (prEhLQZgexCgVJysAYGrbGyTHjWEkGxM - VrErRHnHSBFbSXockeOQkfffgOvGkwop)) ** rho
-    return yzfXtlbWultmkvsrGijiuFyhqWQceWau(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-def kZdRKjkrWOFbCmesgdCsylgvVPWpBhfp(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
-    ywkdEDhpSPXHYARENdFhpYnCzsLhiORy = torch.linspace(math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe), math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj), zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc).exp()
-    return yzfXtlbWultmkvsrGijiuFyhqWQceWau(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy)
-def ycbvozqOJgwREIGJdDouyDrTvoOXuofF(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, rho=1., fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
-    CXURldOtbDrlqtwyOXRPAdpXYbntOGUT = torch.linspace(1, 0, zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc) ** rho
-    ywkdEDhpSPXHYARENdFhpYnCzsLhiORy = torch.exp(CXURldOtbDrlqtwyOXRPAdpXYbntOGUT * (math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe) - math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj)) + math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj))
-    return yzfXtlbWultmkvsrGijiuFyhqWQceWau(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy)
-def rUvmOjeAZtwfFLESPIWsdHTNvLzklbtn(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, beta_d=19.9, beta_min=0.1, eps_s=1e-3, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc='cpu'):
-    XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = torch.linspace(1, eps_s, zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-    ywkdEDhpSPXHYARENdFhpYnCzsLhiORy = torch.sqrt(torch.exp(beta_d * XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz ** 2 / 2 + beta_min * XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz) - 1)
-    return yzfXtlbWultmkvsrGijiuFyhqWQceWau(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy)
-def wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, njuvAJFseAnTpNXMmovFtOzaohoePSQs, ODAZKuAsCnodIahYkmGtylGzWplGUuPD):
-    return (NECAaWUrFGIXcLimrerEYmxYIykQBfXb - ODAZKuAsCnodIahYkmGtylGzWplGUuPD) / utils.CMxxOxdPTSrjIzfwUpFYdWOyWfmNnQNF(njuvAJFseAnTpNXMmovFtOzaohoePSQs, NECAaWUrFGIXcLimrerEYmxYIykQBfXb.ndim)
-def EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(sigma_from, sigma_to, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1.):
-    if not YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
+
+
+def append_zero(x):
+    return torch.cat([x, x.new_zeros([1])])
+
+
+def get_sigmas_karras(n, sigma_min, sigma_max, rho=7., device='cpu'):
+    """Constructs the noise schedule of Karras et al. (2022)."""
+    ramp = torch.linspace(0, 1, n, device=device)
+    min_inv_rho = sigma_min ** (1 / rho)
+    max_inv_rho = sigma_max ** (1 / rho)
+    sigmas = (max_inv_rho + ramp * (min_inv_rho - max_inv_rho)) ** rho
+    return append_zero(sigmas).to(device)
+
+
+def get_sigmas_exponential(n, sigma_min, sigma_max, device='cpu'):
+    """Constructs an exponential noise schedule."""
+    sigmas = torch.linspace(math.log(sigma_max), math.log(sigma_min), n, device=device).exp()
+    return append_zero(sigmas)
+
+
+def get_sigmas_polyexponential(n, sigma_min, sigma_max, rho=1., device='cpu'):
+    """Constructs an polynomial in log sigma noise schedule."""
+    ramp = torch.linspace(1, 0, n, device=device) ** rho
+    sigmas = torch.exp(ramp * (math.log(sigma_max) - math.log(sigma_min)) + math.log(sigma_min))
+    return append_zero(sigmas)
+
+
+def get_sigmas_vp(n, beta_d=19.9, beta_min=0.1, eps_s=1e-3, device='cpu'):
+    """Constructs a continuous VP noise schedule."""
+    t = torch.linspace(1, eps_s, n, device=device)
+    sigmas = torch.sqrt(torch.exp(beta_d * t ** 2 / 2 + beta_min * t) - 1)
+    return append_zero(sigmas)
+
+
+def to_d(x, sigma, denoised):
+    """Converts a denoiser output to a Karras ODE derivative."""
+    return (x - denoised) / utils.append_dims(sigma, x.ndim)
+
+
+def get_ancestral_step(sigma_from, sigma_to, eta=1.):
+    """Calculates the noise level (sigma_down) to step down to and the amount
+    of noise to add (sigma_up) when doing an ancestral sampling step."""
+    if not eta:
         return sigma_to, 0.
-    jfsUMkPasnZkDrBlHrfavWZhDulLllvc = min(sigma_to, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO * (sigma_to ** 2 * (sigma_from ** 2 - sigma_to ** 2) / sigma_from ** 2) ** 0.5)
-    FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs = (sigma_to ** 2 - jfsUMkPasnZkDrBlHrfavWZhDulLllvc ** 2) ** 0.5
-    return FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs, jfsUMkPasnZkDrBlHrfavWZhDulLllvc
-def IIWZsliZaKlVluovJAtCbQFoHHPJmJDG(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-    return lambda njuvAJFseAnTpNXMmovFtOzaohoePSQs, sigma_next: torch.randn_like(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-class ioRBGeZVPXlLSIJciWlohlwLtaxCmFgk:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=None, **kwargs):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.cpu_tree = True
+    sigma_up = min(sigma_to, eta * (sigma_to ** 2 * (sigma_from ** 2 - sigma_to ** 2) / sigma_from ** 2) ** 0.5)
+    sigma_down = (sigma_to ** 2 - sigma_up ** 2) ** 0.5
+    return sigma_down, sigma_up
+
+
+def default_noise_sampler(x):
+    return lambda sigma, sigma_next: torch.randn_like(x)
+
+
+class BatchedBrownianTree:
+    """A wrapper around torchsde.BrownianTree that enables batches of entropy."""
+
+    def __init__(self, x, t0, t1, seed=None, **kwargs):
+        self.cpu_tree = True
         if "cpu" in kwargs:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.cpu_tree = kwargs.pop("cpu")
-        WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HBMNcZPXMGfIKnBsvnouXucWvkUmgWwq = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sort(WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE)
-        ynDVQlyZvavwayPPgASoQNtQlVCbisLC = kwargs.get('w0', torch.zeros_like(NECAaWUrFGIXcLimrerEYmxYIykQBfXb))
-        if qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr is None:
-            qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr = torch.randint(0, 2 ** 63 - 1, []).ygFiYnqtfEqFJmbillPxtHRxsUoFqqJk()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.batched = True
+            self.cpu_tree = kwargs.pop("cpu")
+        t0, t1, self.sign = self.sort(t0, t1)
+        w0 = kwargs.get('w0', torch.zeros_like(x))
+        if seed is None:
+            seed = torch.randint(0, 2 ** 63 - 1, []).item()
+        self.batched = True
         try:
-            assert len(qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr) == NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]
-            ynDVQlyZvavwayPPgASoQNtQlVCbisLC = ynDVQlyZvavwayPPgASoQNtQlVCbisLC[0]
+            assert len(seed) == x.shape[0]
+            w0 = w0[0]
         except TypeError:
-            qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr = [qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr]
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.batched = False
-        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.cpu_tree:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.trees = [torchsde.BrownianTree(WFuXrjgnWyCysWFupUPTADHAPjELsNbG.cpu(), ynDVQlyZvavwayPPgASoQNtQlVCbisLC.cpu(), MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.cpu(), entropy=uPePujIqMVDrwNvZQxJajkuaQFAcacjA, **kwargs) for uPePujIqMVDrwNvZQxJajkuaQFAcacjA in qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr]
+            seed = [seed]
+            self.batched = False
+        if self.cpu_tree:
+            self.trees = [torchsde.BrownianTree(t0.cpu(), w0.cpu(), t1.cpu(), entropy=s, **kwargs) for s in seed]
         else:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.trees = [torchsde.BrownianTree(WFuXrjgnWyCysWFupUPTADHAPjELsNbG, ynDVQlyZvavwayPPgASoQNtQlVCbisLC, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, entropy=uPePujIqMVDrwNvZQxJajkuaQFAcacjA, **kwargs) for uPePujIqMVDrwNvZQxJajkuaQFAcacjA in qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr]
+            self.trees = [torchsde.BrownianTree(t0, w0, t1, entropy=s, **kwargs) for s in seed]
+
     @staticmethod
-    def sort(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav, b):
-        return (GlZreLQjBCiBptpFgmbsMbhjFlMgPVav, b, 1) if GlZreLQjBCiBptpFgmbsMbhjFlMgPVav < b else (b, GlZreLQjBCiBptpFgmbsMbhjFlMgPVav, -1)
-    def __call__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE):
-        WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, HBMNcZPXMGfIKnBsvnouXucWvkUmgWwq = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sort(WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE)
-        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.cpu_tree:
-            AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = torch.stack([QsZEAmfflOadhVePZXNfHzYmVeuBjJin(WFuXrjgnWyCysWFupUPTADHAPjELsNbG.cpu().float(), MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.cpu().float()).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(WFuXrjgnWyCysWFupUPTADHAPjELsNbG.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(WFuXrjgnWyCysWFupUPTADHAPjELsNbG.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc) for QsZEAmfflOadhVePZXNfHzYmVeuBjJin in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.trees]) * (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HBMNcZPXMGfIKnBsvnouXucWvkUmgWwq * HBMNcZPXMGfIKnBsvnouXucWvkUmgWwq)
+    def sort(a, b):
+        return (a, b, 1) if a < b else (b, a, -1)
+
+    def __call__(self, t0, t1):
+        t0, t1, sign = self.sort(t0, t1)
+        if self.cpu_tree:
+            w = torch.stack([tree(t0.cpu().float(), t1.cpu().float()).to(t0.dtype).to(t0.device) for tree in self.trees]) * (self.sign * sign)
         else:
-            AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = torch.stack([QsZEAmfflOadhVePZXNfHzYmVeuBjJin(WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE) for QsZEAmfflOadhVePZXNfHzYmVeuBjJin in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.trees]) * (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HBMNcZPXMGfIKnBsvnouXucWvkUmgWwq * HBMNcZPXMGfIKnBsvnouXucWvkUmgWwq)
-        return AeIrbRXDkpZlClJGwzMknCltTQQdmhvu if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.batched else AeIrbRXDkpZlClJGwzMknCltTQQdmhvu[0]
-class NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=None, transform=lambda NECAaWUrFGIXcLimrerEYmxYIykQBfXb: NECAaWUrFGIXcLimrerEYmxYIykQBfXb, cpu=False):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform = transform
-        WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform(torch.as_tensor(FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj)), rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform(torch.as_tensor(SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe))
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QsZEAmfflOadhVePZXNfHzYmVeuBjJin = ioRBGeZVPXlLSIJciWlohlwLtaxCmFgk(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, cpu=cpu)
-    def __call__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, njuvAJFseAnTpNXMmovFtOzaohoePSQs, sigma_next):
-        WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform(torch.as_tensor(njuvAJFseAnTpNXMmovFtOzaohoePSQs)), rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.transform(torch.as_tensor(sigma_next))
-        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QsZEAmfflOadhVePZXNfHzYmVeuBjJin(WFuXrjgnWyCysWFupUPTADHAPjELsNbG, MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE) / (MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE - WFuXrjgnWyCysWFupUPTADHAPjELsNbG).abs().sqrt()
+            w = torch.stack([tree(t0, t1) for tree in self.trees]) * (self.sign * sign)
+
+        return w if self.batched else w[0]
+
+
+class BrownianTreeNoiseSampler:
+    """A noise sampler backed by a torchsde.BrownianTree.
+
+    Args:
+        x (Tensor): The tensor whose shape, device and dtype to use to generate
+            random samples.
+        sigma_min (float): The low end of the valid interval.
+        sigma_max (float): The high end of the valid interval.
+        seed (int or List[int]): The random seed. If a list of seeds is
+            supplied instead of a single integer, then the noise sampler will
+            use one BrownianTree per batch item, each with its own seed.
+        transform (callable): A function that maps sigma to the sampler's
+            internal timestep.
+    """
+
+    def __init__(self, x, sigma_min, sigma_max, seed=None, transform=lambda x: x, cpu=False):
+        self.transform = transform
+        t0, t1 = self.transform(torch.as_tensor(sigma_min)), self.transform(torch.as_tensor(sigma_max))
+        self.tree = BatchedBrownianTree(x, t0, t1, seed, cpu=cpu)
+
+    def __call__(self, sigma, sigma_next):
+        t0, t1 = self.transform(torch.as_tensor(sigma)), self.transform(torch.as_tensor(sigma_next))
+        return self.tree(t0, t1) / (t1 - t0).abs().sqrt()
+
+
 @torch.no_grad()
-def PuAgvJfRmvFlidRHqKvHBEoHrWNmVjiR(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, s_churn=0., s_tmin=0., s_tmax=float('inf'), s_noise=1.):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz = min(s_churn / (len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1), 2 ** 0.5 - 1) if s_tmin <= ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] <= s_tmax else 0.
-        CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * (bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz + 1)
-        if bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz > 0:
-            VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = torch.randn_like(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) * s_noise
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv * (CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn ** 2 - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] ** 2) ** 0.5
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn, ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn, 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] - CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+def sample_euler(model, x, sigmas, extra_args=None, callback=None, disable=None, s_churn=0., s_tmin=0., s_tmax=float('inf'), s_noise=1.):
+    """Implements Algorithm 2 (Euler steps) from Karras et al. (2022)."""
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+    for i in trange(len(sigmas) - 1, disable=disable):
+        gamma = min(s_churn / (len(sigmas) - 1), 2 ** 0.5 - 1) if s_tmin <= sigmas[i] <= s_tmax else 0.
+        sigma_hat = sigmas[i] * (gamma + 1)
+        if gamma > 0:
+            eps = torch.randn_like(x) * s_noise
+            x = x + eps * (sigma_hat ** 2 - sigmas[i] ** 2) ** 0.5
+        denoised = model(x, sigma_hat * s_in, **extra_args)
+        d = to_d(x, sigma_hat, denoised)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigma_hat, 'denoised': denoised})
+        dt = sigmas[i + 1] - sigma_hat
+        # Euler method
+        x = x + d * dt
+    return x
+
+
 @torch.no_grad()
-def SQPTsGeeXwABUFqJMVihgEHyuTpiYIUo(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = IIWZsliZaKlVluovJAtCbQFoHHPJmJDG(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs, jfsUMkPasnZkDrBlHrfavWZhDulLllvc = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1], YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-        rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] > 0:
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1]) * s_noise * jfsUMkPasnZkDrBlHrfavWZhDulLllvc
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+def sample_euler_ancestral(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None):
+    """Ancestral sampling with Euler method steps."""
+    extra_args = {} if extra_args is None else extra_args
+    noise_sampler = default_noise_sampler(x) if noise_sampler is None else noise_sampler
+    s_in = x.new_ones([x.shape[0]])
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        sigma_down, sigma_up = get_ancestral_step(sigmas[i], sigmas[i + 1], eta=eta)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        d = to_d(x, sigmas[i], denoised)
+        # Euler method
+        dt = sigma_down - sigmas[i]
+        x = x + d * dt
+        if sigmas[i + 1] > 0:
+            x = x + noise_sampler(sigmas[i], sigmas[i + 1]) * s_noise * sigma_up
+    return x
+
+
 @torch.no_grad()
-def oDLEZdqtdUxCVvBkOgnAmKbPeSQUHsAY(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, s_churn=0., s_tmin=0., s_tmax=float('inf'), s_noise=1.):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz = min(s_churn / (len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1), 2 ** 0.5 - 1) if s_tmin <= ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] <= s_tmax else 0.
-        CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * (bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz + 1)
-        if bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz > 0:
-            VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = torch.randn_like(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) * s_noise
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv * (CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn ** 2 - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] ** 2) ** 0.5
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn, ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn, 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] - CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] == 0:
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
+def sample_heun(model, x, sigmas, extra_args=None, callback=None, disable=None, s_churn=0., s_tmin=0., s_tmax=float('inf'), s_noise=1.):
+    """Implements Algorithm 2 (Heun steps) from Karras et al. (2022)."""
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+    for i in trange(len(sigmas) - 1, disable=disable):
+        gamma = min(s_churn / (len(sigmas) - 1), 2 ** 0.5 - 1) if s_tmin <= sigmas[i] <= s_tmax else 0.
+        sigma_hat = sigmas[i] * (gamma + 1)
+        if gamma > 0:
+            eps = torch.randn_like(x) * s_noise
+            x = x + eps * (sigma_hat ** 2 - sigmas[i] ** 2) ** 0.5
+        denoised = model(x, sigma_hat * s_in, **extra_args)
+        d = to_d(x, sigma_hat, denoised)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigma_hat, 'denoised': denoised})
+        dt = sigmas[i + 1] - sigma_hat
+        if sigmas[i + 1] == 0:
+            # Euler method
+            x = x + d * dt
         else:
-            kFbeKlGwETjnrOUnINvTygvTLgayPoOr = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
-            BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-            FuAUWHkMfOeTSBLwrSFWPYoaINWdNNuS = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1], BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr)
-            MuSoyWCWnTgQTlACEFqeERUJEMYSXsqG = (TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo + FuAUWHkMfOeTSBLwrSFWPYoaINWdNNuS) / 2
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + MuSoyWCWnTgQTlACEFqeERUJEMYSXsqG * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            # Heun's method
+            x_2 = x + d * dt
+            denoised_2 = model(x_2, sigmas[i + 1] * s_in, **extra_args)
+            d_2 = to_d(x_2, sigmas[i + 1], denoised_2)
+            d_prime = (d + d_2) / 2
+            x = x + d_prime * dt
+    return x
+
+
 @torch.no_grad()
-def jbTLkXhMkVoqNMkBmVuXgtBIfDUQzwLK(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, s_churn=0., s_tmin=0., s_tmax=float('inf'), s_noise=1.):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz = min(s_churn / (len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1), 2 ** 0.5 - 1) if s_tmin <= ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] <= s_tmax else 0.
-        CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * (bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz + 1)
-        if bGXhNdiqkuBftSpmdmGnluqLPlFxVFXz > 0:
-            VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = torch.randn_like(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) * s_noise
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv * (CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn ** 2 - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] ** 2) ** 0.5
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn, ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn, 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] == 0:
-            rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] - CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
+def sample_dpm_2(model, x, sigmas, extra_args=None, callback=None, disable=None, s_churn=0., s_tmin=0., s_tmax=float('inf'), s_noise=1.):
+    """A sampler inspired by DPM-Solver-2 and Algorithm 2 from Karras et al. (2022)."""
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+    for i in trange(len(sigmas) - 1, disable=disable):
+        gamma = min(s_churn / (len(sigmas) - 1), 2 ** 0.5 - 1) if s_tmin <= sigmas[i] <= s_tmax else 0.
+        sigma_hat = sigmas[i] * (gamma + 1)
+        if gamma > 0:
+            eps = torch.randn_like(x) * s_noise
+            x = x + eps * (sigma_hat ** 2 - sigmas[i] ** 2) ** 0.5
+        denoised = model(x, sigma_hat * s_in, **extra_args)
+        d = to_d(x, sigma_hat, denoised)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigma_hat, 'denoised': denoised})
+        if sigmas[i + 1] == 0:
+            # Euler method
+            dt = sigmas[i + 1] - sigma_hat
+            x = x + d * dt
         else:
-            sahmwjoyHOScdLmiUoocJhfMmYjSxaJw = CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL().lerp(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1].DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(), 0.5).exp()
-            mYbwFoBzIzNaKtZLNPrZfYAiiXtKgqCB = sahmwjoyHOScdLmiUoocJhfMmYjSxaJw - CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn
-            sarzybouETpGLDMDvAKZxFsvbnqCanvR = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] - CAWDKXGBXpOWdbjQrpDTbrPyowjCdaIn
-            kFbeKlGwETjnrOUnINvTygvTLgayPoOr = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * mYbwFoBzIzNaKtZLNPrZfYAiiXtKgqCB
-            BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, sahmwjoyHOScdLmiUoocJhfMmYjSxaJw * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-            FuAUWHkMfOeTSBLwrSFWPYoaINWdNNuS = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, sahmwjoyHOScdLmiUoocJhfMmYjSxaJw, BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr)
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + FuAUWHkMfOeTSBLwrSFWPYoaINWdNNuS * sarzybouETpGLDMDvAKZxFsvbnqCanvR
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            # DPM-Solver-2
+            sigma_mid = sigma_hat.log().lerp(sigmas[i + 1].log(), 0.5).exp()
+            dt_1 = sigma_mid - sigma_hat
+            dt_2 = sigmas[i + 1] - sigma_hat
+            x_2 = x + d * dt_1
+            denoised_2 = model(x_2, sigma_mid * s_in, **extra_args)
+            d_2 = to_d(x_2, sigma_mid, denoised_2)
+            x = x + d_2 * dt_2
+    return x
+
+
 @torch.no_grad()
-def OwSxHXEpwAmJifuVJnvsHyagIcNmBqVk(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = IIWZsliZaKlVluovJAtCbQFoHHPJmJDG(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs, jfsUMkPasnZkDrBlHrfavWZhDulLllvc = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1], YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-        if FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs == 0:
-            rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
+def sample_dpm_2_ancestral(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None):
+    """Ancestral sampling with DPM-Solver second-order steps."""
+    extra_args = {} if extra_args is None else extra_args
+    noise_sampler = default_noise_sampler(x) if noise_sampler is None else noise_sampler
+    s_in = x.new_ones([x.shape[0]])
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        sigma_down, sigma_up = get_ancestral_step(sigmas[i], sigmas[i + 1], eta=eta)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        d = to_d(x, sigmas[i], denoised)
+        if sigma_down == 0:
+            # Euler method
+            dt = sigma_down - sigmas[i]
+            x = x + d * dt
         else:
-            sahmwjoyHOScdLmiUoocJhfMmYjSxaJw = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL().lerp(FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(), 0.5).exp()
-            mYbwFoBzIzNaKtZLNPrZfYAiiXtKgqCB = sahmwjoyHOScdLmiUoocJhfMmYjSxaJw - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
-            sarzybouETpGLDMDvAKZxFsvbnqCanvR = FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
-            kFbeKlGwETjnrOUnINvTygvTLgayPoOr = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * mYbwFoBzIzNaKtZLNPrZfYAiiXtKgqCB
-            BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, sahmwjoyHOScdLmiUoocJhfMmYjSxaJw * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-            FuAUWHkMfOeTSBLwrSFWPYoaINWdNNuS = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, sahmwjoyHOScdLmiUoocJhfMmYjSxaJw, BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr)
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + FuAUWHkMfOeTSBLwrSFWPYoaINWdNNuS * sarzybouETpGLDMDvAKZxFsvbnqCanvR
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1]) * s_noise * jfsUMkPasnZkDrBlHrfavWZhDulLllvc
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-def YBBNVCgficcesWKBpkrWWRHRnnFStZwy(wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, HCXmerBqIMuTscBONzTGKYapYSxWTYHo, VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ):
-    if wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt - 1 > HCXmerBqIMuTscBONzTGKYapYSxWTYHo:
+            # DPM-Solver-2
+            sigma_mid = sigmas[i].log().lerp(sigma_down.log(), 0.5).exp()
+            dt_1 = sigma_mid - sigmas[i]
+            dt_2 = sigma_down - sigmas[i]
+            x_2 = x + d * dt_1
+            denoised_2 = model(x_2, sigma_mid * s_in, **extra_args)
+            d_2 = to_d(x_2, sigma_mid, denoised_2)
+            x = x + d_2 * dt_2
+            x = x + noise_sampler(sigmas[i], sigmas[i + 1]) * s_noise * sigma_up
+    return x
+
+
+def linear_multistep_coeff(order, t, i, j):
+    if order - 1 > i:
         raise ValueError(f'Order {order} too high for step {i}')
-    def UBHGiEJRIvAIIxVhgWpzHaosMoApMUPf(tau):
-        AxEOibCbRjeUvRwvVNaXLXCBIIzXUnBD = 1.
-        for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in range(wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt):
-            if VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ == EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm:
+    def fn(tau):
+        prod = 1.
+        for k in range(order):
+            if j == k:
                 continue
-            AxEOibCbRjeUvRwvVNaXLXCBIIzXUnBD *= (tau - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[HCXmerBqIMuTscBONzTGKYapYSxWTYHo - EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm]) / (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[HCXmerBqIMuTscBONzTGKYapYSxWTYHo - VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ] - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[HCXmerBqIMuTscBONzTGKYapYSxWTYHo - EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm])
-        return AxEOibCbRjeUvRwvVNaXLXCBIIzXUnBD
-    return integrate.quad(UBHGiEJRIvAIIxVhgWpzHaosMoApMUPf, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1], epsrel=1e-4)[0]
+            prod *= (tau - t[i - k]) / (t[i - j] - t[i - k])
+        return prod
+    return integrate.quad(fn, t[i], t[i + 1], epsrel=1e-4)[0]
+
+
 @torch.no_grad()
-def YvLQeBPrMuGdZhfqmuFjJMaHFEhvIcMP(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt=4):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    dTmYgTUgufMcGyMnnJowIAZqeHEGwVLa = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.detach().cpu().numpy()
-    bKTOPCkNnYlTtvyGohgLIoPMQbrflxmi = []
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-        bKTOPCkNnYlTtvyGohgLIoPMQbrflxmi.append(TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo)
-        if len(bKTOPCkNnYlTtvyGohgLIoPMQbrflxmi) > wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt:
-            bKTOPCkNnYlTtvyGohgLIoPMQbrflxmi.pop(0)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        ZWrQpYxChvwQShHmclFqrKsTNDRcHBIk = min(HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1, wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt)
-        OABLyDuHThLdYuHnvRIPeoSNESXgbYMG = [YBBNVCgficcesWKBpkrWWRHRnnFStZwy(ZWrQpYxChvwQShHmclFqrKsTNDRcHBIk, dTmYgTUgufMcGyMnnJowIAZqeHEGwVLa, HCXmerBqIMuTscBONzTGKYapYSxWTYHo, VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ) for VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ in range(ZWrQpYxChvwQShHmclFqrKsTNDRcHBIk)]
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + sum(RTeeCveGNqxbJtPYwNiYCFTAFzNZRiqQ * TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo for RTeeCveGNqxbJtPYwNiYCFTAFzNZRiqQ, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo in zip(OABLyDuHThLdYuHnvRIPeoSNESXgbYMG, reversed(bKTOPCkNnYlTtvyGohgLIoPMQbrflxmi)))
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-class NGiNYzQhmKjeBZLsqcKpxYURBZmYqGcq:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, pcoeff, icoeff, dcoeff, wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt=1, accept_safety=0.81, VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv=1e-8):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.b1 = (pcoeff + icoeff + dcoeff) / wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.b2 = -(pcoeff + 2 * dcoeff) / wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.b3 = dcoeff / wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.accept_safety = accept_safety
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs = []
-    def bTftPQpbuUjUgSfCZgPydPPxdiarPmWa(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return 1 + math.atan(NECAaWUrFGIXcLimrerEYmxYIykQBfXb - 1)
-    def foIIHvoqqRevvKxdeHdyKcKTgnrvvWhQ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, PqgBmIFFlGqAiqwTGPXLJksdyclTftXN):
-        JcmCprFGEoXFxRBzgvhXNLyFdLBEwPSU = 1 / (float(PqgBmIFFlGqAiqwTGPXLJksdyclTftXN) + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv)
-        if not rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs = [JcmCprFGEoXFxRBzgvhXNLyFdLBEwPSU, JcmCprFGEoXFxRBzgvhXNLyFdLBEwPSU, JcmCprFGEoXFxRBzgvhXNLyFdLBEwPSU]
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[0] = JcmCprFGEoXFxRBzgvhXNLyFdLBEwPSU
-        ZOCdfHhxSDyKGnmTCFXPxBveAfxLOShd = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[0] ** rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.b1 * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[1] ** rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.b2 * rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[2] ** rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.b3
-        ZOCdfHhxSDyKGnmTCFXPxBveAfxLOShd = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bTftPQpbuUjUgSfCZgPydPPxdiarPmWa(ZOCdfHhxSDyKGnmTCFXPxBveAfxLOShd)
-        zhHKdMSPADgJhezBAcOeeNCoGFcRRkLr = ZOCdfHhxSDyKGnmTCFXPxBveAfxLOShd >= rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.accept_safety
-        if zhHKdMSPADgJhezBAcOeeNCoGFcRRkLr:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[2] = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[1]
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[1] = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.errs[0]
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab *= ZOCdfHhxSDyKGnmTCFXPxBveAfxLOShd
-        return zhHKdMSPADgJhezBAcOeeNCoGFcRRkLr
-class emYxrxANFTrWWjWadwfDMSCYZnhrRDgT(nn.Module):
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, eps_callback=None, info_callback=None):
+def sample_lms(model, x, sigmas, extra_args=None, callback=None, disable=None, order=4):
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+    sigmas_cpu = sigmas.detach().cpu().numpy()
+    ds = []
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        d = to_d(x, sigmas[i], denoised)
+        ds.append(d)
+        if len(ds) > order:
+            ds.pop(0)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        cur_order = min(i + 1, order)
+        coeffs = [linear_multistep_coeff(cur_order, sigmas_cpu, i, j) for j in range(cur_order)]
+        x = x + sum(coeff * d for coeff, d in zip(coeffs, reversed(ds)))
+    return x
+
+
+class PIDStepSizeController:
+    """A PID controller for ODE adaptive step size control."""
+    def __init__(self, h, pcoeff, icoeff, dcoeff, order=1, accept_safety=0.81, eps=1e-8):
+        self.h = h
+        self.b1 = (pcoeff + icoeff + dcoeff) / order
+        self.b2 = -(pcoeff + 2 * dcoeff) / order
+        self.b3 = dcoeff / order
+        self.accept_safety = accept_safety
+        self.eps = eps
+        self.errs = []
+
+    def limiter(self, x):
+        return 1 + math.atan(x - 1)
+
+    def propose_step(self, error):
+        inv_error = 1 / (float(error) + self.eps)
+        if not self.errs:
+            self.errs = [inv_error, inv_error, inv_error]
+        self.errs[0] = inv_error
+        factor = self.errs[0] ** self.b1 * self.errs[1] ** self.b2 * self.errs[2] ** self.b3
+        factor = self.limiter(factor)
+        accept = factor >= self.accept_safety
+        if accept:
+            self.errs[2] = self.errs[1]
+            self.errs[1] = self.errs[0]
+        self.h *= factor
+        return accept
+
+
+class DPMSolver(nn.Module):
+    """DPM-Solver. See https://arxiv.org/abs/2206.00927."""
+
+    def __init__(self, model, extra_args=None, eps_callback=None, info_callback=None):
         super().__init__()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.eps_callback = eps_callback
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.info_callback = info_callback
-    def XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, njuvAJFseAnTpNXMmovFtOzaohoePSQs):
-        return -njuvAJFseAnTpNXMmovFtOzaohoePSQs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL()
-    def njuvAJFseAnTpNXMmovFtOzaohoePSQs(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz):
-        return XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.neg().exp()
-    def VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, nyrzKxQtioheHIZujafABgijbCjrWhBU, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
-        if nyrzKxQtioheHIZujafABgijbCjrWhBU in UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC:
-            return UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC[nyrzKxQtioheHIZujafABgijbCjrWhBU], UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-        njuvAJFseAnTpNXMmovFtOzaohoePSQs = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv = (NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, njuvAJFseAnTpNXMmovFtOzaohoePSQs, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.TlJxtGydipTPezrPlUrxTKACQdhKNgvw, **kwargs)) / rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
-        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.eps_callback is not None:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.eps_callback()
-        return VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, {nyrzKxQtioheHIZujafABgijbCjrWhBU: VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, **UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC}
-    def HzAMZAoLeVYawAUWyrrBxXuvUjreQOsk(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=None):
-        UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = {} if UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC is None else UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps', NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
-        OwtjieWMGnaJvwZEZbRZsGQyWjGUyGdi = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab.expm1() * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv
-        return OwtjieWMGnaJvwZEZbRZsGQyWjGUyGdi, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-    def FXhawJAqlnkeQxauLnmajSilxvyhqXYh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ, apACmNWgYmlQTXHPQlhMzlFpreaoNbwW=1 / 2, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=None):
-        UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = {} if UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC is None else UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps', NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
-        XauksjEFAUvtInEaALXIwUhurkUuooOF = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + apACmNWgYmlQTXHPQlhMzlFpreaoNbwW * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-        ddkdPIaRKoONDDOjzqCLBzqWRUfKAuZP = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XauksjEFAUvtInEaALXIwUhurkUuooOF) * (apACmNWgYmlQTXHPQlhMzlFpreaoNbwW * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv
-        HWCcAjtdJVaPoTurNyGCUZfzCVQoWpYg, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps_r1', ddkdPIaRKoONDDOjzqCLBzqWRUfKAuZP, XauksjEFAUvtInEaALXIwUhurkUuooOF)
-        kFbeKlGwETjnrOUnINvTygvTLgayPoOr = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab.expm1() * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) / (2 * apACmNWgYmlQTXHPQlhMzlFpreaoNbwW) * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab.expm1() * (HWCcAjtdJVaPoTurNyGCUZfzCVQoWpYg - VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv)
-        return kFbeKlGwETjnrOUnINvTygvTLgayPoOr, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-    def IuzFllPzUxmiJphaHtQbBaxJViSVJqPW(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ, apACmNWgYmlQTXHPQlhMzlFpreaoNbwW=1 / 3, jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ=2 / 3, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=None):
-        UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = {} if UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC is None else UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps', NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
-        XauksjEFAUvtInEaALXIwUhurkUuooOF = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + apACmNWgYmlQTXHPQlhMzlFpreaoNbwW * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-        orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-        ddkdPIaRKoONDDOjzqCLBzqWRUfKAuZP = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XauksjEFAUvtInEaALXIwUhurkUuooOF) * (apACmNWgYmlQTXHPQlhMzlFpreaoNbwW * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv
-        HWCcAjtdJVaPoTurNyGCUZfzCVQoWpYg, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps_r1', ddkdPIaRKoONDDOjzqCLBzqWRUfKAuZP, XauksjEFAUvtInEaALXIwUhurkUuooOF)
-        YaoLKXMxYolQSjUTSVHMwSWbGqmmhIZH = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa) * (jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa) * (jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ / apACmNWgYmlQTXHPQlhMzlFpreaoNbwW) * ((jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() / (jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab) - 1) * (HWCcAjtdJVaPoTurNyGCUZfzCVQoWpYg - VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv)
-        fXFfHKElHcEsNlXUBanhIhLYlnyBgYYW, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps_r2', YaoLKXMxYolQSjUTSVHMwSWbGqmmhIZH, orjPyVtdqCXZbZZCrekqzXxPBGSWSqJa)
-        zTbhjDcmYDmcunfncCyQqpmFtTMHAqGh = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab.expm1() * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) / jUXrpBDWrfGGiwtyaMexgPCaBaIoLdEZ * (xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab.expm1() / xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab - 1) * (fXFfHKElHcEsNlXUBanhIhLYlnyBgYYW - VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv)
-        return zTbhjDcmYDmcunfncCyQqpmFtTMHAqGh, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC
-    def WriULhEyEihtMQlEXBgXiTsCMmqSinrF(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, t_start, t_end, mqjdnLvRIQanefOEDvuxdBhWzpDCvXGA, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=0., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-        ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = IIWZsliZaKlVluovJAtCbQFoHHPJmJDG(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-        if not t_end > t_start and YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
+        self.model = model
+        self.extra_args = {} if extra_args is None else extra_args
+        self.eps_callback = eps_callback
+        self.info_callback = info_callback
+
+    def t(self, sigma):
+        return -sigma.log()
+
+    def sigma(self, t):
+        return t.neg().exp()
+
+    def eps(self, eps_cache, key, x, t, *args, **kwargs):
+        if key in eps_cache:
+            return eps_cache[key], eps_cache
+        sigma = self.sigma(t) * x.new_ones([x.shape[0]])
+        eps = (x - self.model(x, sigma, *args, **self.extra_args, **kwargs)) / self.sigma(t)
+        if self.eps_callback is not None:
+            self.eps_callback()
+        return eps, {key: eps, **eps_cache}
+
+    def dpm_solver_1_step(self, x, t, t_next, eps_cache=None):
+        eps_cache = {} if eps_cache is None else eps_cache
+        h = t_next - t
+        eps, eps_cache = self.eps(eps_cache, 'eps', x, t)
+        x_1 = x - self.sigma(t_next) * h.expm1() * eps
+        return x_1, eps_cache
+
+    def dpm_solver_2_step(self, x, t, t_next, r1=1 / 2, eps_cache=None):
+        eps_cache = {} if eps_cache is None else eps_cache
+        h = t_next - t
+        eps, eps_cache = self.eps(eps_cache, 'eps', x, t)
+        s1 = t + r1 * h
+        u1 = x - self.sigma(s1) * (r1 * h).expm1() * eps
+        eps_r1, eps_cache = self.eps(eps_cache, 'eps_r1', u1, s1)
+        x_2 = x - self.sigma(t_next) * h.expm1() * eps - self.sigma(t_next) / (2 * r1) * h.expm1() * (eps_r1 - eps)
+        return x_2, eps_cache
+
+    def dpm_solver_3_step(self, x, t, t_next, r1=1 / 3, r2=2 / 3, eps_cache=None):
+        eps_cache = {} if eps_cache is None else eps_cache
+        h = t_next - t
+        eps, eps_cache = self.eps(eps_cache, 'eps', x, t)
+        s1 = t + r1 * h
+        s2 = t + r2 * h
+        u1 = x - self.sigma(s1) * (r1 * h).expm1() * eps
+        eps_r1, eps_cache = self.eps(eps_cache, 'eps_r1', u1, s1)
+        u2 = x - self.sigma(s2) * (r2 * h).expm1() * eps - self.sigma(s2) * (r2 / r1) * ((r2 * h).expm1() / (r2 * h) - 1) * (eps_r1 - eps)
+        eps_r2, eps_cache = self.eps(eps_cache, 'eps_r2', u2, s2)
+        x_3 = x - self.sigma(t_next) * h.expm1() * eps - self.sigma(t_next) / r2 * (h.expm1() / h - 1) * (eps_r2 - eps)
+        return x_3, eps_cache
+
+    def dpm_solver_fast(self, x, t_start, t_end, nfe, eta=0., s_noise=1., noise_sampler=None):
+        noise_sampler = default_noise_sampler(x) if noise_sampler is None else noise_sampler
+        if not t_end > t_start and eta:
             raise ValueError('eta must be 0 for reverse sampling')
-        FTosLGldclAzaiNbwuLMIEtXfrZQpTnU = math.floor(mqjdnLvRIQanefOEDvuxdBhWzpDCvXGA / 3) + 1
-        cZfLNeHGLvPreutnrDmWGGyKvtymQVKM = torch.linspace(t_start, t_end, FTosLGldclAzaiNbwuLMIEtXfrZQpTnU + 1, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=NECAaWUrFGIXcLimrerEYmxYIykQBfXb.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-        if mqjdnLvRIQanefOEDvuxdBhWzpDCvXGA % 3 == 0:
-            CfVKhsKPtOaiLDSyReEIATrYxiCnFRUx = [3] * (FTosLGldclAzaiNbwuLMIEtXfrZQpTnU - 2) + [2, 1]
+
+        m = math.floor(nfe / 3) + 1
+        ts = torch.linspace(t_start, t_end, m + 1, device=x.device)
+
+        if nfe % 3 == 0:
+            orders = [3] * (m - 2) + [2, 1]
         else:
-            CfVKhsKPtOaiLDSyReEIATrYxiCnFRUx = [3] * (FTosLGldclAzaiNbwuLMIEtXfrZQpTnU - 1) + [mqjdnLvRIQanefOEDvuxdBhWzpDCvXGA % 3]
-        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(CfVKhsKPtOaiLDSyReEIATrYxiCnFRUx)):
-            UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = {}
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ = cZfLNeHGLvPreutnrDmWGGyKvtymQVKM[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], cZfLNeHGLvPreutnrDmWGGyKvtymQVKM[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1]
-            if YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
-                ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa, WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ), YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-                bYVlspJHAQeYetnvmXskpqNYdxqYkhnk = torch.minimum(t_end, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa))
-                WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) ** 2 - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(bYVlspJHAQeYetnvmXskpqNYdxqYkhnk) ** 2) ** 0.5
+            orders = [3] * (m - 1) + [nfe % 3]
+
+        for i in range(len(orders)):
+            eps_cache = {}
+            t, t_next = ts[i], ts[i + 1]
+            if eta:
+                sd, su = get_ancestral_step(self.sigma(t), self.sigma(t_next), eta)
+                t_next_ = torch.minimum(t_end, self.t(sd))
+                su = (self.sigma(t_next) ** 2 - self.sigma(t_next_) ** 2) ** 0.5
             else:
-                bYVlspJHAQeYetnvmXskpqNYdxqYkhnk, WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ, 0.
-            VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps', NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
-            ODAZKuAsCnodIahYkmGtylGzWplGUuPD = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz) * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv
-            if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.info_callback is not None:
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.info_callback({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 't': cZfLNeHGLvPreutnrDmWGGyKvtymQVKM[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 't_up': XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-            if CfVKhsKPtOaiLDSyReEIATrYxiCnFRUx[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] == 1:
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HzAMZAoLeVYawAUWyrrBxXuvUjreQOsk(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, bYVlspJHAQeYetnvmXskpqNYdxqYkhnk, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
-            elif CfVKhsKPtOaiLDSyReEIATrYxiCnFRUx[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] == 2:
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.FXhawJAqlnkeQxauLnmajSilxvyhqXYh(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, bYVlspJHAQeYetnvmXskpqNYdxqYkhnk, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
+                t_next_, su = t_next, 0.
+
+            eps, eps_cache = self.eps(eps_cache, 'eps', x, t)
+            denoised = x - self.sigma(t) * eps
+            if self.info_callback is not None:
+                self.info_callback({'x': x, 'i': i, 't': ts[i], 't_up': t, 'denoised': denoised})
+
+            if orders[i] == 1:
+                x, eps_cache = self.dpm_solver_1_step(x, t, t_next_, eps_cache=eps_cache)
+            elif orders[i] == 2:
+                x, eps_cache = self.dpm_solver_2_step(x, t, t_next_, eps_cache=eps_cache)
             else:
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.IuzFllPzUxmiJphaHtQbBaxJViSVJqPW(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, bYVlspJHAQeYetnvmXskpqNYdxqYkhnk, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg * s_noise * ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ))
-        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-    def lieinrspmvpJdGRvWmbDEsTLywcStiXK(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, t_start, t_end, wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt=3, lrGjvYpKmgOnrVeFRaijRVZHIZNddmlD=0.05, fFzyGDwsUOSTBngTGiKDqIYKKikweEzG=0.0078, nHhdfLfCCuIPTnfLwRoJKgcxTtMzAVNY=0.05, pcoeff=0., icoeff=1., dcoeff=0., accept_safety=0.81, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=0., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-        ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = IIWZsliZaKlVluovJAtCbQFoHHPJmJDG(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-        if wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt not in {2, 3}:
+                x, eps_cache = self.dpm_solver_3_step(x, t, t_next_, eps_cache=eps_cache)
+
+            x = x + su * s_noise * noise_sampler(self.sigma(t), self.sigma(t_next))
+
+        return x
+
+    def dpm_solver_adaptive(self, x, t_start, t_end, order=3, rtol=0.05, atol=0.0078, h_init=0.05, pcoeff=0., icoeff=1., dcoeff=0., accept_safety=0.81, eta=0., s_noise=1., noise_sampler=None):
+        noise_sampler = default_noise_sampler(x) if noise_sampler is None else noise_sampler
+        if order not in {2, 3}:
             raise ValueError('order should be 2 or 3')
-        lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ = t_end > t_start
-        if not lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ and YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
+        forward = t_end > t_start
+        if not forward and eta:
             raise ValueError('eta must be 0 for reverse sampling')
-        nHhdfLfCCuIPTnfLwRoJKgcxTtMzAVNY = abs(nHhdfLfCCuIPTnfLwRoJKgcxTtMzAVNY) * (1 if lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ else -1)
-        fFzyGDwsUOSTBngTGiKDqIYKKikweEzG = torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(fFzyGDwsUOSTBngTGiKDqIYKKikweEzG)
-        lrGjvYpKmgOnrVeFRaijRVZHIZNddmlD = torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(lrGjvYpKmgOnrVeFRaijRVZHIZNddmlD)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = t_start
-        sIfmGCKFYSuAcKGivnHeSsHXHFOsVWBD = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-        zhHKdMSPADgJhezBAcOeeNCoGFcRRkLr = True
-        McbnBzBcpYLemnDFrpdXetrbuBSescLC = NGiNYzQhmKjeBZLsqcKpxYURBZmYqGcq(nHhdfLfCCuIPTnfLwRoJKgcxTtMzAVNY, pcoeff, icoeff, dcoeff, 1.5 if YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO else wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt, accept_safety)
-        dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi = {'steps': 0, 'nfe': 0, 'n_accept': 0, 'n_reject': 0}
-        while uPePujIqMVDrwNvZQxJajkuaQFAcacjA < t_end - 1e-5 if lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ else uPePujIqMVDrwNvZQxJajkuaQFAcacjA > t_end + 1e-5:
-            UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = {}
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = torch.minimum(t_end, uPePujIqMVDrwNvZQxJajkuaQFAcacjA + McbnBzBcpYLemnDFrpdXetrbuBSescLC.xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab) if lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ else torch.maximum(t_end, uPePujIqMVDrwNvZQxJajkuaQFAcacjA + McbnBzBcpYLemnDFrpdXetrbuBSescLC.xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab)
-            if YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
-                ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa, WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(uPePujIqMVDrwNvZQxJajkuaQFAcacjA), rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-                MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb = torch.minimum(t_end, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa))
-                WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz) ** 2 - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb) ** 2) ** 0.5
+        h_init = abs(h_init) * (1 if forward else -1)
+        atol = torch.tensor(atol)
+        rtol = torch.tensor(rtol)
+        s = t_start
+        x_prev = x
+        accept = True
+        pid = PIDStepSizeController(h_init, pcoeff, icoeff, dcoeff, 1.5 if eta else order, accept_safety)
+        info = {'steps': 0, 'nfe': 0, 'n_accept': 0, 'n_reject': 0}
+
+        while s < t_end - 1e-5 if forward else s > t_end + 1e-5:
+            eps_cache = {}
+            t = torch.minimum(t_end, s + pid.h) if forward else torch.maximum(t_end, s + pid.h)
+            if eta:
+                sd, su = get_ancestral_step(self.sigma(s), self.sigma(t), eta)
+                t_ = torch.minimum(t_end, self.t(sd))
+                su = (self.sigma(t) ** 2 - self.sigma(t_) ** 2) ** 0.5
             else:
-                MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb, WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, 0.
-            VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv(UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC, 'eps', NECAaWUrFGIXcLimrerEYmxYIykQBfXb, uPePujIqMVDrwNvZQxJajkuaQFAcacjA)
-            ODAZKuAsCnodIahYkmGtylGzWplGUuPD = NECAaWUrFGIXcLimrerEYmxYIykQBfXb - rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(uPePujIqMVDrwNvZQxJajkuaQFAcacjA) * VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv
-            if wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt == 2:
-                GfrchFcsKktrRpeJWVjvVinDZCjHJpVJ, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HzAMZAoLeVYawAUWyrrBxXuvUjreQOsk(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, uPePujIqMVDrwNvZQxJajkuaQFAcacjA, MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
-                PhsXoEtTtWgfBRlQjqyjFjLXYhIIULtH, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.FXhawJAqlnkeQxauLnmajSilxvyhqXYh(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, uPePujIqMVDrwNvZQxJajkuaQFAcacjA, MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
+                t_, su = t, 0.
+
+            eps, eps_cache = self.eps(eps_cache, 'eps', x, s)
+            denoised = x - self.sigma(s) * eps
+
+            if order == 2:
+                x_low, eps_cache = self.dpm_solver_1_step(x, s, t_, eps_cache=eps_cache)
+                x_high, eps_cache = self.dpm_solver_2_step(x, s, t_, eps_cache=eps_cache)
             else:
-                GfrchFcsKktrRpeJWVjvVinDZCjHJpVJ, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.FXhawJAqlnkeQxauLnmajSilxvyhqXYh(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, uPePujIqMVDrwNvZQxJajkuaQFAcacjA, MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb, apACmNWgYmlQTXHPQlhMzlFpreaoNbwW=1 / 3, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
-                PhsXoEtTtWgfBRlQjqyjFjLXYhIIULtH, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.IuzFllPzUxmiJphaHtQbBaxJViSVJqPW(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, uPePujIqMVDrwNvZQxJajkuaQFAcacjA, MdTfxGpERcHJkTQkcfFIbAXTjXrLmeZb, UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC=UrPSefbjpQyNJmSeYnIHVGjeyEquRrNC)
-            MOjnRhezkNHoQzGPojAUpkgsQLDRoDNC = torch.maximum(fFzyGDwsUOSTBngTGiKDqIYKKikweEzG, lrGjvYpKmgOnrVeFRaijRVZHIZNddmlD * torch.maximum(GfrchFcsKktrRpeJWVjvVinDZCjHJpVJ.abs(), sIfmGCKFYSuAcKGivnHeSsHXHFOsVWBD.abs()))
-            PqgBmIFFlGqAiqwTGPXLJksdyclTftXN = torch.linalg.norm((GfrchFcsKktrRpeJWVjvVinDZCjHJpVJ - PhsXoEtTtWgfBRlQjqyjFjLXYhIIULtH) / MOjnRhezkNHoQzGPojAUpkgsQLDRoDNC) / NECAaWUrFGIXcLimrerEYmxYIykQBfXb.numel() ** 0.5
-            zhHKdMSPADgJhezBAcOeeNCoGFcRRkLr = McbnBzBcpYLemnDFrpdXetrbuBSescLC.foIIHvoqqRevvKxdeHdyKcKTgnrvvWhQ(PqgBmIFFlGqAiqwTGPXLJksdyclTftXN)
-            if zhHKdMSPADgJhezBAcOeeNCoGFcRRkLr:
-                sIfmGCKFYSuAcKGivnHeSsHXHFOsVWBD = GfrchFcsKktrRpeJWVjvVinDZCjHJpVJ
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = PhsXoEtTtWgfBRlQjqyjFjLXYhIIULtH + WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg * s_noise * ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(uPePujIqMVDrwNvZQxJajkuaQFAcacjA), rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.njuvAJFseAnTpNXMmovFtOzaohoePSQs(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz))
-                uPePujIqMVDrwNvZQxJajkuaQFAcacjA = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-                dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['n_accept'] += 1
+                x_low, eps_cache = self.dpm_solver_2_step(x, s, t_, r1=1 / 3, eps_cache=eps_cache)
+                x_high, eps_cache = self.dpm_solver_3_step(x, s, t_, eps_cache=eps_cache)
+            delta = torch.maximum(atol, rtol * torch.maximum(x_low.abs(), x_prev.abs()))
+            error = torch.linalg.norm((x_low - x_high) / delta) / x.numel() ** 0.5
+            accept = pid.propose_step(error)
+            if accept:
+                x_prev = x_low
+                x = x_high + su * s_noise * noise_sampler(self.sigma(s), self.sigma(t))
+                s = t
+                info['n_accept'] += 1
             else:
-                dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['n_reject'] += 1
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['nfe'] += wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['steps'] += 1
-            if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.info_callback is not None:
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.info_callback({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['steps'] - 1, 't': uPePujIqMVDrwNvZQxJajkuaQFAcacjA, 't_up': uPePujIqMVDrwNvZQxJajkuaQFAcacjA, 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD, 'error': PqgBmIFFlGqAiqwTGPXLJksdyclTftXN, 'h': McbnBzBcpYLemnDFrpdXetrbuBSescLC.xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, **dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi})
-        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb, dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi
+                info['n_reject'] += 1
+            info['nfe'] += order
+            info['steps'] += 1
+
+            if self.info_callback is not None:
+                self.info_callback({'x': x, 'i': info['steps'] - 1, 't': s, 't_up': s, 'denoised': denoised, 'error': error, 'h': pid.h, **info})
+
+        return x, info
+
+
 @torch.no_grad()
-def VDQOtTmmMUGwedygxOrBSZdviYnhtBDM(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=0., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-    if FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj <= 0 or SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe <= 0:
+def sample_dpm_fast(model, x, sigma_min, sigma_max, n, extra_args=None, callback=None, disable=None, eta=0., s_noise=1., noise_sampler=None):
+    """DPM-Solver-Fast (fixed step size). See https://arxiv.org/abs/2206.00927."""
+    if sigma_min <= 0 or sigma_max <= 0:
         raise ValueError('sigma_min and sigma_max must not be 0')
-    with tqdm(total=zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, disable=disable) as ehYcJDzojxbXZiwqMPlEiTyCBgASsEBo:
-        coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm = emYxrxANFTrWWjWadwfDMSCYZnhrRDgT(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, TlJxtGydipTPezrPlUrxTKACQdhKNgvw, eps_callback=ehYcJDzojxbXZiwqMPlEiTyCBgASsEBo.update)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.info_callback = lambda dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi: FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'sigma': coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.njuvAJFseAnTpNXMmovFtOzaohoePSQs(dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['t']), 'sigma_hat': coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.njuvAJFseAnTpNXMmovFtOzaohoePSQs(dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['t_up']), **dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi})
-        return coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.WriULhEyEihtMQlEXBgXiTsCMmqSinrF(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe)), coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj)), zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO, s_noise, ubyoEoHoKfVYweiaMPbKnyuENzoZHLei)
+    with tqdm(total=n, disable=disable) as pbar:
+        dpm_solver = DPMSolver(model, extra_args, eps_callback=pbar.update)
+        if callback is not None:
+            dpm_solver.info_callback = lambda info: callback({'sigma': dpm_solver.sigma(info['t']), 'sigma_hat': dpm_solver.sigma(info['t_up']), **info})
+        return dpm_solver.dpm_solver_fast(x, dpm_solver.t(torch.tensor(sigma_max)), dpm_solver.t(torch.tensor(sigma_min)), n, eta, s_noise, noise_sampler)
+
+
 @torch.no_grad()
-def BvWGQUPePgVskvYZnjYrTTFssOiSKdhE(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt=3, lrGjvYpKmgOnrVeFRaijRVZHIZNddmlD=0.05, fFzyGDwsUOSTBngTGiKDqIYKKikweEzG=0.0078, nHhdfLfCCuIPTnfLwRoJKgcxTtMzAVNY=0.05, pcoeff=0., icoeff=1., dcoeff=0., accept_safety=0.81, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=0., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None, return_info=False):
-    if FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj <= 0 or SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe <= 0:
+def sample_dpm_adaptive(model, x, sigma_min, sigma_max, extra_args=None, callback=None, disable=None, order=3, rtol=0.05, atol=0.0078, h_init=0.05, pcoeff=0., icoeff=1., dcoeff=0., accept_safety=0.81, eta=0., s_noise=1., noise_sampler=None, return_info=False):
+    """DPM-Solver-12 and 23 (adaptive step size). See https://arxiv.org/abs/2206.00927."""
+    if sigma_min <= 0 or sigma_max <= 0:
         raise ValueError('sigma_min and sigma_max must not be 0')
-    with tqdm(disable=disable) as ehYcJDzojxbXZiwqMPlEiTyCBgASsEBo:
-        coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm = emYxrxANFTrWWjWadwfDMSCYZnhrRDgT(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, TlJxtGydipTPezrPlUrxTKACQdhKNgvw, eps_callback=ehYcJDzojxbXZiwqMPlEiTyCBgASsEBo.update)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.info_callback = lambda dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi: FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'sigma': coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.njuvAJFseAnTpNXMmovFtOzaohoePSQs(dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['t']), 'sigma_hat': coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.njuvAJFseAnTpNXMmovFtOzaohoePSQs(dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['t_up']), **dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi})
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb, dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi = coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.lieinrspmvpJdGRvWmbDEsTLywcStiXK(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe)), coRBQpFSAigrvAFvKpXVhaSBGcYwgXUm.XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz(torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla(FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj)), wXwbcvVCQXFmEpNuIRIfbkuOtOpqgUXt, lrGjvYpKmgOnrVeFRaijRVZHIZNddmlD, fFzyGDwsUOSTBngTGiKDqIYKKikweEzG, nHhdfLfCCuIPTnfLwRoJKgcxTtMzAVNY, pcoeff, icoeff, dcoeff, accept_safety, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO, s_noise, ubyoEoHoKfVYweiaMPbKnyuENzoZHLei)
+    with tqdm(disable=disable) as pbar:
+        dpm_solver = DPMSolver(model, extra_args, eps_callback=pbar.update)
+        if callback is not None:
+            dpm_solver.info_callback = lambda info: callback({'sigma': dpm_solver.sigma(info['t']), 'sigma_hat': dpm_solver.sigma(info['t_up']), **info})
+        x, info = dpm_solver.dpm_solver_adaptive(x, dpm_solver.t(torch.tensor(sigma_max)), dpm_solver.t(torch.tensor(sigma_min)), order, rtol, atol, h_init, pcoeff, icoeff, dcoeff, accept_safety, eta, s_noise, noise_sampler)
     if return_info:
-        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb, dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+        return x, info
+    return x
+
+
 @torch.no_grad()
-def LeKQzbzjntcGKZLmyypVGMKVoXUMuzVl(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = IIWZsliZaKlVluovJAtCbQFoHHPJmJDG(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    iJNMljKhHywaTvselSjXSJkeAobJUZjA = lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.neg().exp()
-    ocNKgMRHAumlFztHlKLWFgphgoqSohMJ = lambda njuvAJFseAnTpNXMmovFtOzaohoePSQs: njuvAJFseAnTpNXMmovFtOzaohoePSQs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL().neg()
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs, jfsUMkPasnZkDrBlHrfavWZhDulLllvc = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1], YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        if FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs == 0:
-            TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-            rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
+def sample_dpmpp_2s_ancestral(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None):
+    """Ancestral sampling with DPM-Solver++(2S) second-order steps."""
+    extra_args = {} if extra_args is None else extra_args
+    noise_sampler = default_noise_sampler(x) if noise_sampler is None else noise_sampler
+    s_in = x.new_ones([x.shape[0]])
+    sigma_fn = lambda t: t.neg().exp()
+    t_fn = lambda sigma: sigma.log().neg()
+
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        sigma_down, sigma_up = get_ancestral_step(sigmas[i], sigmas[i + 1], eta=eta)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        if sigma_down == 0:
+            # Euler method
+            d = to_d(x, sigmas[i], denoised)
+            dt = sigma_down - sigmas[i]
+            x = x + d * dt
         else:
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ = ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]), ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(FEJQVZkfSRZklwwzvlTqxcIUgPGYvkPs)
+            # DPM-Solver++(2S)
+            t, t_next = t_fn(sigmas[i]), t_fn(sigma_down)
             r = 1 / 2
-            xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + r * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-            kFbeKlGwETjnrOUnINvTygvTLgayPoOr = (iJNMljKhHywaTvselSjXSJkeAobJUZjA(uPePujIqMVDrwNvZQxJajkuaQFAcacjA) / iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb - (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab * r).expm1() * ODAZKuAsCnodIahYkmGtylGzWplGUuPD
-            BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, iJNMljKhHywaTvselSjXSJkeAobJUZjA(uPePujIqMVDrwNvZQxJajkuaQFAcacjA) * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = (iJNMljKhHywaTvselSjXSJkeAobJUZjA(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) / iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb - (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() * BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] > 0:
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1]) * s_noise * jfsUMkPasnZkDrBlHrfavWZhDulLllvc
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            h = t_next - t
+            s = t + r * h
+            x_2 = (sigma_fn(s) / sigma_fn(t)) * x - (-h * r).expm1() * denoised
+            denoised_2 = model(x_2, sigma_fn(s) * s_in, **extra_args)
+            x = (sigma_fn(t_next) / sigma_fn(t)) * x - (-h).expm1() * denoised_2
+        # Noise addition
+        if sigmas[i + 1] > 0:
+            x = x + noise_sampler(sigmas[i], sigmas[i + 1]) * s_noise * sigma_up
+    return x
+
+
 @torch.no_grad()
-def QRikJcRGHxTxaPvSvOzHyOJrgVxpnJnw(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None, r=1 / 2):
-    FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[ywkdEDhpSPXHYARENdFhpYnCzsLhiORy > 0].min(), ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.max()
-    qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr = TlJxtGydipTPezrPlUrxTKACQdhKNgvw.get("seed", None)
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, cpu=True) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    iJNMljKhHywaTvselSjXSJkeAobJUZjA = lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.neg().exp()
-    ocNKgMRHAumlFztHlKLWFgphgoqSohMJ = lambda njuvAJFseAnTpNXMmovFtOzaohoePSQs: njuvAJFseAnTpNXMmovFtOzaohoePSQs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL().neg()
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] == 0:
-            TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = wWkWWmmaMWzBivoGthogCOrDaHJcXRQg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ODAZKuAsCnodIahYkmGtylGzWplGUuPD)
-            rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] - ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo * rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG
+def sample_dpmpp_sde(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None, r=1 / 2):
+    """DPM-Solver++ (stochastic)."""
+    sigma_min, sigma_max = sigmas[sigmas > 0].min(), sigmas.max()
+    seed = extra_args.get("seed", None)
+    noise_sampler = BrownianTreeNoiseSampler(x, sigma_min, sigma_max, seed=seed, cpu=True) if noise_sampler is None else noise_sampler
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+    sigma_fn = lambda t: t.neg().exp()
+    t_fn = lambda sigma: sigma.log().neg()
+
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        if sigmas[i + 1] == 0:
+            # Euler method
+            d = to_d(x, sigmas[i], denoised)
+            dt = sigmas[i + 1] - sigmas[i]
+            x = x + d * dt
         else:
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ = ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]), ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1])
-            xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab * r
-            dUdwyQTZywwzpMBUEMfJcciKbLwgFwkk = 1 / (2 * r)
-            ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa, WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), iJNMljKhHywaTvselSjXSJkeAobJUZjA(uPePujIqMVDrwNvZQxJajkuaQFAcacjA), YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-            xGbtxSIyjuzSTkrGzwzrSnToNOCqXWiE = ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa)
-            kFbeKlGwETjnrOUnINvTygvTLgayPoOr = (iJNMljKhHywaTvselSjXSJkeAobJUZjA(xGbtxSIyjuzSTkrGzwzrSnToNOCqXWiE) / iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb - (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz - xGbtxSIyjuzSTkrGzwzrSnToNOCqXWiE).expm1() * ODAZKuAsCnodIahYkmGtylGzWplGUuPD
-            kFbeKlGwETjnrOUnINvTygvTLgayPoOr = kFbeKlGwETjnrOUnINvTygvTLgayPoOr + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), iJNMljKhHywaTvselSjXSJkeAobJUZjA(uPePujIqMVDrwNvZQxJajkuaQFAcacjA)) * s_noise * WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg
-            BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(kFbeKlGwETjnrOUnINvTygvTLgayPoOr, iJNMljKhHywaTvselSjXSJkeAobJUZjA(uPePujIqMVDrwNvZQxJajkuaQFAcacjA) * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-            ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa, WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg = EQrWJtFJAcWXVjwSXclhNFDOxYkkGfcF(iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), iJNMljKhHywaTvselSjXSJkeAobJUZjA(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ), YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO)
-            bYVlspJHAQeYetnvmXskpqNYdxqYkhnk = ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa)
-            rKSZfrRIFKbTvDlLGiZPNMcxKfBZimzE = (1 - dUdwyQTZywwzpMBUEMfJcciKbLwgFwkk) * ODAZKuAsCnodIahYkmGtylGzWplGUuPD + dUdwyQTZywwzpMBUEMfJcciKbLwgFwkk * BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = (iJNMljKhHywaTvselSjXSJkeAobJUZjA(bYVlspJHAQeYetnvmXskpqNYdxqYkhnk) / iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb - (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz - bYVlspJHAQeYetnvmXskpqNYdxqYkhnk).expm1() * rKSZfrRIFKbTvDlLGiZPNMcxKfBZimzE
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz), iJNMljKhHywaTvselSjXSJkeAobJUZjA(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ)) * s_noise * WWLDnvOujbcGZhDStZqEqAbBZaJQZkVg
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            # DPM-Solver++
+            t, t_next = t_fn(sigmas[i]), t_fn(sigmas[i + 1])
+            h = t_next - t
+            s = t + h * r
+            fac = 1 / (2 * r)
+
+            # Step 1
+            sd, su = get_ancestral_step(sigma_fn(t), sigma_fn(s), eta)
+            s_ = t_fn(sd)
+            x_2 = (sigma_fn(s_) / sigma_fn(t)) * x - (t - s_).expm1() * denoised
+            x_2 = x_2 + noise_sampler(sigma_fn(t), sigma_fn(s)) * s_noise * su
+            denoised_2 = model(x_2, sigma_fn(s) * s_in, **extra_args)
+
+            # Step 2
+            sd, su = get_ancestral_step(sigma_fn(t), sigma_fn(t_next), eta)
+            t_next_ = t_fn(sd)
+            denoised_d = (1 - fac) * denoised + fac * denoised_2
+            x = (sigma_fn(t_next_) / sigma_fn(t)) * x - (t - t_next_).expm1() * denoised_d
+            x = x + noise_sampler(sigma_fn(t), sigma_fn(t_next)) * s_noise * su
+    return x
+
+
 @torch.no_grad()
-def mLCrRcghkbEZotZzvMYNlReioZaoihIc(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None):
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    iJNMljKhHywaTvselSjXSJkeAobJUZjA = lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.neg().exp()
-    ocNKgMRHAumlFztHlKLWFgphgoqSohMJ = lambda njuvAJFseAnTpNXMmovFtOzaohoePSQs: njuvAJFseAnTpNXMmovFtOzaohoePSQs.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL().neg()
-    ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs = None
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ = ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo]), ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1])
-        xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-        if ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs is None or ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] == 0:
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = (iJNMljKhHywaTvselSjXSJkeAobJUZjA(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) / iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb - (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() * ODAZKuAsCnodIahYkmGtylGzWplGUuPD
+def sample_dpmpp_2m(model, x, sigmas, extra_args=None, callback=None, disable=None):
+    """DPM-Solver++(2M)."""
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+    sigma_fn = lambda t: t.neg().exp()
+    t_fn = lambda sigma: sigma.log().neg()
+    old_denoised = None
+
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        t, t_next = t_fn(sigmas[i]), t_fn(sigmas[i + 1])
+        h = t_next - t
+        if old_denoised is None or sigmas[i + 1] == 0:
+            x = (sigma_fn(t_next) / sigma_fn(t)) * x - (-h).expm1() * denoised
         else:
-            CxMMXaDxrhzaisSNzJudfgSUMPNkfkZs = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz - ocNKgMRHAumlFztHlKLWFgphgoqSohMJ(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo - 1])
-            r = CxMMXaDxrhzaisSNzJudfgSUMPNkfkZs / xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-            rKSZfrRIFKbTvDlLGiZPNMcxKfBZimzE = (1 + 1 / (2 * r)) * ODAZKuAsCnodIahYkmGtylGzWplGUuPD - (1 / (2 * r)) * ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = (iJNMljKhHywaTvselSjXSJkeAobJUZjA(FeAWRnaTBNovNhgenUWGiCkgCADxZPHQ) / iJNMljKhHywaTvselSjXSJkeAobJUZjA(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb - (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab).expm1() * rKSZfrRIFKbTvDlLGiZPNMcxKfBZimzE
-        ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs = ODAZKuAsCnodIahYkmGtylGzWplGUuPD
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            h_last = t - t_fn(sigmas[i - 1])
+            r = h_last / h
+            denoised_d = (1 + 1 / (2 * r)) * denoised - (1 / (2 * r)) * old_denoised
+            x = (sigma_fn(t_next) / sigma_fn(t)) * x - (-h).expm1() * denoised_d
+        old_denoised = denoised
+    return x
+
 @torch.no_grad()
-def uNmHMVmlZIfozpWtWtfnPVRUoUgjiFfI(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None, clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB='midpoint'):
-    if clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB not in {'heun', 'midpoint'}:
+def sample_dpmpp_2m_sde(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None, solver_type='midpoint'):
+    """DPM-Solver++(2M) SDE."""
+
+    if solver_type not in {'heun', 'midpoint'}:
         raise ValueError('solver_type must be \'heun\' or \'midpoint\'')
-    qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr = TlJxtGydipTPezrPlUrxTKACQdhKNgvw.get("seed", None)
-    FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[ywkdEDhpSPXHYARENdFhpYnCzsLhiORy > 0].min(), ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.max()
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, cpu=True) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs = None
-    CxMMXaDxrhzaisSNzJudfgSUMPNkfkZs = None
-    xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = None
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] == 0:
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = ODAZKuAsCnodIahYkmGtylGzWplGUuPD
+
+    seed = extra_args.get("seed", None)
+    sigma_min, sigma_max = sigmas[sigmas > 0].min(), sigmas.max()
+    noise_sampler = BrownianTreeNoiseSampler(x, sigma_min, sigma_max, seed=seed, cpu=True) if noise_sampler is None else noise_sampler
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+
+    old_denoised = None
+    h_last = None
+    h = None
+
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        if sigmas[i + 1] == 0:
+            # Denoising step
+            x = denoised
         else:
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, uPePujIqMVDrwNvZQxJajkuaQFAcacjA = -ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(), -ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1].DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL()
-            xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = uPePujIqMVDrwNvZQxJajkuaQFAcacjA - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-            vsjyXOaGpNISukdnqLpXahdvkXFTgQDj = YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] / ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * (-vsjyXOaGpNISukdnqLpXahdvkXFTgQDj).exp() * NECAaWUrFGIXcLimrerEYmxYIykQBfXb + (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab - vsjyXOaGpNISukdnqLpXahdvkXFTgQDj).expm1().neg() * ODAZKuAsCnodIahYkmGtylGzWplGUuPD
-            if ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs is not None:
-                r = CxMMXaDxrhzaisSNzJudfgSUMPNkfkZs / xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-                if clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB == 'heun':
-                    NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ((-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab - vsjyXOaGpNISukdnqLpXahdvkXFTgQDj).expm1().neg() / (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab - vsjyXOaGpNISukdnqLpXahdvkXFTgQDj) + 1) * (1 / r) * (ODAZKuAsCnodIahYkmGtylGzWplGUuPD - ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs)
-                elif clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB == 'midpoint':
-                    NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + 0.5 * (-xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab - vsjyXOaGpNISukdnqLpXahdvkXFTgQDj).expm1().neg() * (1 / r) * (ODAZKuAsCnodIahYkmGtylGzWplGUuPD - ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs)
-            if YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1]) * ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] * (-2 * vsjyXOaGpNISukdnqLpXahdvkXFTgQDj).expm1().neg().sqrt() * s_noise
-        ueXXLHoJXnpFxRYcHYZiKwSNTImJksbs = ODAZKuAsCnodIahYkmGtylGzWplGUuPD
-        CxMMXaDxrhzaisSNzJudfgSUMPNkfkZs = xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            # DPM-Solver++(2M) SDE
+            t, s = -sigmas[i].log(), -sigmas[i + 1].log()
+            h = s - t
+            eta_h = eta * h
+
+            x = sigmas[i + 1] / sigmas[i] * (-eta_h).exp() * x + (-h - eta_h).expm1().neg() * denoised
+
+            if old_denoised is not None:
+                r = h_last / h
+                if solver_type == 'heun':
+                    x = x + ((-h - eta_h).expm1().neg() / (-h - eta_h) + 1) * (1 / r) * (denoised - old_denoised)
+                elif solver_type == 'midpoint':
+                    x = x + 0.5 * (-h - eta_h).expm1().neg() * (1 / r) * (denoised - old_denoised)
+
+            if eta:
+                x = x + noise_sampler(sigmas[i], sigmas[i + 1]) * sigmas[i + 1] * (-2 * eta_h).expm1().neg().sqrt() * s_noise
+
+        old_denoised = denoised
+        h_last = h
+    return x
+
 @torch.no_grad()
-def GsPANuUcgsjHGkTyeIQySWJIyyoltTqj(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-    qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr = TlJxtGydipTPezrPlUrxTKACQdhKNgvw.get("seed", None)
-    FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[ywkdEDhpSPXHYARENdFhpYnCzsLhiORy > 0].min(), ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.max()
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, cpu=True) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    TlJxtGydipTPezrPlUrxTKACQdhKNgvw = {} if TlJxtGydipTPezrPlUrxTKACQdhKNgvw is None else TlJxtGydipTPezrPlUrxTKACQdhKNgvw
-    moQRitRqIYEATNnahksUxyKeQfVQohNA = NECAaWUrFGIXcLimrerEYmxYIykQBfXb.new_ones([NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]])
-    SIAhnrRYZKAdFiRAoAIjMieqUGNFPJks, BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = None, None
-    xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, WWYRPNkUKTAWHUatYWDtFEQZUJYCgYhA, odURDvLMVCAWjoNhpFhQPFcQPfPXPepU = None, None, None
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in trange(len(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy) - 1, disable=disable):
-        ODAZKuAsCnodIahYkmGtylGzWplGUuPD = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] * moQRitRqIYEATNnahksUxyKeQfVQohNA, **TlJxtGydipTPezrPlUrxTKACQdhKNgvw)
-        if FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF is not None:
-            FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF({'x': NECAaWUrFGIXcLimrerEYmxYIykQBfXb, 'i': HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 'sigma': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'sigma_hat': ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], 'denoised': ODAZKuAsCnodIahYkmGtylGzWplGUuPD})
-        if ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] == 0:
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = ODAZKuAsCnodIahYkmGtylGzWplGUuPD
+def sample_dpmpp_3m_sde(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None):
+    """DPM-Solver++(3M) SDE."""
+
+    seed = extra_args.get("seed", None)
+    sigma_min, sigma_max = sigmas[sigmas > 0].min(), sigmas.max()
+    noise_sampler = BrownianTreeNoiseSampler(x, sigma_min, sigma_max, seed=seed, cpu=True) if noise_sampler is None else noise_sampler
+    extra_args = {} if extra_args is None else extra_args
+    s_in = x.new_ones([x.shape[0]])
+
+    denoised_1, denoised_2 = None, None
+    h, h_1, h_2 = None, None, None
+
+    for i in trange(len(sigmas) - 1, disable=disable):
+        denoised = model(x, sigmas[i] * s_in, **extra_args)
+        if callback is not None:
+            callback({'x': x, 'i': i, 'sigma': sigmas[i], 'sigma_hat': sigmas[i], 'denoised': denoised})
+        if sigmas[i + 1] == 0:
+            # Denoising step
+            x = denoised
         else:
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, uPePujIqMVDrwNvZQxJajkuaQFAcacjA = -ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(), -ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1].DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL()
-            xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = uPePujIqMVDrwNvZQxJajkuaQFAcacjA - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-            HvMtcLMkYOgBajunBiNciNYZrgUexevn = xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab * (YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO + 1)
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = torch.exp(-HvMtcLMkYOgBajunBiNciNYZrgUexevn) * NECAaWUrFGIXcLimrerEYmxYIykQBfXb + (-HvMtcLMkYOgBajunBiNciNYZrgUexevn).expm1().neg() * ODAZKuAsCnodIahYkmGtylGzWplGUuPD
-            if odURDvLMVCAWjoNhpFhQPFcQPfPXPepU is not None:
-                aNnhgvGSzDOfunNUFPhsrxktbnXzLhMl = WWYRPNkUKTAWHUatYWDtFEQZUJYCgYhA / xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-                apACmNWgYmlQTXHPQlhMzlFpreaoNbwW = odURDvLMVCAWjoNhpFhQPFcQPfPXPepU / xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-                BuOKAoOadeFDehIzNrjhsKWYpzeDxJvv = (ODAZKuAsCnodIahYkmGtylGzWplGUuPD - SIAhnrRYZKAdFiRAoAIjMieqUGNFPJks) / aNnhgvGSzDOfunNUFPhsrxktbnXzLhMl
-                pLnXFBBVVTvPLoFwyFPIDmkVDLfvHXLU = (SIAhnrRYZKAdFiRAoAIjMieqUGNFPJks - BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr) / apACmNWgYmlQTXHPQlhMzlFpreaoNbwW
-                tbuZnqNEmikCJaKNSLmSqWpMDYVUBzXX = BuOKAoOadeFDehIzNrjhsKWYpzeDxJvv + (BuOKAoOadeFDehIzNrjhsKWYpzeDxJvv - pLnXFBBVVTvPLoFwyFPIDmkVDLfvHXLU) * aNnhgvGSzDOfunNUFPhsrxktbnXzLhMl / (aNnhgvGSzDOfunNUFPhsrxktbnXzLhMl + apACmNWgYmlQTXHPQlhMzlFpreaoNbwW)
-                qmVBooQzqysdVWXJerZDBEhryENmpgND = (BuOKAoOadeFDehIzNrjhsKWYpzeDxJvv - pLnXFBBVVTvPLoFwyFPIDmkVDLfvHXLU) / (aNnhgvGSzDOfunNUFPhsrxktbnXzLhMl + apACmNWgYmlQTXHPQlhMzlFpreaoNbwW)
-                sSoPaxtPkFmuEwlZOSGoifpOhiJjZods = HvMtcLMkYOgBajunBiNciNYZrgUexevn.neg().expm1() / HvMtcLMkYOgBajunBiNciNYZrgUexevn + 1
-                vQCArAadlVzodMvevsCjAxlkZoNodHrO = sSoPaxtPkFmuEwlZOSGoifpOhiJjZods / HvMtcLMkYOgBajunBiNciNYZrgUexevn - 0.5
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + sSoPaxtPkFmuEwlZOSGoifpOhiJjZods * tbuZnqNEmikCJaKNSLmSqWpMDYVUBzXX - vQCArAadlVzodMvevsCjAxlkZoNodHrO * qmVBooQzqysdVWXJerZDBEhryENmpgND
-            elif WWYRPNkUKTAWHUatYWDtFEQZUJYCgYhA is not None:
-                r = WWYRPNkUKTAWHUatYWDtFEQZUJYCgYhA / xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab
-                TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = (ODAZKuAsCnodIahYkmGtylGzWplGUuPD - SIAhnrRYZKAdFiRAoAIjMieqUGNFPJks) / r
-                sSoPaxtPkFmuEwlZOSGoifpOhiJjZods = HvMtcLMkYOgBajunBiNciNYZrgUexevn.neg().expm1() / HvMtcLMkYOgBajunBiNciNYZrgUexevn + 1
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + sSoPaxtPkFmuEwlZOSGoifpOhiJjZods * TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo
-            if YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO:
-                NECAaWUrFGIXcLimrerEYmxYIykQBfXb = NECAaWUrFGIXcLimrerEYmxYIykQBfXb + ubyoEoHoKfVYweiaMPbKnyuENzoZHLei(ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1]) * ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1] * (-2 * xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab * YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO).expm1().neg().sqrt() * s_noise
-        SIAhnrRYZKAdFiRAoAIjMieqUGNFPJks, BcIfZkiygxWOtTynEqPPtsxtqUsZCGOr = ODAZKuAsCnodIahYkmGtylGzWplGUuPD, SIAhnrRYZKAdFiRAoAIjMieqUGNFPJks
-        WWYRPNkUKTAWHUatYWDtFEQZUJYCgYhA, odURDvLMVCAWjoNhpFhQPFcQPfPXPepU = xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, WWYRPNkUKTAWHUatYWDtFEQZUJYCgYhA
-    return NECAaWUrFGIXcLimrerEYmxYIykQBfXb
+            t, s = -sigmas[i].log(), -sigmas[i + 1].log()
+            h = s - t
+            h_eta = h * (eta + 1)
+
+            x = torch.exp(-h_eta) * x + (-h_eta).expm1().neg() * denoised
+
+            if h_2 is not None:
+                r0 = h_1 / h
+                r1 = h_2 / h
+                d1_0 = (denoised - denoised_1) / r0
+                d1_1 = (denoised_1 - denoised_2) / r1
+                d1 = d1_0 + (d1_0 - d1_1) * r0 / (r0 + r1)
+                d2 = (d1_0 - d1_1) / (r0 + r1)
+                phi_2 = h_eta.neg().expm1() / h_eta + 1
+                phi_3 = phi_2 / h_eta - 0.5
+                x = x + phi_2 * d1 - phi_3 * d2
+            elif h_1 is not None:
+                r = h_1 / h
+                d = (denoised - denoised_1) / r
+                phi_2 = h_eta.neg().expm1() / h_eta + 1
+                x = x + phi_2 * d
+
+            if eta:
+                x = x + noise_sampler(sigmas[i], sigmas[i + 1]) * sigmas[i + 1] * (-2 * h * eta).expm1().neg().sqrt() * s_noise
+
+        denoised_1, denoised_2 = denoised, denoised_1
+        h_1, h_2 = h, h_1
+    return x
+
 @torch.no_grad()
-def ajpILspJdcYSCWKOpWipfPxtgCkReUEz(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None):
-    FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[ywkdEDhpSPXHYARENdFhpYnCzsLhiORy > 0].min(), ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.max()
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=TlJxtGydipTPezrPlUrxTKACQdhKNgvw.get("seed", None), cpu=False) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    return GsPANuUcgsjHGkTyeIQySWJIyyoltTqj(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=TlJxtGydipTPezrPlUrxTKACQdhKNgvw, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF, disable=disable, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO, s_noise=s_noise, ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=ubyoEoHoKfVYweiaMPbKnyuENzoZHLei)
+def sample_dpmpp_3m_sde_gpu(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None):
+    sigma_min, sigma_max = sigmas[sigmas > 0].min(), sigmas.max()
+    noise_sampler = BrownianTreeNoiseSampler(x, sigma_min, sigma_max, seed=extra_args.get("seed", None), cpu=False) if noise_sampler is None else noise_sampler
+    return sample_dpmpp_3m_sde(model, x, sigmas, extra_args=extra_args, callback=callback, disable=disable, eta=eta, s_noise=s_noise, noise_sampler=noise_sampler)
+
 @torch.no_grad()
-def PaJXRHhJlLsQTOEUIYargwwHoGufrEiR(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None, clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB='midpoint'):
-    FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[ywkdEDhpSPXHYARENdFhpYnCzsLhiORy > 0].min(), ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.max()
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=TlJxtGydipTPezrPlUrxTKACQdhKNgvw.get("seed", None), cpu=False) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    return uNmHMVmlZIfozpWtWtfnPVRUoUgjiFfI(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=TlJxtGydipTPezrPlUrxTKACQdhKNgvw, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF, disable=disable, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO, s_noise=s_noise, ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=ubyoEoHoKfVYweiaMPbKnyuENzoZHLei, clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB=clbgFKGfOFaPvTRBXwoouOOLgsSYaJzB)
+def sample_dpmpp_2m_sde_gpu(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None, solver_type='midpoint'):
+    sigma_min, sigma_max = sigmas[sigmas > 0].min(), sigmas.max()
+    noise_sampler = BrownianTreeNoiseSampler(x, sigma_min, sigma_max, seed=extra_args.get("seed", None), cpu=False) if noise_sampler is None else noise_sampler
+    return sample_dpmpp_2m_sde(model, x, sigmas, extra_args=extra_args, callback=callback, disable=disable, eta=eta, s_noise=s_noise, noise_sampler=noise_sampler, solver_type=solver_type)
+
 @torch.no_grad()
-def RtidtItaVjCLMmrjlxMnBZYmZgltTGen(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=None, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=None, disable=None, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=1., s_noise=1., ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=None, r=1 / 2):
-    FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe = ywkdEDhpSPXHYARENdFhpYnCzsLhiORy[ywkdEDhpSPXHYARENdFhpYnCzsLhiORy > 0].min(), ywkdEDhpSPXHYARENdFhpYnCzsLhiORy.max()
-    ubyoEoHoKfVYweiaMPbKnyuENzoZHLei = NKEocvhZhGGzDdsiFFqWYmrsPdkyJdwN(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, FrgHMQrwGwxjLFZFaZndQasXgRhPXZyj, SjuBswrlxdwXAwbvIiTMrngJfAEFYXwe, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=TlJxtGydipTPezrPlUrxTKACQdhKNgvw.get("seed", None), cpu=False) if ubyoEoHoKfVYweiaMPbKnyuENzoZHLei is None else ubyoEoHoKfVYweiaMPbKnyuENzoZHLei
-    return QRikJcRGHxTxaPvSvOzHyOJrgVxpnJnw(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, TlJxtGydipTPezrPlUrxTKACQdhKNgvw=TlJxtGydipTPezrPlUrxTKACQdhKNgvw, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF, disable=disable, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO=YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO, s_noise=s_noise, ubyoEoHoKfVYweiaMPbKnyuENzoZHLei=ubyoEoHoKfVYweiaMPbKnyuENzoZHLei, r=r)
+def sample_dpmpp_sde_gpu(model, x, sigmas, extra_args=None, callback=None, disable=None, eta=1., s_noise=1., noise_sampler=None, r=1 / 2):
+    sigma_min, sigma_max = sigmas[sigmas > 0].min(), sigmas.max()
+    noise_sampler = BrownianTreeNoiseSampler(x, sigma_min, sigma_max, seed=extra_args.get("seed", None), cpu=False) if noise_sampler is None else noise_sampler
+    return sample_dpmpp_sde(model, x, sigmas, extra_args=extra_args, callback=callback, disable=disable, eta=eta, s_noise=s_noise, noise_sampler=noise_sampler, r=r)
+

@@ -1,163 +1,278 @@
+# adopted from
+# https://github.com/openai/improved-diffusion/blob/main/improved_diffusion/gaussian_diffusion.py
+# and
+# https://github.com/lucidrains/denoising-diffusion-pytorch/blob/7706bdfc6f527f58d33f84b7b522e61e6e3164b3/denoising_diffusion_pytorch/denoising_diffusion_pytorch.py
+# and
+# https://github.com/openai/guided-diffusion/blob/0ba878e517b276c45d1195eb29f6f5f72659a05b/guided_diffusion/nn.py
+#
+# thanks!
+
+
 import os
 import math
 import torch
 import torch.nn as nn
 import numpy as np
-from einops import kYXcbCDGZMxtOlIZeOtGMsNePlSickQL
-from quasar.ldm.util import EGpJWSXQbHSqfmcMzBaJeJAuDkDlnmrK
+from einops import repeat
+
+from quasar.ldm.util import instantiate_from_config
 import quasar.ops
-def zaisjRTCkjpiDfZeBMSaxmKWIiSAGqnS(HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs, n_timestep, uxpvmlqmOaPaMVrpHrWCryZCjOHCVbkJ=1e-4, linear_end=2e-2, zPdwEaBmJLoyWlLEECXftyIOeNavvXbe=8e-3):
-    if HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs == "linear":
-        aGiatFWLVusbPGSDloFtejqscKjAwtLv = (
-                torch.linspace(uxpvmlqmOaPaMVrpHrWCryZCjOHCVbkJ ** 0.5, linear_end ** 0.5, n_timestep, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float64) ** 2
+
+def make_beta_schedule(schedule, n_timestep, linear_start=1e-4, linear_end=2e-2, cosine_s=8e-3):
+    if schedule == "linear":
+        betas = (
+                torch.linspace(linear_start ** 0.5, linear_end ** 0.5, n_timestep, dtype=torch.float64) ** 2
         )
-    elif HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs == "cosine":
-        iaqNqpReXPEdYpNiyUIejEPLCqtbtedA = (
-                torch.arange(n_timestep + 1, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float64) / n_timestep + zPdwEaBmJLoyWlLEECXftyIOeNavvXbe
+
+    elif schedule == "cosine":
+        timesteps = (
+                torch.arange(n_timestep + 1, dtype=torch.float64) / n_timestep + cosine_s
         )
-        QgAevolFCLuucRhHfnVzUiISHrgGQRYP = iaqNqpReXPEdYpNiyUIejEPLCqtbtedA / (1 + zPdwEaBmJLoyWlLEECXftyIOeNavvXbe) * np.pi / 2
-        QgAevolFCLuucRhHfnVzUiISHrgGQRYP = torch.cos(QgAevolFCLuucRhHfnVzUiISHrgGQRYP).pow(2)
-        QgAevolFCLuucRhHfnVzUiISHrgGQRYP = QgAevolFCLuucRhHfnVzUiISHrgGQRYP / QgAevolFCLuucRhHfnVzUiISHrgGQRYP[0]
-        aGiatFWLVusbPGSDloFtejqscKjAwtLv = 1 - QgAevolFCLuucRhHfnVzUiISHrgGQRYP[1:] / QgAevolFCLuucRhHfnVzUiISHrgGQRYP[:-1]
-        aGiatFWLVusbPGSDloFtejqscKjAwtLv = np.WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ(aGiatFWLVusbPGSDloFtejqscKjAwtLv, a_min=0, a_max=0.999)
-    elif HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs == "squaredcos_cap_v2":  
-        return QqhqLNkergXrRNvczKyXdaZjuSPCjnlO(
+        alphas = timesteps / (1 + cosine_s) * np.pi / 2
+        alphas = torch.cos(alphas).pow(2)
+        alphas = alphas / alphas[0]
+        betas = 1 - alphas[1:] / alphas[:-1]
+        betas = np.clip(betas, a_min=0, a_max=0.999)
+
+    elif schedule == "squaredcos_cap_v2":  # used for karlo prior
+        # return early
+        return betas_for_alpha_bar(
             n_timestep,
-            lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: math.cos((XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + 0.008) / 1.008 * math.pi / 2) ** 2,
+            lambda t: math.cos((t + 0.008) / 1.008 * math.pi / 2) ** 2,
         )
-    elif HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs == "sqrt_linear":
-        aGiatFWLVusbPGSDloFtejqscKjAwtLv = torch.linspace(uxpvmlqmOaPaMVrpHrWCryZCjOHCVbkJ, linear_end, n_timestep, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float64)
-    elif HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs == "sqrt":
-        aGiatFWLVusbPGSDloFtejqscKjAwtLv = torch.linspace(uxpvmlqmOaPaMVrpHrWCryZCjOHCVbkJ, linear_end, n_timestep, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float64) ** 0.5
+
+    elif schedule == "sqrt_linear":
+        betas = torch.linspace(linear_start, linear_end, n_timestep, dtype=torch.float64)
+    elif schedule == "sqrt":
+        betas = torch.linspace(linear_start, linear_end, n_timestep, dtype=torch.float64) ** 0.5
     else:
-        raise ValueError(f"schedule '{HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs}' unknown.")
-    return aGiatFWLVusbPGSDloFtejqscKjAwtLv.numpy()
-def ydGLHegofJxILoEQvdIngtXoioplZMrS(ddim_discr_method, num_ddim_timesteps, buEvQvwasZgYyUqrxGfyNjTbzvwhzPXv, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True):
+        raise ValueError(f"schedule '{schedule}' unknown.")
+    return betas.numpy()
+
+
+def make_ddim_timesteps(ddim_discr_method, num_ddim_timesteps, num_ddpm_timesteps, verbose=True):
     if ddim_discr_method == 'uniform':
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = buEvQvwasZgYyUqrxGfyNjTbzvwhzPXv // num_ddim_timesteps
-        xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm = np.asarray(list(range(0, buEvQvwasZgYyUqrxGfyNjTbzvwhzPXv, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY)))
+        c = num_ddpm_timesteps // num_ddim_timesteps
+        ddim_timesteps = np.asarray(list(range(0, num_ddpm_timesteps, c)))
     elif ddim_discr_method == 'quad':
-        xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm = ((np.linspace(0, np.sqrt(buEvQvwasZgYyUqrxGfyNjTbzvwhzPXv * .8), num_ddim_timesteps)) ** 2).astype(int)
+        ddim_timesteps = ((np.linspace(0, np.sqrt(num_ddpm_timesteps * .8), num_ddim_timesteps)) ** 2).astype(int)
     else:
         raise NotImplementedError(f'There is no ddim discretization method called "{ddim_discr_method}"')
-    XQGIPsYoJudhQRIBrfcZFFmipNuGLZBQ = xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm + 1
-    if aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS:
+
+    # assert ddim_timesteps.shape[0] == num_ddim_timesteps
+    # add one to get the final alpha values right (the ones from first scale to data during sampling)
+    steps_out = ddim_timesteps + 1
+    if verbose:
         print(f'Selected timesteps for ddim sampler: {steps_out}')
-    return XQGIPsYoJudhQRIBrfcZFFmipNuGLZBQ
-def vARPohLnkqbmEgaTgkzsKrKSnRlVAXsG(alphacums, xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm, YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True):
-    QgAevolFCLuucRhHfnVzUiISHrgGQRYP = alphacums[xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm]
-    PgrClhecyuZcmtDWgocBUxaRljPilBZn = np.asarray([alphacums[0]] + alphacums[xaHdUhZcWVcLrTPEWFnTJjCgaiOMOyDm[:-1]].tolist())
-    ywkdEDhpSPXHYARENdFhpYnCzsLhiORy = YifKHCfIbeEsuQSFLLpJatOOrlBeQSoO * np.sqrt((1 - PgrClhecyuZcmtDWgocBUxaRljPilBZn) / (1 - QgAevolFCLuucRhHfnVzUiISHrgGQRYP) * (1 - QgAevolFCLuucRhHfnVzUiISHrgGQRYP / PgrClhecyuZcmtDWgocBUxaRljPilBZn))
-    if aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS:
+    return steps_out
+
+
+def make_ddim_sampling_parameters(alphacums, ddim_timesteps, eta, verbose=True):
+    # select alphas for computing the variance schedule
+    alphas = alphacums[ddim_timesteps]
+    alphas_prev = np.asarray([alphacums[0]] + alphacums[ddim_timesteps[:-1]].tolist())
+
+    # according the the formula provided in https://arxiv.org/abs/2010.02502
+    sigmas = eta * np.sqrt((1 - alphas_prev) / (1 - alphas) * (1 - alphas / alphas_prev))
+    if verbose:
         print(f'Selected alphas for ddim sampler: a_t: {alphas}; a_(t-1): {alphas_prev}')
         print(f'For the chosen value of eta, which is {eta}, '
               f'this results in the following sigma_t schedule for ddim sampler {sigmas}')
-    return ywkdEDhpSPXHYARENdFhpYnCzsLhiORy, QgAevolFCLuucRhHfnVzUiISHrgGQRYP, PgrClhecyuZcmtDWgocBUxaRljPilBZn
-def QqhqLNkergXrRNvczKyXdaZjuSPCjnlO(num_diffusion_timesteps, alpha_bar, max_beta=0.999):
-    aGiatFWLVusbPGSDloFtejqscKjAwtLv = []
-    for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(num_diffusion_timesteps):
-        MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE = HCXmerBqIMuTscBONzTGKYapYSxWTYHo / num_diffusion_timesteps
-        SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb = (HCXmerBqIMuTscBONzTGKYapYSxWTYHo + 1) / num_diffusion_timesteps
-        aGiatFWLVusbPGSDloFtejqscKjAwtLv.append(min(1 - alpha_bar(SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb) / alpha_bar(MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE), max_beta))
-    return np.array(aGiatFWLVusbPGSDloFtejqscKjAwtLv)
-def uECnTnBCuBqbDgSNRAiUiBKHNFFLIvnZ(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, x_shape):
-    b, *_ = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
-    iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = GlZreLQjBCiBptpFgmbsMbhjFlMgPVav.gather(-1, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz)
-    return iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.reshape(b, *((1,) * (len(x_shape) - 1)))
-def vcSlHLxBcVodHmZrzACHLEJuENMXjWTG(txqWbeldWuTXEOzUjapZMrWhymqrYFLd, kxdrqSDQHJnEllMOtIqUSWLnexkmvsXK, params, flag):
+    return sigmas, alphas, alphas_prev
+
+
+def betas_for_alpha_bar(num_diffusion_timesteps, alpha_bar, max_beta=0.999):
+    """
+    Create a beta schedule that discretizes the given alpha_t_bar function,
+    which defines the cumulative product of (1-beta) over time from t = [0,1].
+    :param num_diffusion_timesteps: the number of betas to produce.
+    :param alpha_bar: a lambda that takes an argument t from 0 to 1 and
+                      produces the cumulative product of (1-beta) up to that
+                      part of the diffusion process.
+    :param max_beta: the maximum beta to use; use values lower than 1 to
+                     prevent singularities.
+    """
+    betas = []
+    for i in range(num_diffusion_timesteps):
+        t1 = i / num_diffusion_timesteps
+        t2 = (i + 1) / num_diffusion_timesteps
+        betas.append(min(1 - alpha_bar(t2) / alpha_bar(t1), max_beta))
+    return np.array(betas)
+
+
+def extract_into_tensor(a, t, x_shape):
+    b, *_ = t.shape
+    out = a.gather(-1, t)
+    return out.reshape(b, *((1,) * (len(x_shape) - 1)))
+
+
+def checkpoint(func, inputs, params, flag):
+    """
+    Evaluate a function without caching intermediate activations, allowing for
+    reduced memory at the expense of extra compute in the backward pass.
+    :param func: the function to evaluate.
+    :param inputs: the argument sequence to pass to `func`.
+    :param params: a sequence of parameters `func` depends on but does not
+                   explicitly take as arguments.
+    :param flag: if False, disable gradient checkpointing.
+    """
     if flag:
-        DukiculvUpjhZIVvaGinshRSKLSTgVVl = tuple(kxdrqSDQHJnEllMOtIqUSWLnexkmvsXK) + tuple(params)
-        return xVKdURxTwzqiiALCqWnxcGXOkKDlrScR.apply(txqWbeldWuTXEOzUjapZMrWhymqrYFLd, len(kxdrqSDQHJnEllMOtIqUSWLnexkmvsXK), *DukiculvUpjhZIVvaGinshRSKLSTgVVl)
+        args = tuple(inputs) + tuple(params)
+        return CheckpointFunction.apply(func, len(inputs), *args)
     else:
-        return txqWbeldWuTXEOzUjapZMrWhymqrYFLd(*kxdrqSDQHJnEllMOtIqUSWLnexkmvsXK)
-class xVKdURxTwzqiiALCqWnxcGXOkKDlrScR(torch.autograd.Function):
+        return func(*inputs)
+
+
+class CheckpointFunction(torch.autograd.Function):
     @staticmethod
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(ctx, run_function, SruGYKDDIYooroMjYWrVQpmbvNQFTTDo, *DukiculvUpjhZIVvaGinshRSKLSTgVVl):
+    def forward(ctx, run_function, length, *args):
         ctx.run_function = run_function
-        ctx.input_tensors = list(DukiculvUpjhZIVvaGinshRSKLSTgVVl[:SruGYKDDIYooroMjYWrVQpmbvNQFTTDo])
-        ctx.input_params = list(DukiculvUpjhZIVvaGinshRSKLSTgVVl[SruGYKDDIYooroMjYWrVQpmbvNQFTTDo:])
+        ctx.input_tensors = list(args[:length])
+        ctx.input_params = list(args[length:])
         ctx.gpu_autocast_kwargs = {"enabled": torch.is_autocast_enabled(),
                                    "dtype": torch.get_autocast_gpu_dtype(),
                                    "cache_enabled": torch.is_autocast_cache_enabled()}
         with torch.no_grad():
-            CURHMRNgSgkjFnpgBQKghEKxXRChhubt = ctx.run_function(*ctx.input_tensors)
-        return CURHMRNgSgkjFnpgBQKghEKxXRChhubt
+            output_tensors = ctx.run_function(*ctx.input_tensors)
+        return output_tensors
+
     @staticmethod
-    def ZhvidJrykcGQbSgDCsJFHArYPcHBZFvy(ctx, *output_grads):
-        ctx.input_tensors = [NECAaWUrFGIXcLimrerEYmxYIykQBfXb.detach().requires_grad_(True) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in ctx.input_tensors]
+    def backward(ctx, *output_grads):
+        ctx.input_tensors = [x.detach().requires_grad_(True) for x in ctx.input_tensors]
         with torch.enable_grad(), \
                 torch.cuda.amp.autocast(**ctx.gpu_autocast_kwargs):
-            ldOfCRTolSPqriAbdYXrxAaMHTSvwqQR = [NECAaWUrFGIXcLimrerEYmxYIykQBfXb.view_as(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in ctx.input_tensors]
-            CURHMRNgSgkjFnpgBQKghEKxXRChhubt = ctx.run_function(*ldOfCRTolSPqriAbdYXrxAaMHTSvwqQR)
-        ogNkSjasdceFynEnEeZTTAUpsMqUcsFo = torch.autograd.grad(
-            CURHMRNgSgkjFnpgBQKghEKxXRChhubt,
+            # Fixes a bug where the first op in run_function modifies the
+            # Tensor storage in place, which is not allowed for detach()'d
+            # Tensors.
+            shallow_copies = [x.view_as(x) for x in ctx.input_tensors]
+            output_tensors = ctx.run_function(*shallow_copies)
+        input_grads = torch.autograd.grad(
+            output_tensors,
             ctx.input_tensors + ctx.input_params,
             output_grads,
-            NbICzLQAAPdmLEQOuPpxKRYNtBKaGZoG=True,
+            allow_unused=True,
         )
         del ctx.input_tensors
         del ctx.input_params
-        del CURHMRNgSgkjFnpgBQKghEKxXRChhubt
-        return (None, None) + ogNkSjasdceFynEnEeZTTAUpsMqUcsFo
-def gjzRLJpCqzjvjCYIlAGlFiFZIQLazZsd(iaqNqpReXPEdYpNiyUIejEPLCqtbtedA, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk, max_period=10000, repeat_only=False):
+        del output_tensors
+        return (None, None) + input_grads
+
+
+def timestep_embedding(timesteps, dim, max_period=10000, repeat_only=False):
+    """
+    Create sinusoidal timestep embeddings.
+    :param timesteps: a 1-D Tensor of N indices, one per batch element.
+                      These may be fractional.
+    :param dim: the dimension of the output.
+    :param max_period: controls the minimum frequency of the embeddings.
+    :return: an [N x dim] Tensor of positional embeddings.
+    """
     if not repeat_only:
-        XEoZtCUxZMfcPGkBpgLTmSwVAzLKszZq = yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk // 2
-        uUlRlOhvqRrGmUUqtgaNjJLzXXMmlsyN = torch.exp(
-            -math.DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(max_period) * torch.arange(tUuYqnLjDXuftYgMagGpmrobxWgfcbgq=0, lGLYgANCchGMWZfAOSVuiBulTGaEVaQM=XEoZtCUxZMfcPGkBpgLTmSwVAzLKszZq, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32) / XEoZtCUxZMfcPGkBpgLTmSwVAzLKszZq
-        ).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=iaqNqpReXPEdYpNiyUIejEPLCqtbtedA.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-        DukiculvUpjhZIVvaGinshRSKLSTgVVl = iaqNqpReXPEdYpNiyUIejEPLCqtbtedA[:, None].float() * uUlRlOhvqRrGmUUqtgaNjJLzXXMmlsyN[None]
-        FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu = torch.cat([torch.cos(DukiculvUpjhZIVvaGinshRSKLSTgVVl), torch.sin(DukiculvUpjhZIVvaGinshRSKLSTgVVl)], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=-1)
-        if yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk % 2:
-            FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu = torch.cat([FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu, torch.zeros_like(FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu[:, :1])], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=-1)
+        half = dim // 2
+        freqs = torch.exp(
+            -math.log(max_period) * torch.arange(start=0, end=half, dtype=torch.float32) / half
+        ).to(device=timesteps.device)
+        args = timesteps[:, None].float() * freqs[None]
+        embedding = torch.cat([torch.cos(args), torch.sin(args)], dim=-1)
+        if dim % 2:
+            embedding = torch.cat([embedding, torch.zeros_like(embedding[:, :1])], dim=-1)
     else:
-        FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu = kYXcbCDGZMxtOlIZeOtGMsNePlSickQL(iaqNqpReXPEdYpNiyUIejEPLCqtbtedA, 'b -> b d', TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo=yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk)
-    return FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu
-def TVrUNiPGCtAmXFOUoqodGJnRgbvoldNA(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC):
-    for HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.parameters():
-        HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj.detach().zero_()
-    return FRIBQCDfDDxIonplwxvPCicvOmmOgYPC
-def eMZsxoLFxsVZViKmkFMLvONapPoMoeTG(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, xmbXivThLFnawFPAJvIDBztziWsaDyEE):
-    for HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.parameters():
-        HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj.detach().mul_(xmbXivThLFnawFPAJvIDBztziWsaDyEE)
-    return FRIBQCDfDDxIonplwxvPCicvOmmOgYPC
-def LQBGcVjMdfNQYPLmVRRnitgdXFeFXNHl(xPmCFphFKpGMpIsczaSKHmMgRPZzJwla):
-    return xPmCFphFKpGMpIsczaSKHmMgRPZzJwla.mean(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=list(range(1, len(xPmCFphFKpGMpIsczaSKHmMgRPZzJwla.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg))))
-def DvCWYnpMIBQxXcLuPCRaTuuQvPYPGGWh(channels, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None):
-    return vfpTUAnVQlZcLDVcoSfPjwLQHAyARIkg(32, channels, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-class XHAfRvdQzGhVBUIWzxCQjrhAiQInnRoY(nn.Module):
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb * torch.sigmoid(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-class vfpTUAnVQlZcLDVcoSfPjwLQHAyARIkg(nn.GroupNorm):
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return super().lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(NECAaWUrFGIXcLimrerEYmxYIykQBfXb.float()).type(NECAaWUrFGIXcLimrerEYmxYIykQBfXb.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-def XqmPajboESpTdLShIQpHOQZiwGoVuVAj(ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
-    if ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 1:
-        return nn.Conv1d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
-    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 2:
-        return quasar.ops.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
-    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 3:
-        return nn.Conv3d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+        embedding = repeat(timesteps, 'b -> b d', d=dim)
+    return embedding
+
+
+def zero_module(module):
+    """
+    Zero out the parameters of a module and return it.
+    """
+    for p in module.parameters():
+        p.detach().zero_()
+    return module
+
+
+def scale_module(module, scale):
+    """
+    Scale the parameters of a module and return it.
+    """
+    for p in module.parameters():
+        p.detach().mul_(scale)
+    return module
+
+
+def mean_flat(tensor):
+    """
+    Take the mean over all non-batch dimensions.
+    """
+    return tensor.mean(dim=list(range(1, len(tensor.shape))))
+
+
+def normalization(channels, dtype=None):
+    """
+    Make a standard normalization layer.
+    :param channels: number of input channels.
+    :return: an nn.Module for normalization.
+    """
+    return GroupNorm32(32, channels, dtype=dtype)
+
+
+# PyTorch 1.7 has SiLU, but we support PyTorch 1.5.
+class SiLU(nn.Module):
+    def forward(self, x):
+        return x * torch.sigmoid(x)
+
+
+class GroupNorm32(nn.GroupNorm):
+    def forward(self, x):
+        return super().forward(x.float()).type(x.dtype)
+
+
+def conv_nd(dims, *args, **kwargs):
+    """
+    Create a 1D, 2D, or 3D convolution module.
+    """
+    if dims == 1:
+        return nn.Conv1d(*args, **kwargs)
+    elif dims == 2:
+        return quasar.ops.Conv2d(*args, **kwargs)
+    elif dims == 3:
+        return nn.Conv3d(*args, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
-def BJkSsAwbTZLfucgvGkDLcVEiRIlYJCmK(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
-    return quasar.ops.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
-def ppDrxhPctQxMusBvKAntWykhHyNnAUtv(ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
-    if ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 1:
-        return nn.AvgPool1d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
-    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 2:
-        return nn.AvgPool2d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
-    elif ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 3:
-        return nn.AvgPool3d(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+
+
+def linear(*args, **kwargs):
+    """
+    Create a linear module.
+    """
+    return quasar.ops.Linear(*args, **kwargs)
+
+
+def avg_pool_nd(dims, *args, **kwargs):
+    """
+    Create a 1D, 2D, or 3D average pooling module.
+    """
+    if dims == 1:
+        return nn.AvgPool1d(*args, **kwargs)
+    elif dims == 2:
+        return nn.AvgPool2d(*args, **kwargs)
+    elif dims == 3:
+        return nn.AvgPool3d(*args, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
-class qZPdfEgEaHhjNPveZSVNmXvtBVyJrHNt(nn.Module):
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, c_concat_config, c_crossattn_config):
+
+
+class HybridConditioner(nn.Module):
+
+    def __init__(self, c_concat_config, c_crossattn_config):
         super().__init__()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.concat_conditioner = EGpJWSXQbHSqfmcMzBaJeJAuDkDlnmrK(c_concat_config)
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.crossattn_conditioner = EGpJWSXQbHSqfmcMzBaJeJAuDkDlnmrK(c_crossattn_config)
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NxPzLGoygEGpTpJOvmrPwoSPnCtjjNUI, IAcIseSrcOgfiCQlLtmRUgpgfxAzxiKm):
-        NxPzLGoygEGpTpJOvmrPwoSPnCtjjNUI = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.concat_conditioner(NxPzLGoygEGpTpJOvmrPwoSPnCtjjNUI)
-        IAcIseSrcOgfiCQlLtmRUgpgfxAzxiKm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.crossattn_conditioner(IAcIseSrcOgfiCQlLtmRUgpgfxAzxiKm)
-        return {'c_concat': [NxPzLGoygEGpTpJOvmrPwoSPnCtjjNUI], 'c_crossattn': [IAcIseSrcOgfiCQlLtmRUgpgfxAzxiKm]}
-def LrAizKrQgKBxXFjYQZHueeWsViuvAXJp(BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, kYXcbCDGZMxtOlIZeOtGMsNePlSickQL=False):
-    ILPiaoThrLFONsZievnjpKpnQSXeiZbN = lambda: torch.randn((1, *BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1:]), fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc).kYXcbCDGZMxtOlIZeOtGMsNePlSickQL(BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0], *((1,) * (len(BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) - 1)))
-    jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD = lambda: torch.randn(BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-    return ILPiaoThrLFONsZievnjpKpnQSXeiZbN() if kYXcbCDGZMxtOlIZeOtGMsNePlSickQL else jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD()
+        self.concat_conditioner = instantiate_from_config(c_concat_config)
+        self.crossattn_conditioner = instantiate_from_config(c_crossattn_config)
+
+    def forward(self, c_concat, c_crossattn):
+        c_concat = self.concat_conditioner(c_concat)
+        c_crossattn = self.crossattn_conditioner(c_crossattn)
+        return {'c_concat': [c_concat], 'c_crossattn': [c_crossattn]}
+
+
+def noise_like(shape, device, repeat=False):
+    repeat_noise = lambda: torch.randn((1, *shape[1:]), device=device).repeat(shape[0], *((1,) * (len(shape) - 1)))
+    noise = lambda: torch.randn(shape, device=device)
+    return repeat_noise() if repeat else noise()

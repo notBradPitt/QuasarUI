@@ -1,4 +1,5 @@
 import torch
+
 import os
 import sys
 import json
@@ -7,124 +8,160 @@ import traceback
 import math
 import time
 import random
+
 from PIL import Image, ImageOps
 from PIL.PngImagePlugin import PngInfo
 import numpy as np
 import safetensors.torch
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar"))
+
+
 import quasar.diffusers_load
 import quasar.samplers
 import quasar.sample
 import quasar.sd
 import quasar.utils
 import quasar.controlnet
+
 import quasar.clip_vision
+
 import quasar.model_management
-from quasar.cli_args import DukiculvUpjhZIVvaGinshRSKLSTgVVl
+from quasar.cli_args import args
+
 import importlib
+
 import folder_paths
 import latent_preview
-def cZCqaSABLYzQIyICXPawBbAkRZgRglpn():
-    quasar.model_management.cufzYbsmvfzVPCacJuRroKjPAHWqOusW()
-def NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM(value=True):
-    quasar.model_management.ggsUtIbLrBjTjYoMQwfUAZvlFgfjRNAK(value)
-tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq=8192
-class xFugYlszeGKAKGYYiugpgdmBdgLdixjN:
+
+def before_node_execution():
+    quasar.model_management.throw_exception_if_processing_interrupted()
+
+def interrupt_processing(value=True):
+    quasar.model_management.interrupt_current_processing(value)
+
+MAX_RESOLUTION=8192
+
+class CLIPTextEncode:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"text": ("STRING", {"multiline": True}), "clip": ("CLIP", )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "encode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def encode(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ, text):
-        SKTuXdEkUTcvRMkWNnuUOzlxSfTAvHGL = WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.tokenize(text)
-        BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf, JEVUUwAOLsybeumSAyAWnfqCzuItnDIB = WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.encode_from_tokens(SKTuXdEkUTcvRMkWNnuUOzlxSfTAvHGL, return_pooled=True)
-        return ([[BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf, {"pooled_output": JEVUUwAOLsybeumSAyAWnfqCzuItnDIB}]], )
-class qvtLCeXRQPHPReAlvcQavnYuAcYQHAdD:
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "encode"
+
+    CATEGORY = "conditioning"
+
+    def encode(self, clip, text):
+        tokens = clip.tokenize(text)
+        cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
+        return ([[cond, {"pooled_output": pooled}]], )
+
+class ConditioningCombine:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning_1": ("CONDITIONING", ), "conditioning_2": ("CONDITIONING", )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "combine"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def EknVfXGLBgZEPAAAJxDVxtsWkRFSBXfn(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, conditioning_1, conditioning_2):
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "combine"
+
+    CATEGORY = "conditioning"
+
+    def combine(self, conditioning_1, conditioning_2):
         return (conditioning_1 + conditioning_2, )
-class lkWhhWnSlSzqLNbmCZhegjWlIcKUZzIc :
+
+class ConditioningAverage :
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning_to": ("CONDITIONING", ), "conditioning_from": ("CONDITIONING", ),
                               "conditioning_to_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01})
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "addWeighted"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def XKMBNlwPShbSVxlLwWKAcahUlLsgmbce(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, conditioning_to, conditioning_from, conditioning_to_strength):
-        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = []
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "addWeighted"
+
+    CATEGORY = "conditioning"
+
+    def addWeighted(self, conditioning_to, conditioning_from, conditioning_to_strength):
+        out = []
+
         if len(conditioning_from) > 1:
             print("Warning: ConditioningAverage conditioning_from contains more than 1 cond, only the first one will actually be applied to conditioning_to.")
-        pgPPMdYvXZoNNSfDDbHTMeqnVNhLruHM = conditioning_from[0][0]
-        QQPitfUhikrTwLoNczHTqjrReZNVzOVi = conditioning_from[0][1].get("pooled_output", None)
-        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(conditioning_to)):
-            MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE = conditioning_to[HCXmerBqIMuTscBONzTGKYapYSxWTYHo][0]
-            YRpCXuomhsEEmhwulPxRKCvzIZFzmtkV = conditioning_to[HCXmerBqIMuTscBONzTGKYapYSxWTYHo][1].get("pooled_output", QQPitfUhikrTwLoNczHTqjrReZNVzOVi)
-            WFuXrjgnWyCysWFupUPTADHAPjELsNbG = pgPPMdYvXZoNNSfDDbHTMeqnVNhLruHM[:,:MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1]]
-            if WFuXrjgnWyCysWFupUPTADHAPjELsNbG.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] < MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1]:
-                WFuXrjgnWyCysWFupUPTADHAPjELsNbG = torch.cat([WFuXrjgnWyCysWFupUPTADHAPjELsNbG] + [torch.zeros((1, (MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] - WFuXrjgnWyCysWFupUPTADHAPjELsNbG.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1]), MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2]))], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)
-            EaVaaECttSYhxDvJVPgrDnCcVlduPEUd = torch.mul(MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, conditioning_to_strength) + torch.mul(WFuXrjgnWyCysWFupUPTADHAPjELsNbG, (1.0 - conditioning_to_strength))
-            WmSwahUzmeLCgSvMwJBmDhYZnefdmRmV = conditioning_to[HCXmerBqIMuTscBONzTGKYapYSxWTYHo][1].copy()
-            if QQPitfUhikrTwLoNczHTqjrReZNVzOVi is not None and YRpCXuomhsEEmhwulPxRKCvzIZFzmtkV is not None:
-                WmSwahUzmeLCgSvMwJBmDhYZnefdmRmV["pooled_output"] = torch.mul(YRpCXuomhsEEmhwulPxRKCvzIZFzmtkV, conditioning_to_strength) + torch.mul(QQPitfUhikrTwLoNczHTqjrReZNVzOVi, (1.0 - conditioning_to_strength))
-            elif QQPitfUhikrTwLoNczHTqjrReZNVzOVi is not None:
-                WmSwahUzmeLCgSvMwJBmDhYZnefdmRmV["pooled_output"] = QQPitfUhikrTwLoNczHTqjrReZNVzOVi
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [EaVaaECttSYhxDvJVPgrDnCcVlduPEUd, WmSwahUzmeLCgSvMwJBmDhYZnefdmRmV]
-            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (iqymPVpxyjOWChGwBkTemSzHJbnJdAIz, )
-class VXMFcQDwHLDiOqVxzpyZwaXkTroGCAPs:
+
+        cond_from = conditioning_from[0][0]
+        pooled_output_from = conditioning_from[0][1].get("pooled_output", None)
+
+        for i in range(len(conditioning_to)):
+            t1 = conditioning_to[i][0]
+            pooled_output_to = conditioning_to[i][1].get("pooled_output", pooled_output_from)
+            t0 = cond_from[:,:t1.shape[1]]
+            if t0.shape[1] < t1.shape[1]:
+                t0 = torch.cat([t0] + [torch.zeros((1, (t1.shape[1] - t0.shape[1]), t1.shape[2]))], dim=1)
+
+            tw = torch.mul(t1, conditioning_to_strength) + torch.mul(t0, (1.0 - conditioning_to_strength))
+            t_to = conditioning_to[i][1].copy()
+            if pooled_output_from is not None and pooled_output_to is not None:
+                t_to["pooled_output"] = torch.mul(pooled_output_to, conditioning_to_strength) + torch.mul(pooled_output_from, (1.0 - conditioning_to_strength))
+            elif pooled_output_from is not None:
+                t_to["pooled_output"] = pooled_output_from
+
+            n = [tw, t_to]
+            out.append(n)
+        return (out, )
+
+class ConditioningConcat:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {
             "conditioning_to": ("CONDITIONING",),
             "conditioning_from": ("CONDITIONING",),
             }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "concat"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def DLwjOtTssoVQwfNOBntGtewcESlYttnq(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, conditioning_to, conditioning_from):
-        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = []
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "concat"
+
+    CATEGORY = "conditioning"
+
+    def concat(self, conditioning_to, conditioning_from):
+        out = []
+
         if len(conditioning_from) > 1:
             print("Warning: ConditioningConcat conditioning_from contains more than 1 cond, only the first one will actually be applied to conditioning_to.")
-        pgPPMdYvXZoNNSfDDbHTMeqnVNhLruHM = conditioning_from[0][0]
-        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(conditioning_to)):
-            MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE = conditioning_to[HCXmerBqIMuTscBONzTGKYapYSxWTYHo][0]
-            EaVaaECttSYhxDvJVPgrDnCcVlduPEUd = torch.cat((MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE, pgPPMdYvXZoNNSfDDbHTMeqnVNhLruHM),1)
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [EaVaaECttSYhxDvJVPgrDnCcVlduPEUd, conditioning_to[HCXmerBqIMuTscBONzTGKYapYSxWTYHo][1].copy()]
-            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (iqymPVpxyjOWChGwBkTemSzHJbnJdAIz, )
-class uiryePJpXaKctwLymJTRGmDYTnmFpOVu:
+
+        cond_from = conditioning_from[0][0]
+
+        for i in range(len(conditioning_to)):
+            t1 = conditioning_to[i][0]
+            tw = torch.cat((t1, cond_from),1)
+            n = [tw, conditioning_to[i][1].copy()]
+            out.append(n)
+
+        return (out, )
+
+class ConditioningSetArea:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
-                              "width": ("INT", {"default": 64, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "height": ("INT", {"default": 64, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "x": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "y": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
+                              "width": ("INT", {"default": 64, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "height": ("INT", {"default": 64, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "x": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                              "y": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
                               "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "append"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def append(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, strength):
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()]
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['area'] = (yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM // 8, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz // 8, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW // 8, NECAaWUrFGIXcLimrerEYmxYIykQBfXb // 8)
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['strength'] = strength
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['set_area_to_bounds'] = False
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class MOhYaVYOzpeAtEFqcdIAWHKLQcntTzGT:
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "append"
+
+    CATEGORY = "conditioning"
+
+    def append(self, conditioning, width, height, x, y, strength):
+        c = []
+        for t in conditioning:
+            n = [t[0], t[1].copy()]
+            n[1]['area'] = (height // 8, width // 8, y // 8, x // 8)
+            n[1]['strength'] = strength
+            n[1]['set_area_to_bounds'] = False
+            c.append(n)
+        return (c, )
+
+class ConditioningSetAreaPercentage:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
                               "width": ("FLOAT", {"default": 1.0, "min": 0, "max": 1.0, "step": 0.01}),
                               "height": ("FLOAT", {"default": 1.0, "min": 0, "max": 1.0, "step": 0.01}),
@@ -132,391 +169,489 @@ class MOhYaVYOzpeAtEFqcdIAWHKLQcntTzGT:
                               "y": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
                               "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "append"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def append(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, strength):
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()]
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['area'] = ("percentage", yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['strength'] = strength
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['set_area_to_bounds'] = False
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class sGJAjzbAeEjMjezMdZmhSjpUrztuIxrd:
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "append"
+
+    CATEGORY = "conditioning"
+
+    def append(self, conditioning, width, height, x, y, strength):
+        c = []
+        for t in conditioning:
+            n = [t[0], t[1].copy()]
+            n[1]['area'] = ("percentage", height, width, y, x)
+            n[1]['strength'] = strength
+            n[1]['set_area_to_bounds'] = False
+            c.append(n)
+        return (c, )
+
+class ConditioningSetMask:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
                               "mask": ("MASK", ),
                               "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                               "set_cond_area": (["default", "mask bounds"],),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "append"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def append(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, KHpRlHOzblljQyskecSxzUuWZtneWwta, set_cond_area, strength):
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        MXEQWbluiOHFSuTIGDmpHNbNMuAJFDrG = False
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "append"
+
+    CATEGORY = "conditioning"
+
+    def append(self, conditioning, mask, set_cond_area, strength):
+        c = []
+        set_area_to_bounds = False
         if set_cond_area != "default":
-            MXEQWbluiOHFSuTIGDmpHNbNMuAJFDrG = True
-        if len(KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) < 3:
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = KHpRlHOzblljQyskecSxzUuWZtneWwta.unsqueeze(0)
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()]
-            _, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['mask'] = KHpRlHOzblljQyskecSxzUuWZtneWwta
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['set_area_to_bounds'] = MXEQWbluiOHFSuTIGDmpHNbNMuAJFDrG
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['mask_strength'] = strength
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class MbOIIXitffUZYmaOhrWLoXmkaSHBaWAJ:
+            set_area_to_bounds = True
+        if len(mask.shape) < 3:
+            mask = mask.unsqueeze(0)
+        for t in conditioning:
+            n = [t[0], t[1].copy()]
+            _, h, w = mask.shape
+            n[1]['mask'] = mask
+            n[1]['set_area_to_bounds'] = set_area_to_bounds
+            n[1]['mask_strength'] = strength
+            c.append(n)
+        return (c, )
+
+class ConditioningZeroOut:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "zero_out"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/conditioning"
-    def wIJVLvhRcrvalZtaXCWiynpisRCDKUQN(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR):
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()
-            if "pooled_output" in TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo:
-                TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo["pooled_output"] = torch.zeros_like(TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo["pooled_output"])
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [torch.zeros_like(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0]), TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo]
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class xkewWZVEtrrwkpVxpgXOzhuLNUDrAyoA:
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "zero_out"
+
+    CATEGORY = "advanced/conditioning"
+
+    def zero_out(self, conditioning):
+        c = []
+        for t in conditioning:
+            d = t[1].copy()
+            if "pooled_output" in d:
+                d["pooled_output"] = torch.zeros_like(d["pooled_output"])
+            n = [torch.zeros_like(t[0]), d]
+            c.append(n)
+        return (c, )
+
+class ConditioningSetTimestepRange:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
                              "start": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
                              "end": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001})
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "set_range"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/conditioning"
-    def lltoTuldZKQmXxlemNkBHTZQcxQkpAYi(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, tUuYqnLjDXuftYgMagGpmrobxWgfcbgq, lGLYgANCchGMWZfAOSVuiBulTGaEVaQM):
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()
-            TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo['start_percent'] = 1.0 - tUuYqnLjDXuftYgMagGpmrobxWgfcbgq
-            TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo['end_percent'] = 1.0 - lGLYgANCchGMWZfAOSVuiBulTGaEVaQM
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo]
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class tkeFAusZeYzBDPFSpXbBAbSiGuguweLJ:
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "set_range"
+
+    CATEGORY = "advanced/conditioning"
+
+    def set_range(self, conditioning, start, end):
+        c = []
+        for t in conditioning:
+            d = t[1].copy()
+            d['start_percent'] = 1.0 - start
+            d['end_percent'] = 1.0 - end
+            n = [t[0], d]
+            c.append(n)
+        return (c, )
+
+class VAEDecode:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT", ), "vae": ("VAE", )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "decode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent"
-    def DzeufPfapTAWMrnfPsMZfOIZEyGYmPHT(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs):
-        return (PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi.DzeufPfapTAWMrnfPsMZfOIZEyGYmPHT(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"]), )
-class CcxzNqovaHQVHpxKUeCssGusFOficgdF:
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "decode"
+
+    CATEGORY = "latent"
+
+    def decode(self, vae, samples):
+        return (vae.decode(samples["samples"]), )
+
+class VAEDecodeTiled:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"samples": ("LATENT", ), "vae": ("VAE", ),
                              "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64})
                             }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "decode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "_for_testing"
-    def DzeufPfapTAWMrnfPsMZfOIZEyGYmPHT(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, tile_size):
-        return (PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi.decode_tiled(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"], tile_x=tile_size // 8, tile_y=tile_size // 8, ), )
-class yHdOrZGLzaZsuJPMNoADlrOQJtKypbUC:
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "decode"
+
+    CATEGORY = "_for_testing"
+
+    def decode(self, vae, samples, tile_size):
+        return (vae.decode_tiled(samples["samples"], tile_x=tile_size // 8, tile_y=tile_size // 8, ), )
+
+class VAEEncode:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "pixels": ("IMAGE", ), "vae": ("VAE", )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "encode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent"
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "encode"
+
+    CATEGORY = "latent"
+
     @staticmethod
-    def snFNHFoUdAZQEYQCcLrajgOuliPdcfLR(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP):
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] // 8) * 8
-        ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] // 8) * 8
-        if yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] != NECAaWUrFGIXcLimrerEYmxYIykQBfXb or yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] != ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW:
-            mjTAPKgRyErnNpDWehUthBVOgGxXodYk = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] % 8) // 2
-            BgshOdAbnkGhUyelDmBsZhLVsoWgocfj = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] % 8) // 2
-            yRvviORwdqEhCaLCkyVjtwxFonOdeNcP = yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:, mjTAPKgRyErnNpDWehUthBVOgGxXodYk:NECAaWUrFGIXcLimrerEYmxYIykQBfXb + mjTAPKgRyErnNpDWehUthBVOgGxXodYk, BgshOdAbnkGhUyelDmBsZhLVsoWgocfj:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW + BgshOdAbnkGhUyelDmBsZhLVsoWgocfj, :]
-        return yRvviORwdqEhCaLCkyVjtwxFonOdeNcP
-    def encode(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi, yRvviORwdqEhCaLCkyVjtwxFonOdeNcP):
-        yRvviORwdqEhCaLCkyVjtwxFonOdeNcP = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.snFNHFoUdAZQEYQCcLrajgOuliPdcfLR(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP)
-        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi.encode(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:,:,:,:3])
-        return ({"samples":XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz}, )
-class GnDUARhnfPPMFDGTRWPeOnvfVZuTBjBJ:
+    def vae_encode_crop_pixels(pixels):
+        x = (pixels.shape[1] // 8) * 8
+        y = (pixels.shape[2] // 8) * 8
+        if pixels.shape[1] != x or pixels.shape[2] != y:
+            x_offset = (pixels.shape[1] % 8) // 2
+            y_offset = (pixels.shape[2] % 8) // 2
+            pixels = pixels[:, x_offset:x + x_offset, y_offset:y + y_offset, :]
+        return pixels
+
+    def encode(self, vae, pixels):
+        pixels = self.vae_encode_crop_pixels(pixels)
+        t = vae.encode(pixels[:,:,:,:3])
+        return ({"samples":t}, )
+
+class VAEEncodeTiled:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"pixels": ("IMAGE", ), "vae": ("VAE", ),
                              "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64})
                             }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "encode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "_for_testing"
-    def encode(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi, yRvviORwdqEhCaLCkyVjtwxFonOdeNcP, tile_size):
-        yRvviORwdqEhCaLCkyVjtwxFonOdeNcP = yHdOrZGLzaZsuJPMNoADlrOQJtKypbUC.snFNHFoUdAZQEYQCcLrajgOuliPdcfLR(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP)
-        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi.encode_tiled(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:,:,:,:3], tile_x=tile_size, tile_y=tile_size, )
-        return ({"samples":XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz}, )
-class XcLrUEEGwySqZlhOsrsQexLVMCIATlUX:
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "encode"
+
+    CATEGORY = "_for_testing"
+
+    def encode(self, vae, pixels, tile_size):
+        pixels = VAEEncode.vae_encode_crop_pixels(pixels)
+        t = vae.encode_tiled(pixels[:,:,:,:3], tile_x=tile_size, tile_y=tile_size, )
+        return ({"samples":t}, )
+
+class VAEEncodeForInpaint:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "pixels": ("IMAGE", ), "vae": ("VAE", ), "mask": ("MASK", ), "grow_mask_by": ("INT", {"default": 6, "min": 0, "max": 64, "step": 1}),}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "encode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/inpaint"
-    def encode(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi, yRvviORwdqEhCaLCkyVjtwxFonOdeNcP, KHpRlHOzblljQyskecSxzUuWZtneWwta, grow_mask_by=6):
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] // 8) * 8
-        ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] // 8) * 8
-        KHpRlHOzblljQyskecSxzUuWZtneWwta = torch.nn.functional.interpolate(KHpRlHOzblljQyskecSxzUuWZtneWwta.reshape((-1, 1, KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[-2], KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[-1])), vqDBJgidQufnKyAltPYRqiKGjmztArDJ=(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1], yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2]), bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC="bilinear")
-        yRvviORwdqEhCaLCkyVjtwxFonOdeNcP = yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.tEcQvpBwXwdqvKxRTLEBROBUyPoodldL()
-        if yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] != NECAaWUrFGIXcLimrerEYmxYIykQBfXb or yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] != ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW:
-            mjTAPKgRyErnNpDWehUthBVOgGxXodYk = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] % 8) // 2
-            BgshOdAbnkGhUyelDmBsZhLVsoWgocfj = (yRvviORwdqEhCaLCkyVjtwxFonOdeNcP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] % 8) // 2
-            yRvviORwdqEhCaLCkyVjtwxFonOdeNcP = yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:,mjTAPKgRyErnNpDWehUthBVOgGxXodYk:NECAaWUrFGIXcLimrerEYmxYIykQBfXb + mjTAPKgRyErnNpDWehUthBVOgGxXodYk, BgshOdAbnkGhUyelDmBsZhLVsoWgocfj:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW + BgshOdAbnkGhUyelDmBsZhLVsoWgocfj,:]
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = KHpRlHOzblljQyskecSxzUuWZtneWwta[:,:,mjTAPKgRyErnNpDWehUthBVOgGxXodYk:NECAaWUrFGIXcLimrerEYmxYIykQBfXb + mjTAPKgRyErnNpDWehUthBVOgGxXodYk, BgshOdAbnkGhUyelDmBsZhLVsoWgocfj:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW + BgshOdAbnkGhUyelDmBsZhLVsoWgocfj]
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "encode"
+
+    CATEGORY = "latent/inpaint"
+
+    def encode(self, vae, pixels, mask, grow_mask_by=6):
+        x = (pixels.shape[1] // 8) * 8
+        y = (pixels.shape[2] // 8) * 8
+        mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(pixels.shape[1], pixels.shape[2]), mode="bilinear")
+
+        pixels = pixels.clone()
+        if pixels.shape[1] != x or pixels.shape[2] != y:
+            x_offset = (pixels.shape[1] % 8) // 2
+            y_offset = (pixels.shape[2] % 8) // 2
+            pixels = pixels[:,x_offset:x + x_offset, y_offset:y + y_offset,:]
+            mask = mask[:,:,x_offset:x + x_offset, y_offset:y + y_offset]
+
+        #grow mask by a few pixels to keep things seamless in latent space
         if grow_mask_by == 0:
-            KLTTBAAGhdWFJBvxNyzFefTVgdDrwlys = KHpRlHOzblljQyskecSxzUuWZtneWwta
+            mask_erosion = mask
         else:
-            ftzHWwcFwrOvghWNPKIFSlEPtLJaqkze = torch.ones((1, 1, grow_mask_by, grow_mask_by))
-            sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP = math.ceil((grow_mask_by - 1) / 2)
-            KLTTBAAGhdWFJBvxNyzFefTVgdDrwlys = torch.clamp(torch.nn.functional.conv2d(KHpRlHOzblljQyskecSxzUuWZtneWwta.round(), ftzHWwcFwrOvghWNPKIFSlEPtLJaqkze, sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP), 0, 1)
-        FTosLGldclAzaiNbwuLMIEtXfrZQpTnU = (1.0 - KHpRlHOzblljQyskecSxzUuWZtneWwta.round()).squeeze(1)
-        for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(3):
-            yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:,:,:,HCXmerBqIMuTscBONzTGKYapYSxWTYHo] -= 0.5
-            yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:,:,:,HCXmerBqIMuTscBONzTGKYapYSxWTYHo] *= FTosLGldclAzaiNbwuLMIEtXfrZQpTnU
-            yRvviORwdqEhCaLCkyVjtwxFonOdeNcP[:,:,:,HCXmerBqIMuTscBONzTGKYapYSxWTYHo] += 0.5
-        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi.encode(yRvviORwdqEhCaLCkyVjtwxFonOdeNcP)
-        return ({"samples":XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, "noise_mask": (KLTTBAAGhdWFJBvxNyzFefTVgdDrwlys[:,:,:NECAaWUrFGIXcLimrerEYmxYIykQBfXb,:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW].round())}, )
-class KNkmvkLrAPwddvOOzCKLuJvoplliUlqI:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo()
+            kernel_tensor = torch.ones((1, 1, grow_mask_by, grow_mask_by))
+            padding = math.ceil((grow_mask_by - 1) / 2)
+
+            mask_erosion = torch.clamp(torch.nn.functional.conv2d(mask.round(), kernel_tensor, padding=padding), 0, 1)
+
+        m = (1.0 - mask.round()).squeeze(1)
+        for i in range(3):
+            pixels[:,:,:,i] -= 0.5
+            pixels[:,:,:,i] *= m
+            pixels[:,:,:,i] += 0.5
+        t = vae.encode(pixels)
+
+        return ({"samples":t, "noise_mask": (mask_erosion[:,:,:x,:y].round())}, )
+
+class SaveLatent:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT", ),
                               "filename_prefix": ("STRING", {"default": "latents/QuasarUI"})},
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ()
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "save"
-    AQnTlfqkrmdAAnLjLNUFibEHomwVhMHv = True
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "_for_testing"
-    def PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, azafsUqgjjnMJDTDVblsTwqgMmfrAEPm="QuasarUI", qKBREHoSgcMHYVCNTapmPyODbBOyQAyv=None, extra_pnginfo=None):
-        NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ, EijzAwkTdadIdbBCcDEUbEYNNcstskwi, azafsUqgjjnMJDTDVblsTwqgMmfrAEPm = folder_paths.RzAZobMvYWLmMtiqbeSollhpzISOJhWp(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)
-        GjFngyPEbvmyWKdohCWlJwQdGDmPFMJv = ""
-        if qKBREHoSgcMHYVCNTapmPyODbBOyQAyv is not None:
-            GjFngyPEbvmyWKdohCWlJwQdGDmPFMJv = json.dumps(qKBREHoSgcMHYVCNTapmPyODbBOyQAyv)
-        bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi = None
-        if not DukiculvUpjhZIVvaGinshRSKLSTgVVl.disable_metadata:
-            bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi = {"prompt": GjFngyPEbvmyWKdohCWlJwQdGDmPFMJv}
+    RETURN_TYPES = ()
+    FUNCTION = "save"
+
+    OUTPUT_NODE = True
+
+    CATEGORY = "_for_testing"
+
+    def save(self, samples, filename_prefix="QuasarUI", prompt=None, extra_pnginfo=None):
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
+
+        # support save metadata for latent sharing
+        prompt_info = ""
+        if prompt is not None:
+            prompt_info = json.dumps(prompt)
+
+        metadata = None
+        if not args.disable_metadata:
+            metadata = {"prompt": prompt_info}
             if extra_pnginfo is not None:
-                for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in extra_pnginfo:
-                    bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi[NECAaWUrFGIXcLimrerEYmxYIykQBfXb] = json.dumps(extra_pnginfo[NECAaWUrFGIXcLimrerEYmxYIykQBfXb])
-        GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = f"{filename}_{counter:05}_.latent"
-        NRctuwUflnRJCsQaTaCNgYJowifAWPqJ = list()
-        NRctuwUflnRJCsQaTaCNgYJowifAWPqJ.append({
-            "filename": GGrVUpHsMvVvEYhZgyWAlwaKJQserwts,
-            "subfolder": EijzAwkTdadIdbBCcDEUbEYNNcstskwi,
+                for x in extra_pnginfo:
+                    metadata[x] = json.dumps(extra_pnginfo[x])
+
+        file = f"{filename}_{counter:05}_.latent"
+
+        results = list()
+        results.append({
+            "filename": file,
+            "subfolder": subfolder,
             "type": "output"
         })
-        GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts)
-        pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP = {}
-        pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP["latent_tensor"] = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"]
-        pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP["latent_format_version_0"] = torch.xPmCFphFKpGMpIsczaSKHmMgRPZzJwla([])
-        quasar.utils.save_torch_file(pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts, bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi=bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi)
-        return { "ui": { "latents": NRctuwUflnRJCsQaTaCNgYJowifAWPqJ } }
-class VTKGSJncLiFeXyZiGvTCgFXfSARuMFAd:
+
+        file = os.path.join(full_output_folder, file)
+
+        output = {}
+        output["latent_tensor"] = samples["samples"]
+        output["latent_format_version_0"] = torch.tensor([])
+
+        quasar.utils.save_torch_file(output, file, metadata=metadata)
+        return { "ui": { "latents": results } }
+
+
+class LoadLatent:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        GhiEkpNFOqhdputxuaWhbKlilzZXSMPs = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.path.isfile(os.path.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f)) and f.endswith(".latent")]
-        return {"required": {"latent": [sorted(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE), ]}, }
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "_for_testing"
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT", )
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load"
-    def yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU):
-        vOJbhjoLfYZpEldBxWNHhCmaFfiJMWew = folder_paths.OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU)
-        CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU = safetensors.torch.load_file(vOJbhjoLfYZpEldBxWNHhCmaFfiJMWew, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu")
-        EWOzAFPZCwlkwatzyybUCZgINJrsJyHo = 1.0
-        if "latent_format_version_0" not in CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU:
-            EWOzAFPZCwlkwatzyybUCZgINJrsJyHo = 1.0 / 0.18215
-        bfpFhSQCEeSgZQwablzNZDcPruUlpnjs = {"samples": CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU["latent_tensor"].float() * EWOzAFPZCwlkwatzyybUCZgINJrsJyHo}
-        return (bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, )
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f)) and f.endswith(".latent")]
+        return {"required": {"latent": [sorted(files), ]}, }
+
+    CATEGORY = "_for_testing"
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "load"
+
+    def load(self, latent):
+        latent_path = folder_paths.get_annotated_filepath(latent)
+        latent = safetensors.torch.load_file(latent_path, device="cpu")
+        multiplier = 1.0
+        if "latent_format_version_0" not in latent:
+            multiplier = 1.0 / 0.18215
+        samples = {"samples": latent["latent_tensor"].float() * multiplier}
+        return (samples, )
+
     @classmethod
-    def xChqCjJamsdgOcXgHPiSyUitQVgwKEUj(uPePujIqMVDrwNvZQxJajkuaQFAcacjA, CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU):
-        SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq = folder_paths.OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU)
-        FTosLGldclAzaiNbwuLMIEtXfrZQpTnU = hashlib.sha256()
-        with open(SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq, 'rb') as f:
-            FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.update(f.read())
-        return FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.digest().hex()
+    def IS_CHANGED(s, latent):
+        image_path = folder_paths.get_annotated_filepath(latent)
+        m = hashlib.sha256()
+        with open(image_path, 'rb') as f:
+            m.update(f.read())
+        return m.digest().hex()
+
     @classmethod
-    def zdUBozptADSRFmScDjrsNpGclJRkfHVt(uPePujIqMVDrwNvZQxJajkuaQFAcacjA, CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU):
-        if not folder_paths.LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU):
-            return "Invalid latent file: {}".format(CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU)
+    def VALIDATE_INPUTS(s, latent):
+        if not folder_paths.exists_annotated_filepath(latent):
+            return "Invalid latent file: {}".format(latent)
         return True
-class gJrMIsATfnXkyxPPuPvhyrflWJwbfiOu:
+
+
+class CheckpointLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "config_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("configs"), ),
-                              "ckpt_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("checkpoints"), )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL", "CLIP", "VAE")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_checkpoint"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders"
-    def LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, config_name, ckpt_name, output_vae=True, output_clip=True):
-        MJafEhTfEBNmQGXzAAFXwUBXvYOtnghP = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("configs", config_name)
-        CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("checkpoints", ckpt_name)
-        return quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(MJafEhTfEBNmQGXzAAFXwUBXvYOtnghP, CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA, output_vae=True, output_clip=True, embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
-class rrffnjNRHZdVtoFFMasAclfpghoZjVny:
+    def INPUT_TYPES(s):
+        return {"required": { "config_name": (folder_paths.get_filename_list("configs"), ),
+                              "ckpt_name": (folder_paths.get_filename_list("checkpoints"), )}}
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE")
+    FUNCTION = "load_checkpoint"
+
+    CATEGORY = "advanced/loaders"
+
+    def load_checkpoint(self, config_name, ckpt_name, output_vae=True, output_clip=True):
+        config_path = folder_paths.get_full_path("configs", config_name)
+        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
+        return quasar.sd.load_checkpoint(config_path, ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+
+class CheckpointLoaderSimple:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "ckpt_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("checkpoints"), ),
+    def INPUT_TYPES(s):
+        return {"required": { "ckpt_name": (folder_paths.get_filename_list("checkpoints"), ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL", "CLIP", "VAE")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_checkpoint"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ckpt_name, output_vae=True, output_clip=True):
-        CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("checkpoints", ckpt_name)
-        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.load_checkpoint_guess_config(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA, output_vae=True, output_clip=True, embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
-        return iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[:3]
-class bsDPHyAnZXnIosnIiQuPBGqfEMEJIqBd:
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE")
+    FUNCTION = "load_checkpoint"
+
+    CATEGORY = "loaders"
+
+    def load_checkpoint(self, ckpt_name, output_vae=True, output_clip=True):
+        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
+        out = quasar.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+        return out[:3]
+
+class DiffusersLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(qImTjFfovKitSMWzOmePbprJitutCVKi):
-        AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI = []
-        for YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE in folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("diffusers"):
-            if os.path.exists(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
-                for hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, bwnaMndsjqsroDRgNdISmtBdipLvjCoG, DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE in os.walk(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, followlinks=True):
-                    if "model_index.json" in DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE:
-                        AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI.append(os.path.relpath(hpDCmssMBWJUwBayrpShjJoOSQeDdfbl, tUuYqnLjDXuftYgMagGpmrobxWgfcbgq=YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE))
-        return {"required": {"model_path": (AOGAiLpFWYRqfvQFDHklGCBgbJMOyeLI,), }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL", "CLIP", "VAE")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_checkpoint"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders/deprecated"
-    def LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=True, output_clip=True):
-        for YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE in folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("diffusers"):
-            if os.path.exists(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE):
-                path = os.path.join(YTXcjRUqHbLVfHitIqjyIaWpbQRXlSNE, uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU)
+    def INPUT_TYPES(cls):
+        paths = []
+        for search_path in folder_paths.get_folder_paths("diffusers"):
+            if os.path.exists(search_path):
+                for root, subdir, files in os.walk(search_path, followlinks=True):
+                    if "model_index.json" in files:
+                        paths.append(os.path.relpath(root, start=search_path))
+
+        return {"required": {"model_path": (paths,), }}
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE")
+    FUNCTION = "load_checkpoint"
+
+    CATEGORY = "advanced/loaders/deprecated"
+
+    def load_checkpoint(self, model_path, output_vae=True, output_clip=True):
+        for search_path in folder_paths.get_folder_paths("diffusers"):
+            if os.path.exists(search_path):
+                path = os.path.join(search_path, model_path)
                 if os.path.exists(path):
-                    uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU = path
+                    model_path = path
                     break
-        return quasar.diffusers_load.DzQIxZSOpGriDumdVTpwrMDmDIiYkfvv(uqDmwCRgGlmMMSwgzjrEvGHoQjjvWqWU, output_vae=output_vae, output_clip=output_clip, embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
-class qGILltCyOYXZISZAQqJTdClRJVMIyVhd:
+
+        return quasar.diffusers_load.load_diffusers(model_path, output_vae=output_vae, output_clip=output_clip, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+
+
+class unCLIPCheckpointLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "ckpt_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("checkpoints"), ),
+    def INPUT_TYPES(s):
+        return {"required": { "ckpt_name": (folder_paths.get_filename_list("checkpoints"), ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL", "CLIP", "VAE", "CLIP_VISION")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_checkpoint"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def LHyInfhWtlCKFbhFfqoifLjBGiaoQbUe(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ckpt_name, output_vae=True, output_clip=True):
-        CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("checkpoints", ckpt_name)
-        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.load_checkpoint_guess_config(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA, output_vae=True, output_clip=True, output_clipvision=True, embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
-        return iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
-class LlMizUiJpMXLbfAHRtmaTRtawJCkifXa:
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "CLIP_VISION")
+    FUNCTION = "load_checkpoint"
+
+    CATEGORY = "loaders"
+
+    def load_checkpoint(self, ckpt_name, output_vae=True, output_clip=True):
+        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
+        out = quasar.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, output_clipvision=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+        return out
+
+class CLIPSetLastLayer:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "clip": ("CLIP", ),
                               "stop_at_clip_layer": ("INT", {"default": -1, "min": -24, "max": -1, "step": 1}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CLIP",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "set_last_layer"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def BSFkmsWvVHJfCkpMjAUmGASSFghdhcov(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ, stop_at_clip_layer):
-        WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ = WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.tEcQvpBwXwdqvKxRTLEBROBUyPoodldL()
-        WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.clip_layer(stop_at_clip_layer)
-        return (WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ,)
-class tWARkCwiRcNpBDFPksBMZyyZlnZeQKXT:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora = None
+    RETURN_TYPES = ("CLIP",)
+    FUNCTION = "set_last_layer"
+
+    CATEGORY = "conditioning"
+
+    def set_last_layer(self, clip, stop_at_clip_layer):
+        clip = clip.clone()
+        clip.clip_layer(stop_at_clip_layer)
+        return (clip,)
+
+class LoraLoader:
+    def __init__(self):
+        self.loaded_lora = None
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "model": ("MODEL",),
                               "clip": ("CLIP", ),
-                              "lora_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("loras"), ),
+                              "lora_name": (folder_paths.get_filename_list("loras"), ),
                               "strength_model": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.01}),
                               "strength_clip": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.01}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL", "CLIP")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_lora"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def SrmfspByOhxEpYfUbHxdWOzxdGzupQxv(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ, lora_name, AePTHMNnzpcegVKckEDvKCKXrzsGyVqK, strength_clip):
-        if AePTHMNnzpcegVKckEDvKCKXrzsGyVqK == 0 and strength_clip == 0:
-            return (VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ)
-        mFJAAnHHygkTThWfmPXXdCcMPeegmCqq = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("loras", lora_name)
-        nIzLGXVwazNtJWADcRXQeGTPYhxWppqT = None
-        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora is not None:
-            if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora[0] == mFJAAnHHygkTThWfmPXXdCcMPeegmCqq:
-                nIzLGXVwazNtJWADcRXQeGTPYhxWppqT = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora[1]
+    RETURN_TYPES = ("MODEL", "CLIP")
+    FUNCTION = "load_lora"
+
+    CATEGORY = "loaders"
+
+    def load_lora(self, model, clip, lora_name, strength_model, strength_clip):
+        if strength_model == 0 and strength_clip == 0:
+            return (model, clip)
+
+        lora_path = folder_paths.get_full_path("loras", lora_name)
+        lora = None
+        if self.loaded_lora is not None:
+            if self.loaded_lora[0] == lora_path:
+                lora = self.loaded_lora[1]
             else:
-                xEFqUNADkGHGuTWgscLRcFtjQusIEAid = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora = None
-                del xEFqUNADkGHGuTWgscLRcFtjQusIEAid
-        if nIzLGXVwazNtJWADcRXQeGTPYhxWppqT is None:
-            nIzLGXVwazNtJWADcRXQeGTPYhxWppqT = quasar.utils.load_torch_file(mFJAAnHHygkTThWfmPXXdCcMPeegmCqq, safe_load=True)
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.loaded_lora = (mFJAAnHHygkTThWfmPXXdCcMPeegmCqq, nIzLGXVwazNtJWADcRXQeGTPYhxWppqT)
-        ZIrLKZLebWfxmkLsJDkivxloClyjuiFu, DupelxKQOTnChJYwwDSpKkueQIPmZtXs = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.load_lora_for_models(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ, nIzLGXVwazNtJWADcRXQeGTPYhxWppqT, AePTHMNnzpcegVKckEDvKCKXrzsGyVqK, strength_clip)
-        return (ZIrLKZLebWfxmkLsJDkivxloClyjuiFu, DupelxKQOTnChJYwwDSpKkueQIPmZtXs)
-class AuhSmKRAtBABiDBVlzvkmHPAQcReZjMt:
+                temp = self.loaded_lora
+                self.loaded_lora = None
+                del temp
+
+        if lora is None:
+            lora = quasar.utils.load_torch_file(lora_path, safe_load=True)
+            self.loaded_lora = (lora_path, lora)
+
+        model_lora, clip_lora = quasar.sd.load_lora_for_models(model, clip, lora, strength_model, strength_clip)
+        return (model_lora, clip_lora)
+
+class VAELoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "vae_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("vae"), )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("VAE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_vae"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def DhFCZkBxQjBboCcwLWnpsFKZNZyPLUfi(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, vae_name):
-        SukNRPIFHgQMbRbMnWQLBnsTPeBwANmJ = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("vae", vae_name)
-        PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.VAE(CZOnlrJVXnbYFkZDmLjOAswXNMiGhxHA=SukNRPIFHgQMbRbMnWQLBnsTPeBwANmJ)
-        return (PBWbWRIKcHQYxJBaTdydnolXDaFqlFKi,)
-class YNFxJlmnzZYMUgkvImenKmRbdZZaHHKo:
+    def INPUT_TYPES(s):
+        return {"required": { "vae_name": (folder_paths.get_filename_list("vae"), )}}
+    RETURN_TYPES = ("VAE",)
+    FUNCTION = "load_vae"
+
+    CATEGORY = "loaders"
+
+    #TODO: scale factor?
+    def load_vae(self, vae_name):
+        vae_path = folder_paths.get_full_path("vae", vae_name)
+        vae = quasar.sd.VAE(ckpt_path=vae_path)
+        return (vae,)
+
+class ControlNetLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "control_net_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("controlnet"), )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONTROL_NET",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_controlnet"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def efoaRkqBAKlDrlLSRqYEUrVOsSVGKXPb(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, control_net_name):
-        jwxIqIODHWzEJxDVAcUheqIHyZkmpWII = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("controlnet", control_net_name)
-        VdWlaPlkqsfXvZUkbqkZdTGuTtMgVkfw = quasar.VdWlaPlkqsfXvZUkbqkZdTGuTtMgVkfw.efoaRkqBAKlDrlLSRqYEUrVOsSVGKXPb(jwxIqIODHWzEJxDVAcUheqIHyZkmpWII)
-        return (VdWlaPlkqsfXvZUkbqkZdTGuTtMgVkfw,)
-class zQYTVSuLxhISGqACelxrijpNlRcWHRPc:
+    def INPUT_TYPES(s):
+        return {"required": { "control_net_name": (folder_paths.get_filename_list("controlnet"), )}}
+
+    RETURN_TYPES = ("CONTROL_NET",)
+    FUNCTION = "load_controlnet"
+
+    CATEGORY = "loaders"
+
+    def load_controlnet(self, control_net_name):
+        controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
+        controlnet = quasar.controlnet.load_controlnet(controlnet_path)
+        return (controlnet,)
+
+class DiffControlNetLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "model": ("MODEL",),
-                              "control_net_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("controlnet"), )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONTROL_NET",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_controlnet"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def efoaRkqBAKlDrlLSRqYEUrVOsSVGKXPb(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, control_net_name):
-        jwxIqIODHWzEJxDVAcUheqIHyZkmpWII = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("controlnet", control_net_name)
-        VdWlaPlkqsfXvZUkbqkZdTGuTtMgVkfw = quasar.VdWlaPlkqsfXvZUkbqkZdTGuTtMgVkfw.efoaRkqBAKlDrlLSRqYEUrVOsSVGKXPb(jwxIqIODHWzEJxDVAcUheqIHyZkmpWII, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM)
-        return (VdWlaPlkqsfXvZUkbqkZdTGuTtMgVkfw,)
-class mVdMRJHDdUUxGEmDqyogULmBPSgLFyjR:
+                              "control_net_name": (folder_paths.get_filename_list("controlnet"), )}}
+
+    RETURN_TYPES = ("CONTROL_NET",)
+    FUNCTION = "load_controlnet"
+
+    CATEGORY = "loaders"
+
+    def load_controlnet(self, model, control_net_name):
+        controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
+        controlnet = quasar.controlnet.load_controlnet(controlnet_path, model)
+        return (controlnet,)
+
+
+class ControlNetApply:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
                              "control_net": ("CONTROL_NET", ),
                              "image": ("IMAGE", ),
                              "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01})
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "apply_controlnet"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def kmKTvsVZfYErOBzgocuIEDnPuTjqBEcb(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, control_net, eLyJtroPthPCROYWyMphoIrGatNOOXCO, strength):
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "apply_controlnet"
+
+    CATEGORY = "conditioning"
+
+    def apply_controlnet(self, conditioning, control_net, image, strength):
         if strength == 0:
-            return (nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, )
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        rIbXPGgxYpFZCLAJnwJdpIIkYPFZgeQW = eLyJtroPthPCROYWyMphoIrGatNOOXCO.movedim(-1,1)
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()]
-            DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh = control_net.copy().LDyuFUEWXQnihgTEqvVJdRkoAEEdqHhj(rIbXPGgxYpFZCLAJnwJdpIIkYPFZgeQW, strength)
-            if 'control' in XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1]:
-                DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh.vNmofEXsbaIjqPudAxTruYiypnCtmibE(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1]['control'])
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['control'] = DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['control_apply_to_uncond'] = True
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class KSblUWNSuJYUKDpCFiDcqJtyOSxtwxBN:
+            return (conditioning, )
+
+        c = []
+        control_hint = image.movedim(-1,1)
+        for t in conditioning:
+            n = [t[0], t[1].copy()]
+            c_net = control_net.copy().set_cond_hint(control_hint, strength)
+            if 'control' in t[1]:
+                c_net.set_previous_controlnet(t[1]['control'])
+            n[1]['control'] = c_net
+            n[1]['control_apply_to_uncond'] = True
+            c.append(n)
+        return (c, )
+
+
+class ControlNetApplyAdvanced:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"positive": ("CONDITIONING", ),
                              "negative": ("CONDITIONING", ),
                              "control_net": ("CONTROL_NET", ),
@@ -525,358 +660,434 @@ class KSblUWNSuJYUKDpCFiDcqJtyOSxtwxBN:
                              "start_percent": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
                              "end_percent": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001})
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING","CONDITIONING")
-    vnnDnTEtmjYBCExrcduKGXUgKSzKzhcS = ("positive", "negative")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "apply_controlnet"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def kmKTvsVZfYErOBzgocuIEDnPuTjqBEcb(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, positive, negative, control_net, eLyJtroPthPCROYWyMphoIrGatNOOXCO, strength, start_percent, end_percent):
+
+    RETURN_TYPES = ("CONDITIONING","CONDITIONING")
+    RETURN_NAMES = ("positive", "negative")
+    FUNCTION = "apply_controlnet"
+
+    CATEGORY = "conditioning"
+
+    def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent):
         if strength == 0:
             return (positive, negative)
-        rIbXPGgxYpFZCLAJnwJdpIIkYPFZgeQW = eLyJtroPthPCROYWyMphoIrGatNOOXCO.movedim(-1,1)
-        FxRdoVJRXOPrLjUaYJrngmaOAhVwCuzc = {}
-        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = []
-        for nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR in [positive, negative]:
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-            for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-                TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()
-                nJVjYRrgFBccfIWipLpEsbGQXHoAFvQH = TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo.get('control', None)
-                if nJVjYRrgFBccfIWipLpEsbGQXHoAFvQH in FxRdoVJRXOPrLjUaYJrngmaOAhVwCuzc:
-                    DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh = FxRdoVJRXOPrLjUaYJrngmaOAhVwCuzc[nJVjYRrgFBccfIWipLpEsbGQXHoAFvQH]
+
+        control_hint = image.movedim(-1,1)
+        cnets = {}
+
+        out = []
+        for conditioning in [positive, negative]:
+            c = []
+            for t in conditioning:
+                d = t[1].copy()
+
+                prev_cnet = d.get('control', None)
+                if prev_cnet in cnets:
+                    c_net = cnets[prev_cnet]
                 else:
-                    DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh = control_net.copy().LDyuFUEWXQnihgTEqvVJdRkoAEEdqHhj(rIbXPGgxYpFZCLAJnwJdpIIkYPFZgeQW, strength, (1.0 - start_percent, 1.0 - end_percent))
-                    DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh.vNmofEXsbaIjqPudAxTruYiypnCtmibE(nJVjYRrgFBccfIWipLpEsbGQXHoAFvQH)
-                    FxRdoVJRXOPrLjUaYJrngmaOAhVwCuzc[nJVjYRrgFBccfIWipLpEsbGQXHoAFvQH] = DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh
-                TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo['control'] = DJkeQKKSSIzDuUzMxXNSuRCFILnbiHXh
-                TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo['control_apply_to_uncond'] = False
-                zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo]
-                cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz.append(cjHIelcAqVoHWdLcgzuZiBumKNTVADsY)
-        return (iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[0], iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1])
-class ZJIPzHKaCxfzJZCrIPDhFmCviGVBHwxT:
+                    c_net = control_net.copy().set_cond_hint(control_hint, strength, (1.0 - start_percent, 1.0 - end_percent))
+                    c_net.set_previous_controlnet(prev_cnet)
+                    cnets[prev_cnet] = c_net
+
+                d['control'] = c_net
+                d['control_apply_to_uncond'] = False
+                n = [t[0], d]
+                c.append(n)
+            out.append(c)
+        return (out[0], out[1])
+
+
+class UNETLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "unet_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("unet"), ),
+    def INPUT_TYPES(s):
+        return {"required": { "unet_name": (folder_paths.get_filename_list("unet"), ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MODEL",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_unet"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders"
-    def dtZfLtBphxBRLHJpIPTIxSOaPKOoVyHs(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, unet_name):
-        lUdVoyBhqRkFznaNCaHtBXrzPIxGdAef = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("unet", unet_name)
-        VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.dtZfLtBphxBRLHJpIPTIxSOaPKOoVyHs(lUdVoyBhqRkFznaNCaHtBXrzPIxGdAef)
-        return (VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM,)
-class wjTFuRtlDVnDUEKlDqDyfyFIojrwJSZB:
+    RETURN_TYPES = ("MODEL",)
+    FUNCTION = "load_unet"
+
+    CATEGORY = "advanced/loaders"
+
+    def load_unet(self, unet_name):
+        unet_path = folder_paths.get_full_path("unet", unet_name)
+        model = quasar.sd.load_unet(unet_path)
+        return (model,)
+
+class CLIPLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "clip_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("clip"), ),
+    def INPUT_TYPES(s):
+        return {"required": { "clip_name": (folder_paths.get_filename_list("clip"), ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CLIP",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_clip"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders"
-    def lUJkDFeJtgkghWfgvfOCiPlafTOuBTLh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, clip_name):
-        GYmbiGzZvfXczOLHGETAcmKwauktkxmv = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("clip", clip_name)
-        WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.lUJkDFeJtgkghWfgvfOCiPlafTOuBTLh(ckpt_paths=[GYmbiGzZvfXczOLHGETAcmKwauktkxmv], embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
-        return (WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ,)
-class wFxydWVsOuPMENdbkVzPjDhmMOqXFXMA:
+    RETURN_TYPES = ("CLIP",)
+    FUNCTION = "load_clip"
+
+    CATEGORY = "advanced/loaders"
+
+    def load_clip(self, clip_name):
+        clip_path = folder_paths.get_full_path("clip", clip_name)
+        clip = quasar.sd.load_clip(ckpt_paths=[clip_path], embedding_directory=folder_paths.get_folder_paths("embeddings"))
+        return (clip,)
+
+class DualCLIPLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "clip_name1": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("clip"), ), "clip_name2": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("clip"), ),
+    def INPUT_TYPES(s):
+        return {"required": { "clip_name1": (folder_paths.get_filename_list("clip"), ), "clip_name2": (folder_paths.get_filename_list("clip"), ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CLIP",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_clip"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "advanced/loaders"
-    def lUJkDFeJtgkghWfgvfOCiPlafTOuBTLh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, clip_name1, clip_name2):
-        JjteyzlVhUQtMAUCiaKeYIKbQMyNlFkp = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("clip", clip_name1)
-        iajnqdRHWmvqUmmUmBpFvdtjxJojceAM = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("clip", clip_name2)
-        WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.lUJkDFeJtgkghWfgvfOCiPlafTOuBTLh(ckpt_paths=[JjteyzlVhUQtMAUCiaKeYIKbQMyNlFkp, iajnqdRHWmvqUmmUmBpFvdtjxJojceAM], embedding_directory=folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("embeddings"))
-        return (WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ,)
-class VBGplsVXOYjOSHSeaszMPcfeqtPzrirl:
+    RETURN_TYPES = ("CLIP",)
+    FUNCTION = "load_clip"
+
+    CATEGORY = "advanced/loaders"
+
+    def load_clip(self, clip_name1, clip_name2):
+        clip_path1 = folder_paths.get_full_path("clip", clip_name1)
+        clip_path2 = folder_paths.get_full_path("clip", clip_name2)
+        clip = quasar.sd.load_clip(ckpt_paths=[clip_path1, clip_path2], embedding_directory=folder_paths.get_folder_paths("embeddings"))
+        return (clip,)
+
+class CLIPVisionLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "clip_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("clip_vision"), ),
+    def INPUT_TYPES(s):
+        return {"required": { "clip_name": (folder_paths.get_filename_list("clip_vision"), ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CLIP_VISION",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_clip"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def lUJkDFeJtgkghWfgvfOCiPlafTOuBTLh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, clip_name):
-        GYmbiGzZvfXczOLHGETAcmKwauktkxmv = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("clip_vision", clip_name)
-        oJjvwBRjryeoQIMgjJORkWSyUyVcSVMI = quasar.oJjvwBRjryeoQIMgjJORkWSyUyVcSVMI.yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz(GYmbiGzZvfXczOLHGETAcmKwauktkxmv)
-        return (oJjvwBRjryeoQIMgjJORkWSyUyVcSVMI,)
-class dirxAbDzGLspwIXNciTiCbXOItASPyRD:
+    RETURN_TYPES = ("CLIP_VISION",)
+    FUNCTION = "load_clip"
+
+    CATEGORY = "loaders"
+
+    def load_clip(self, clip_name):
+        clip_path = folder_paths.get_full_path("clip_vision", clip_name)
+        clip_vision = quasar.clip_vision.load(clip_path)
+        return (clip_vision,)
+
+class CLIPVisionEncode:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "clip_vision": ("CLIP_VISION",),
                               "image": ("IMAGE",)
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CLIP_VISION_OUTPUT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "encode"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def encode(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, oJjvwBRjryeoQIMgjJORkWSyUyVcSVMI, eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-        pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP = oJjvwBRjryeoQIMgjJORkWSyUyVcSVMI.NnAHfuFUGEfFYQJPjptHkPYpiniDBghN(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
-        return (pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP,)
-class WyUqJFjBBSkvXHOuTDxxHFYkYqJqzebh:
+    RETURN_TYPES = ("CLIP_VISION_OUTPUT",)
+    FUNCTION = "encode"
+
+    CATEGORY = "conditioning"
+
+    def encode(self, clip_vision, image):
+        output = clip_vision.encode_image(image)
+        return (output,)
+
+class StyleModelLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "style_model_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("style_models"), )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("STYLE_MODEL",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_style_model"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def rectGLJvXYuTZfSfunbcBaPGLRskQuzJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, style_model_name):
-        kISbCQqCiXgXLotRIRWPIUscmsUcVavA = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("style_models", style_model_name)
-        XbguvARSMZgMOEVQoPEJszfqnkMpwwuz = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.rectGLJvXYuTZfSfunbcBaPGLRskQuzJ(kISbCQqCiXgXLotRIRWPIUscmsUcVavA)
-        return (XbguvARSMZgMOEVQoPEJszfqnkMpwwuz,)
-class SOjubiEONXRlmSXXxhVtITwyixpxICwa:
+    def INPUT_TYPES(s):
+        return {"required": { "style_model_name": (folder_paths.get_filename_list("style_models"), )}}
+
+    RETURN_TYPES = ("STYLE_MODEL",)
+    FUNCTION = "load_style_model"
+
+    CATEGORY = "loaders"
+
+    def load_style_model(self, style_model_name):
+        style_model_path = folder_paths.get_full_path("style_models", style_model_name)
+        style_model = quasar.sd.load_style_model(style_model_path)
+        return (style_model,)
+
+
+class StyleModelApply:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
                              "style_model": ("STYLE_MODEL", ),
                              "clip_vision_output": ("CLIP_VISION_OUTPUT", ),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "apply_stylemodel"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning/style_model"
-    def iMaYEnoaPdWuIoTfYsciklgGyrOjwTLC(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, clip_vision_output, XbguvARSMZgMOEVQoPEJszfqnkMpwwuz, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR):
-        BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf = XbguvARSMZgMOEVQoPEJszfqnkMpwwuz.get_cond(clip_vision_output).flatten(start_dim=0, end_dim=1).unsqueeze(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=0)
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [torch.cat((XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf), yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1), XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()]
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class YDCxaWxzbjsFNDcwFDNikWNamdFKYEJr:
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "apply_stylemodel"
+
+    CATEGORY = "conditioning/style_model"
+
+    def apply_stylemodel(self, clip_vision_output, style_model, conditioning):
+        cond = style_model.get_cond(clip_vision_output).flatten(start_dim=0, end_dim=1).unsqueeze(dim=0)
+        c = []
+        for t in conditioning:
+            n = [torch.cat((t[0], cond), dim=1), t[1].copy()]
+            c.append(n)
+        return (c, )
+
+class unCLIPConditioning:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning": ("CONDITIONING", ),
                              "clip_vision_output": ("CLIP_VISION_OUTPUT", ),
                              "strength": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.01}),
                              "noise_augmentation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "apply_adm"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning"
-    def zclHoBEMdTfYlpnsjuuAxPZkbLmSSYcq(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, clip_vision_output, strength, noise_augmentation):
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "apply_adm"
+
+    CATEGORY = "conditioning"
+
+    def apply_adm(self, conditioning, clip_vision_output, strength, noise_augmentation):
         if strength == 0:
-            return (nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR, )
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in nKYmGWBrcYyADcANVAMJtCeHkjgKBdNR:
-            LDnaTUWTECGaKdJqXUUrFoSvDMujRxwx = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = {"clip_vision_output": clip_vision_output, "strength": strength, "noise_augmentation": noise_augmentation}
-            if "unclip_conditioning" in LDnaTUWTECGaKdJqXUUrFoSvDMujRxwx:
-                LDnaTUWTECGaKdJqXUUrFoSvDMujRxwx["unclip_conditioning"] = LDnaTUWTECGaKdJqXUUrFoSvDMujRxwx["unclip_conditioning"][:] + [NECAaWUrFGIXcLimrerEYmxYIykQBfXb]
+            return (conditioning, )
+
+        c = []
+        for t in conditioning:
+            o = t[1].copy()
+            x = {"clip_vision_output": clip_vision_output, "strength": strength, "noise_augmentation": noise_augmentation}
+            if "unclip_conditioning" in o:
+                o["unclip_conditioning"] = o["unclip_conditioning"][:] + [x]
             else:
-                LDnaTUWTECGaKdJqXUUrFoSvDMujRxwx["unclip_conditioning"] = [NECAaWUrFGIXcLimrerEYmxYIykQBfXb]
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], LDnaTUWTECGaKdJqXUUrFoSvDMujRxwx]
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class pmpJQceZGpDQRSmOmKyZwIscUkTsJOkN:
+                o["unclip_conditioning"] = [x]
+            n = [t[0], o]
+            c.append(n)
+        return (c, )
+
+class GLIGENLoader:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "gligen_name": (folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("gligen"), )}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("GLIGEN",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_gligen"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "loaders"
-    def ahutYoNAGGKLXRlfTnRgCkshwGtscWss(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, gligen_name):
-        lGwJnYzJKpDdPDzfujMuwMNsZKbjauIS = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE("gligen", gligen_name)
-        bQxLSNgPlazghYEcawwmtsRrmJBIwCXU = quasar.ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.ahutYoNAGGKLXRlfTnRgCkshwGtscWss(lGwJnYzJKpDdPDzfujMuwMNsZKbjauIS)
-        return (bQxLSNgPlazghYEcawwmtsRrmJBIwCXU,)
-class tYtrMfFbaFUvQdAhLmTEXiDxugViLiCm:
+    def INPUT_TYPES(s):
+        return {"required": { "gligen_name": (folder_paths.get_filename_list("gligen"), )}}
+
+    RETURN_TYPES = ("GLIGEN",)
+    FUNCTION = "load_gligen"
+
+    CATEGORY = "loaders"
+
+    def load_gligen(self, gligen_name):
+        gligen_path = folder_paths.get_full_path("gligen", gligen_name)
+        gligen = quasar.sd.load_gligen(gligen_path)
+        return (gligen,)
+
+class GLIGENTextBoxApply:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {"conditioning_to": ("CONDITIONING", ),
                               "clip": ("CLIP", ),
                               "gligen_textbox_model": ("GLIGEN", ),
                               "text": ("STRING", {"multiline": True}),
-                              "width": ("INT", {"default": 64, "min": 8, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "height": ("INT", {"default": 64, "min": 8, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "x": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "y": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
+                              "width": ("INT", {"default": 64, "min": 8, "max": MAX_RESOLUTION, "step": 8}),
+                              "height": ("INT", {"default": 64, "min": 8, "max": MAX_RESOLUTION, "step": 8}),
+                              "x": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                              "y": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
                              }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("CONDITIONING",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "append"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "conditioning/gligen"
-    def append(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, conditioning_to, WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ, gligen_textbox_model, text, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW):
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = []
-        BuoWBAnnMxyvqTGoSTHbQAlvPFWHbuUf, otExEnXAynOmuosclWTOxAbtTPiksVJV = WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.encode_from_tokens(WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ.tokenize(text), return_pooled=True)
-        for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in conditioning_to:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = [XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[0], XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[1].copy()]
-            fOljKxXLyHfGyNkotLKyQTKMHPpbZVFm = [(otExEnXAynOmuosclWTOxAbtTPiksVJV, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM // 8, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz // 8, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW // 8, NECAaWUrFGIXcLimrerEYmxYIykQBfXb // 8)]
-            VHKvgGDtxDLaDHmvTEkAHAuODuIIgHxj = []
-            if "gligen" in zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]:
-                VHKvgGDtxDLaDHmvTEkAHAuODuIIgHxj = zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['gligen'][2]
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[1]['gligen'] = ("position", gligen_textbox_model, VHKvgGDtxDLaDHmvTEkAHAuODuIIgHxj + fOljKxXLyHfGyNkotLKyQTKMHPpbZVFm)
-            cjHIelcAqVoHWdLcgzuZiBumKNTVADsY.append(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
-        return (cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, )
-class zIvxPokXhsKQUkwRRjDGfhTCiBLEdtiP:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu"):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "append"
+
+    CATEGORY = "conditioning/gligen"
+
+    def append(self, conditioning_to, clip, gligen_textbox_model, text, width, height, x, y):
+        c = []
+        cond, cond_pooled = clip.encode_from_tokens(clip.tokenize(text), return_pooled=True)
+        for t in conditioning_to:
+            n = [t[0], t[1].copy()]
+            position_params = [(cond_pooled, height // 8, width // 8, y // 8, x // 8)]
+            prev = []
+            if "gligen" in n[1]:
+                prev = n[1]['gligen'][2]
+
+            n[1]['gligen'] = ("position", gligen_textbox_model, prev + position_params)
+            c.append(n)
+        return (c, )
+
+class EmptyLatentImage:
+    def __init__(self, device="cpu"):
+        self.device = device
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "width": ("INT", {"default": 512, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "height": ("INT", {"default": 512, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
+    def INPUT_TYPES(s):
+        return {"required": { "width": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "height": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
                               "batch_size": ("INT", {"default": 1, "min": 1, "max": 64})}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "generate"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent"
-    def cMNLLVrjBWvAYnKLhGgZwcTNuoUSsokk(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, batch_size=1):
-        CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU = torch.zeros([batch_size, 4, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM // 8, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz // 8])
-        return ({"samples":CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU}, )
-class BjeSWOzISSYoyQOEAUTNgdoiiiyDqqkI:
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "generate"
+
+    CATEGORY = "latent"
+
+    def generate(self, width, height, batch_size=1):
+        latent = torch.zeros([batch_size, 4, height // 8, width // 8])
+        return ({"samples":latent}, )
+
+
+class LatentFromBatch:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT",),
                               "batch_index": ("INT", {"default": 0, "min": 0, "max": 63}),
                               "length": ("INT", {"default": 1, "min": 1, "max": 64}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "frombatch"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/batch"
-    def cvipDSmwvzkChLbzoZAlgRGFnFYdoIVs(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl, SruGYKDDIYooroMjYWrVQpmbvNQFTTDo):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        moQRitRqIYEATNnahksUxyKeQfVQohNA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"]
-        HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl = min(moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] - 1, HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl)
-        SruGYKDDIYooroMjYWrVQpmbvNQFTTDo = min(moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] - HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl, SruGYKDDIYooroMjYWrVQpmbvNQFTTDo)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = moQRitRqIYEATNnahksUxyKeQfVQohNA[HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl:HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl + SruGYKDDIYooroMjYWrVQpmbvNQFTTDo].tEcQvpBwXwdqvKxRTLEBROBUyPoodldL()
-        if "noise_mask" in bfpFhSQCEeSgZQwablzNZDcPruUlpnjs:
-            npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["noise_mask"]
-            if npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] == 1:
-                uPePujIqMVDrwNvZQxJajkuaQFAcacjA["noise_mask"] = npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.tEcQvpBwXwdqvKxRTLEBROBUyPoodldL()
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "frombatch"
+
+    CATEGORY = "latent/batch"
+
+    def frombatch(self, samples, batch_index, length):
+        s = samples.copy()
+        s_in = samples["samples"]
+        batch_index = min(s_in.shape[0] - 1, batch_index)
+        length = min(s_in.shape[0] - batch_index, length)
+        s["samples"] = s_in[batch_index:batch_index + length].clone()
+        if "noise_mask" in samples:
+            masks = samples["noise_mask"]
+            if masks.shape[0] == 1:
+                s["noise_mask"] = masks.clone()
             else:
-                if npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] < moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]:
-                    npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB = npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.kYXcbCDGZMxtOlIZeOtGMsNePlSickQL(math.ceil(moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] / npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]), 1, 1, 1)[:moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]]
-                uPePujIqMVDrwNvZQxJajkuaQFAcacjA["noise_mask"] = npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB[HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl:HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl + SruGYKDDIYooroMjYWrVQpmbvNQFTTDo].tEcQvpBwXwdqvKxRTLEBROBUyPoodldL()
-        if "batch_index" not in uPePujIqMVDrwNvZQxJajkuaQFAcacjA:
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"] = [NECAaWUrFGIXcLimrerEYmxYIykQBfXb for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in range(HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl, HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl+SruGYKDDIYooroMjYWrVQpmbvNQFTTDo)]
+                if masks.shape[0] < s_in.shape[0]:
+                    masks = masks.repeat(math.ceil(s_in.shape[0] / masks.shape[0]), 1, 1, 1)[:s_in.shape[0]]
+                s["noise_mask"] = masks[batch_index:batch_index + length].clone()
+        if "batch_index" not in s:
+            s["batch_index"] = [x for x in range(batch_index, batch_index+length)]
         else:
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"] = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["batch_index"][HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl:HhYGQTaiBJXaJkGXPEyNEnEpISDgiTTl + SruGYKDDIYooroMjYWrVQpmbvNQFTTDo]
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class adIeuebYdlahZUgrpwIFCsqBprKAwwnF:
+            s["batch_index"] = samples["batch_index"][batch_index:batch_index + length]
+        return (s,)
+    
+class RepeatLatentBatch:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT",),
                               "amount": ("INT", {"default": 1, "min": 1, "max": 64}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "repeat"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/batch"
-    def kYXcbCDGZMxtOlIZeOtGMsNePlSickQL(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, amount):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        moQRitRqIYEATNnahksUxyKeQfVQohNA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"]
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = moQRitRqIYEATNnahksUxyKeQfVQohNA.kYXcbCDGZMxtOlIZeOtGMsNePlSickQL((amount, 1,1,1))
-        if "noise_mask" in bfpFhSQCEeSgZQwablzNZDcPruUlpnjs and bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["noise_mask"].BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] > 1:
-            npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["noise_mask"]
-            if npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] < moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]:
-                npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB = npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.kYXcbCDGZMxtOlIZeOtGMsNePlSickQL(math.ceil(moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0] / npdIyYBsgKLNOVeVWjQcsjYKmaHpbRXB.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]), 1, 1, 1)[:moQRitRqIYEATNnahksUxyKeQfVQohNA.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]]
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA["noise_mask"] = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["noise_mask"].kYXcbCDGZMxtOlIZeOtGMsNePlSickQL((amount, 1,1,1))
-        if "batch_index" in uPePujIqMVDrwNvZQxJajkuaQFAcacjA:
-            UgJNpWQgCrhGXhLkNDqPkhNiazfBUzjL = max(uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"]) - min(uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"]) + 1
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"] = uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"] + [NECAaWUrFGIXcLimrerEYmxYIykQBfXb + (HCXmerBqIMuTscBONzTGKYapYSxWTYHo * UgJNpWQgCrhGXhLkNDqPkhNiazfBUzjL) for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(1, amount) for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in uPePujIqMVDrwNvZQxJajkuaQFAcacjA["batch_index"]]
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class nnaIKRoFlXjuwnjMXMUxgnefIWJmKJCF:
-    nTMejTWQGKEJaifVMLgCiAYoxptTnZdn = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
-    XcQdZHKZQDcRHNbXHMmBlmIhMHVffMUf = ["disabled", "center"]
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "repeat"
+
+    CATEGORY = "latent/batch"
+
+    def repeat(self, samples, amount):
+        s = samples.copy()
+        s_in = samples["samples"]
+        
+        s["samples"] = s_in.repeat((amount, 1,1,1))
+        if "noise_mask" in samples and samples["noise_mask"].shape[0] > 1:
+            masks = samples["noise_mask"]
+            if masks.shape[0] < s_in.shape[0]:
+                masks = masks.repeat(math.ceil(s_in.shape[0] / masks.shape[0]), 1, 1, 1)[:s_in.shape[0]]
+            s["noise_mask"] = samples["noise_mask"].repeat((amount, 1,1,1))
+        if "batch_index" in s:
+            offset = max(s["batch_index"]) - min(s["batch_index"]) + 1
+            s["batch_index"] = s["batch_index"] + [x + (i * offset) for i in range(1, amount) for x in s["batch_index"]]
+        return (s,)
+
+class LatentUpscale:
+    upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
+    crop_methods = ["disabled", "center"]
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "samples": ("LATENT",), "upscale_method": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.nTMejTWQGKEJaifVMLgCiAYoxptTnZdn,),
-                              "width": ("INT", {"default": 512, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "height": ("INT", {"default": 512, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "crop": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.XcQdZHKZQDcRHNbXHMmBlmIhMHVffMUf,)}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "upscale"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent"
-    def VFbOpUjlPHhNgAvxtBCPRqDCJyPQDVlx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, upscale_method, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, CWEytKkepwhdVJpGxZvfxcoPmAcpotMo):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = quasar.utils.common_upscale(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"], QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz // 8, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM // 8, upscale_method, CWEytKkepwhdVJpGxZvfxcoPmAcpotMo)
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class cmbmlESGPTsYIXObNNeWTijDvbyxFcvY:
-    nTMejTWQGKEJaifVMLgCiAYoxptTnZdn = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
+    def INPUT_TYPES(s):
+        return {"required": { "samples": ("LATENT",), "upscale_method": (s.upscale_methods,),
+                              "width": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "height": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "crop": (s.crop_methods,)}}
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "upscale"
+
+    CATEGORY = "latent"
+
+    def upscale(self, samples, upscale_method, width, height, crop):
+        s = samples.copy()
+        s["samples"] = quasar.utils.common_upscale(samples["samples"], width // 8, height // 8, upscale_method, crop)
+        return (s,)
+
+class LatentUpscaleBy:
+    upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "samples": ("LATENT",), "upscale_method": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.nTMejTWQGKEJaifVMLgCiAYoxptTnZdn,),
+    def INPUT_TYPES(s):
+        return {"required": { "samples": ("LATENT",), "upscale_method": (s.upscale_methods,),
                               "scale_by": ("FLOAT", {"default": 1.5, "min": 0.01, "max": 8.0, "step": 0.01}),}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "upscale"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent"
-    def VFbOpUjlPHhNgAvxtBCPRqDCJyPQDVlx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, upscale_method, scale_by):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz = round(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"].BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] * scale_by)
-        yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM = round(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"].BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] * scale_by)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = quasar.utils.common_upscale(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"], QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, upscale_method, "disabled")
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class WOgqIJshXGCopywgtFStTTikxaMHHKaW:
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "upscale"
+
+    CATEGORY = "latent"
+
+    def upscale(self, samples, upscale_method, scale_by):
+        s = samples.copy()
+        width = round(samples["samples"].shape[3] * scale_by)
+        height = round(samples["samples"].shape[2] * scale_by)
+        s["samples"] = quasar.utils.common_upscale(samples["samples"], width, height, upscale_method, "disabled")
+        return (s,)
+
+class LatentRotate:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT",),
                               "rotation": (["none", "90 degrees", "180 degrees", "270 degrees"],),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "rotate"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/transform"
-    def qOOeEbzfVrmXAQAstADIDsiKjQySiavk(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, rotation):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        VmhHRkNgtBinAfXKqLayDdmJBguJhmZi = 0
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "rotate"
+
+    CATEGORY = "latent/transform"
+
+    def rotate(self, samples, rotation):
+        s = samples.copy()
+        rotate_by = 0
         if rotation.startswith("90"):
-            VmhHRkNgtBinAfXKqLayDdmJBguJhmZi = 1
+            rotate_by = 1
         elif rotation.startswith("180"):
-            VmhHRkNgtBinAfXKqLayDdmJBguJhmZi = 2
+            rotate_by = 2
         elif rotation.startswith("270"):
-            VmhHRkNgtBinAfXKqLayDdmJBguJhmZi = 3
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = torch.rot90(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"], EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm=VmhHRkNgtBinAfXKqLayDdmJBguJhmZi, ipYTWVOPDpfJXeTFApPIgldytQSaUFdk=[3, 2])
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class eakUMNdfxMfNUbHaLnvvpbbxcStUaAyg:
+            rotate_by = 3
+
+        s["samples"] = torch.rot90(samples["samples"], k=rotate_by, dims=[3, 2])
+        return (s,)
+
+class LatentFlip:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT",),
                               "flip_method": (["x-axis: vertically", "y-axis: horizontally"],),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "flip"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/transform"
-    def hAHyMhlDympwYBnEsaNWPsolDQrxyovx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, flip_method):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "flip"
+
+    CATEGORY = "latent/transform"
+
+    def flip(self, samples, flip_method):
+        s = samples.copy()
         if flip_method.startswith("x"):
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = torch.hAHyMhlDympwYBnEsaNWPsolDQrxyovx(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"], ipYTWVOPDpfJXeTFApPIgldytQSaUFdk=[2])
+            s["samples"] = torch.flip(samples["samples"], dims=[2])
         elif flip_method.startswith("y"):
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA["samples"] = torch.hAHyMhlDympwYBnEsaNWPsolDQrxyovx(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs["samples"], ipYTWVOPDpfJXeTFApPIgldytQSaUFdk=[3])
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class gYGSnDAIZlHJnpEujwAuWZmOtsaZAMvG:
+            s["samples"] = torch.flip(samples["samples"], dims=[3])
+
+        return (s,)
+
+class LatentComposite:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples_to": ("LATENT",),
                               "samples_from": ("LATENT",),
-                              "x": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "y": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "feather": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
+                              "x": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                              "y": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                              "feather": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "composite"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent"
-    def opRayBIWIGeypbajgYWLNuQzWlwmqgtb(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb, YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, composite_method="normal", WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn=0):
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb =  NECAaWUrFGIXcLimrerEYmxYIykQBfXb // 8
-        ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW = ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW // 8
-        WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn = WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn // 8
-        HEwGkfdJoXzLVUqwdTDnEjXwUaPPEJZX = JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.copy()
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb["samples"].tEcQvpBwXwdqvKxRTLEBROBUyPoodldL()
-        JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb = JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb["samples"]
-        YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo = YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo["samples"]
-        if WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn == 0:
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA[:,:,ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW+YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2],NECAaWUrFGIXcLimrerEYmxYIykQBfXb:NECAaWUrFGIXcLimrerEYmxYIykQBfXb+YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]] = YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo[:,:,:JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] - ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, :JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] - NECAaWUrFGIXcLimrerEYmxYIykQBfXb]
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "composite"
+
+    CATEGORY = "latent"
+
+    def composite(self, samples_to, samples_from, x, y, composite_method="normal", feather=0):
+        x =  x // 8
+        y = y // 8
+        feather = feather // 8
+        samples_out = samples_to.copy()
+        s = samples_to["samples"].clone()
+        samples_to = samples_to["samples"]
+        samples_from = samples_from["samples"]
+        if feather == 0:
+            s[:,:,y:y+samples_from.shape[2],x:x+samples_from.shape[3]] = samples_from[:,:,:samples_to.shape[2] - y, :samples_to.shape[3] - x]
         else:
-            YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo = YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo[:,:,:JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] - ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, :JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] - NECAaWUrFGIXcLimrerEYmxYIykQBfXb]
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = torch.ones_like(YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo)
-            for XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz in range(WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn):
-                if ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW != 0:
-                    KHpRlHOzblljQyskecSxzUuWZtneWwta[:,:,XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz:1+XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz,:] *= ((1.0/WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn) * (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + 1))
-                if ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW + YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] < JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2]:
-                    KHpRlHOzblljQyskecSxzUuWZtneWwta[:,:,KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] -1 -XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2]-XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz,:] *= ((1.0/WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn) * (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + 1))
-                if NECAaWUrFGIXcLimrerEYmxYIykQBfXb != 0:
-                    KHpRlHOzblljQyskecSxzUuWZtneWwta[:,:,:,XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz:1+XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz] *= ((1.0/WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn) * (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + 1))
-                if NECAaWUrFGIXcLimrerEYmxYIykQBfXb + YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] < JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]:
-                    KHpRlHOzblljQyskecSxzUuWZtneWwta[:,:,:,KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]- 1 - XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]- XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz] *= ((1.0/WabjvlpnDbkaMbyxAEQXjxclHhAnNwAn) * (XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz + 1))
-            tMouwchJRcTnBRZbNGDkNoVRMgfNWNkn = torch.ones_like(KHpRlHOzblljQyskecSxzUuWZtneWwta) - KHpRlHOzblljQyskecSxzUuWZtneWwta
-            uPePujIqMVDrwNvZQxJajkuaQFAcacjA[:,:,ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW+YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2],NECAaWUrFGIXcLimrerEYmxYIykQBfXb:NECAaWUrFGIXcLimrerEYmxYIykQBfXb+YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]] = YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo[:,:,:JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] - ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW, :JGYDRGBqBWEeeNCmTRlsklKfoKeHyOmb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] - NECAaWUrFGIXcLimrerEYmxYIykQBfXb] * KHpRlHOzblljQyskecSxzUuWZtneWwta + uPePujIqMVDrwNvZQxJajkuaQFAcacjA[:,:,ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW:ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW+YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2],NECAaWUrFGIXcLimrerEYmxYIykQBfXb:NECAaWUrFGIXcLimrerEYmxYIykQBfXb+YtVGWXlgTlnFnkKIiPMkHfpYwohCAzAo.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]] * tMouwchJRcTnBRZbNGDkNoVRMgfNWNkn
-        HEwGkfdJoXzLVUqwdTDnEjXwUaPPEJZX["samples"] = uPePujIqMVDrwNvZQxJajkuaQFAcacjA
-        return (HEwGkfdJoXzLVUqwdTDnEjXwUaPPEJZX,)
-class ijfkEMojxbOOfagzcQRAdBkeUApzlBrc:
+            samples_from = samples_from[:,:,:samples_to.shape[2] - y, :samples_to.shape[3] - x]
+            mask = torch.ones_like(samples_from)
+            for t in range(feather):
+                if y != 0:
+                    mask[:,:,t:1+t,:] *= ((1.0/feather) * (t + 1))
+
+                if y + samples_from.shape[2] < samples_to.shape[2]:
+                    mask[:,:,mask.shape[2] -1 -t: mask.shape[2]-t,:] *= ((1.0/feather) * (t + 1))
+                if x != 0:
+                    mask[:,:,:,t:1+t] *= ((1.0/feather) * (t + 1))
+                if x + samples_from.shape[3] < samples_to.shape[3]:
+                    mask[:,:,:,mask.shape[3]- 1 - t: mask.shape[3]- t] *= ((1.0/feather) * (t + 1))
+            rev_mask = torch.ones_like(mask) - mask
+            s[:,:,y:y+samples_from.shape[2],x:x+samples_from.shape[3]] = samples_from[:,:,:samples_to.shape[2] - y, :samples_to.shape[3] - x] * mask + s[:,:,y:y+samples_from.shape[2],x:x+samples_from.shape[3]] * rev_mask
+        samples_out["samples"] = s
+        return (samples_out,)
+
+class LatentBlend:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": {
             "samples1": ("LATENT",),
             "samples2": ("LATENT",),
@@ -887,125 +1098,154 @@ class ijfkEMojxbOOfagzcQRAdBkeUApzlBrc:
                 "step": 0.01
             }),
         }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "blend"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "_for_testing"
-    def bInJMvyEcRGRaPSKAOkJVzxIdWgjyBVj(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw, tpxhxmWydZCngCSetgjZSPlQwiSkJcVX, blend_factor:float, alMEcYmcsKBTbSQtHwFJXFKfgFGSgyGR: str="normal"):
-        HEwGkfdJoXzLVUqwdTDnEjXwUaPPEJZX = IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw.copy()
-        IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw = IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw["samples"]
-        tpxhxmWydZCngCSetgjZSPlQwiSkJcVX = tpxhxmWydZCngCSetgjZSPlQwiSkJcVX["samples"]
-        if IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg != tpxhxmWydZCngCSetgjZSPlQwiSkJcVX.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg:
-            tpxhxmWydZCngCSetgjZSPlQwiSkJcVX.permute(0, 3, 1, 2)
-            tpxhxmWydZCngCSetgjZSPlQwiSkJcVX = quasar.utils.common_upscale(tpxhxmWydZCngCSetgjZSPlQwiSkJcVX, IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3], IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2], 'bicubic', CWEytKkepwhdVJpGxZvfxcoPmAcpotMo='center')
-            tpxhxmWydZCngCSetgjZSPlQwiSkJcVX.permute(0, 2, 3, 1)
-        vbrMdvhHVgeTRlppYSnyOPpySRocNtmD = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.alMEcYmcsKBTbSQtHwFJXFKfgFGSgyGR(IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw, tpxhxmWydZCngCSetgjZSPlQwiSkJcVX, alMEcYmcsKBTbSQtHwFJXFKfgFGSgyGR)
-        vbrMdvhHVgeTRlppYSnyOPpySRocNtmD = IaQtJIzGzeFFfWCXvirhDkmYzRxMEXEw * blend_factor + vbrMdvhHVgeTRlppYSnyOPpySRocNtmD * (1 - blend_factor)
-        HEwGkfdJoXzLVUqwdTDnEjXwUaPPEJZX["samples"] = vbrMdvhHVgeTRlppYSnyOPpySRocNtmD
-        return (HEwGkfdJoXzLVUqwdTDnEjXwUaPPEJZX,)
-    def alMEcYmcsKBTbSQtHwFJXFKfgFGSgyGR(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, img1, img2, bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC):
-        if bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC == "normal":
+
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "blend"
+
+    CATEGORY = "_for_testing"
+
+    def blend(self, samples1, samples2, blend_factor:float, blend_mode: str="normal"):
+
+        samples_out = samples1.copy()
+        samples1 = samples1["samples"]
+        samples2 = samples2["samples"]
+
+        if samples1.shape != samples2.shape:
+            samples2.permute(0, 3, 1, 2)
+            samples2 = quasar.utils.common_upscale(samples2, samples1.shape[3], samples1.shape[2], 'bicubic', crop='center')
+            samples2.permute(0, 2, 3, 1)
+
+        samples_blended = self.blend_mode(samples1, samples2, blend_mode)
+        samples_blended = samples1 * blend_factor + samples_blended * (1 - blend_factor)
+        samples_out["samples"] = samples_blended
+        return (samples_out,)
+
+    def blend_mode(self, img1, img2, mode):
+        if mode == "normal":
             return img2
         else:
             raise ValueError(f"Unsupported blend mode: {mode}")
-class bRRgXVaHGoMyxYkieovkraXGdqMmbIfw:
+
+class LatentCrop:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT",),
-                              "width": ("INT", {"default": 512, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "height": ("INT", {"default": 512, "min": 64, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "x": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                              "y": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
+                              "width": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "height": ("INT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                              "x": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                              "y": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "crop"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/transform"
-    def CWEytKkepwhdVJpGxZvfxcoPmAcpotMo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        bfpFhSQCEeSgZQwablzNZDcPruUlpnjs = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs['samples']
-        NECAaWUrFGIXcLimrerEYmxYIykQBfXb =  NECAaWUrFGIXcLimrerEYmxYIykQBfXb // 8
-        ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW = ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW // 8
-        if NECAaWUrFGIXcLimrerEYmxYIykQBfXb > (bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] - 8):
-            NECAaWUrFGIXcLimrerEYmxYIykQBfXb = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] - 8
-        if ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW > (bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] - 8):
-            ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] - 8
-        VRNiSmmRJaNeBlmvXZnkkdSBJCFrkrKN = yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM // 8
-        CkiCReqpgQGFefoNqxIStaNFZETshyIp = QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz // 8
-        fDDYNhxlXaiUUeKUsFfqKTXPMMSyGfwy = CkiCReqpgQGFefoNqxIStaNFZETshyIp + NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-        ddrPPqzOUkqFcrukWAiKntnHCUbFDrWa = VRNiSmmRJaNeBlmvXZnkkdSBJCFrkrKN + ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA['samples'] = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs[:,:,ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW:ddrPPqzOUkqFcrukWAiKntnHCUbFDrWa, NECAaWUrFGIXcLimrerEYmxYIykQBfXb:fDDYNhxlXaiUUeKUsFfqKTXPMMSyGfwy]
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class arKbozbiqKYljDImFotqJXydUptICTsb:
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "crop"
+
+    CATEGORY = "latent/transform"
+
+    def crop(self, samples, width, height, x, y):
+        s = samples.copy()
+        samples = samples['samples']
+        x =  x // 8
+        y = y // 8
+
+        #enfonce minimum size of 64
+        if x > (samples.shape[3] - 8):
+            x = samples.shape[3] - 8
+        if y > (samples.shape[2] - 8):
+            y = samples.shape[2] - 8
+
+        new_height = height // 8
+        new_width = width // 8
+        to_x = new_width + x
+        to_y = new_height + y
+        s['samples'] = samples[:,:,y:to_y, x:to_x]
+        return (s,)
+
+class SetLatentNoiseMask:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "samples": ("LATENT",),
                               "mask": ("MASK",),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "set_mask"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "latent/inpaint"
-    def dHwNnIuhHBhrlqVHAqLzSawpIIJMOmDP(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, KHpRlHOzblljQyskecSxzUuWZtneWwta):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.copy()
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA["noise_mask"] = KHpRlHOzblljQyskecSxzUuWZtneWwta.reshape((-1, 1, KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[-2], KHpRlHOzblljQyskecSxzUuWZtneWwta.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[-1]))
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-def VrTyfkloViDyVJTqJFiYkcbkozdWrKWO(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, TMepbhrhtxHODfHDPkWDjgPPPikciJwm, cfg, sampler_name, scheduler, positive, negative, CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU, afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV=1.0, fyayyJDxffYaNOsUuSdLGHwdKplWmvvE=False, start_step=None, last_step=None, SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg=False):
-    fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = quasar.model_management.aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
-    EUCBZJorhognNSnYSMyloZOBZaIXmOxH = CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU["samples"]
-    if fyayyJDxffYaNOsUuSdLGHwdKplWmvvE:
-        jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD = torch.zeros(EUCBZJorhognNSnYSMyloZOBZaIXmOxH.vqDBJgidQufnKyAltPYRqiKGjmztArDJ(), DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=EUCBZJorhognNSnYSMyloZOBZaIXmOxH.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, layout=EUCBZJorhognNSnYSMyloZOBZaIXmOxH.layout, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu")
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "set_mask"
+
+    CATEGORY = "latent/inpaint"
+
+    def set_mask(self, samples, mask):
+        s = samples.copy()
+        s["noise_mask"] = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1]))
+        return (s,)
+
+
+def common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, denoise=1.0, disable_noise=False, start_step=None, last_step=None, force_full_denoise=False):
+    device = quasar.model_management.get_torch_device()
+    latent_image = latent["samples"]
+
+    if disable_noise:
+        noise = torch.zeros(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, device="cpu")
     else:
-        qKdkVchxkqsQPrzQfSGXInAOatiJAhNr = CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU["batch_index"] if "batch_index" in CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU else None
-        jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD = quasar.kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd.ARfYECVuQsMwJUYnSXwVsEboysUjSIIC(EUCBZJorhognNSnYSMyloZOBZaIXmOxH, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, qKdkVchxkqsQPrzQfSGXInAOatiJAhNr)
-    RQSOwDjntUoguZxRsdjPunfoeNXsiRBB = None
-    if "noise_mask" in CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU:
-        RQSOwDjntUoguZxRsdjPunfoeNXsiRBB = CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU["noise_mask"]
-    WZfrTIKIyoLlyebhpXlKkKxkJvbKObWx = "JPEG"
-    if WZfrTIKIyoLlyebhpXlKkKxkJvbKObWx not in ["JPEG", "PNG"]:
-        WZfrTIKIyoLlyebhpXlKkKxkJvbKObWx = "JPEG"
-    fkGHWNVipMbnAvghGXTNMtnLnbwOtXxA = latent_preview.RmTUmCNiTKhZZJUuGDzOoGuaHckIMsts(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.latent_format)
-    ehYcJDzojxbXZiwqMPlEiTyCBgASsEBo = quasar.utils.ProgressBar(TMepbhrhtxHODfHDPkWDjgPPPikciJwm)
-    def FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF(UHmIQCHeLkozPfaktIdEHKdpTVYzCLhe, UBGvtPbFIPlcsBIwyWKuWMZeENGLMRAP, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, TuJjDqKZekSGicNtWVQgPuLDBIQsIxym):
-        ljJUDoqGBoyPevlyawCUEFbfPKfJQjML = None
-        if fkGHWNVipMbnAvghGXTNMtnLnbwOtXxA:
-            ljJUDoqGBoyPevlyawCUEFbfPKfJQjML = fkGHWNVipMbnAvghGXTNMtnLnbwOtXxA.mIDrtSLzTJeUKrWDwktrhIkJMffMQfwW(WZfrTIKIyoLlyebhpXlKkKxkJvbKObWx, UBGvtPbFIPlcsBIwyWKuWMZeENGLMRAP)
-        ehYcJDzojxbXZiwqMPlEiTyCBgASsEBo.update_absolute(UHmIQCHeLkozPfaktIdEHKdpTVYzCLhe + 1, TuJjDqKZekSGicNtWVQgPuLDBIQsIxym, ljJUDoqGBoyPevlyawCUEFbfPKfJQjML)
-    bfpFhSQCEeSgZQwablzNZDcPruUlpnjs = quasar.kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd.kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD, TMepbhrhtxHODfHDPkWDjgPPPikciJwm, cfg, sampler_name, scheduler, positive, negative, EUCBZJorhognNSnYSMyloZOBZaIXmOxH,
-                                  afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV=afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV, fyayyJDxffYaNOsUuSdLGHwdKplWmvvE=fyayyJDxffYaNOsUuSdLGHwdKplWmvvE, start_step=start_step, last_step=last_step,
-                                  SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg=SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg, RQSOwDjntUoguZxRsdjPunfoeNXsiRBB=RQSOwDjntUoguZxRsdjPunfoeNXsiRBB, FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF=FJsaFpOBdvpFlEdxOzBgjwcWBUfetQGF, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr=qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr)
-    iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = CBTHgqHIDKYRBmSTkKCsLapKGpsubmaU.copy()
-    iqymPVpxyjOWChGwBkTemSzHJbnJdAIz["samples"] = bfpFhSQCEeSgZQwablzNZDcPruUlpnjs
-    return (iqymPVpxyjOWChGwBkTemSzHJbnJdAIz, )
-class fISBgXprrvVNVCupajVDXGsVRGuyiyHR:
+        batch_inds = latent["batch_index"] if "batch_index" in latent else None
+        noise = quasar.sample.prepare_noise(latent_image, seed, batch_inds)
+
+    noise_mask = None
+    if "noise_mask" in latent:
+        noise_mask = latent["noise_mask"]
+
+    preview_format = "JPEG"
+    if preview_format not in ["JPEG", "PNG"]:
+        preview_format = "JPEG"
+
+    previewer = latent_preview.get_previewer(device, model.model.latent_format)
+
+    pbar = quasar.utils.ProgressBar(steps)
+    def callback(step, x0, x, total_steps):
+        preview_bytes = None
+        if previewer:
+            preview_bytes = previewer.decode_latent_to_preview_image(preview_format, x0)
+        pbar.update_absolute(step + 1, total_steps, preview_bytes)
+
+    samples = quasar.sample.sample(model, noise, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
+                                  denoise=denoise, disable_noise=disable_noise, start_step=start_step, last_step=last_step,
+                                  force_full_denoise=force_full_denoise, noise_mask=noise_mask, callback=callback, seed=seed)
+    out = latent.copy()
+    out["samples"] = samples
+    return (out, )
+
+class KSampler:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required":
                     {"model": ("MODEL",),
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                    "sampler_name": (quasar.samplers.fISBgXprrvVNVCupajVDXGsVRGuyiyHR.SAMPLERS, ),
-                    "scheduler": (quasar.samplers.fISBgXprrvVNVCupajVDXGsVRGuyiyHR.SCHEDULERS, ),
+                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
                     "latent_image": ("LATENT", ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                      }
                 }
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "sample"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "sampling"
-    def kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, TMepbhrhtxHODfHDPkWDjgPPPikciJwm, cfg, sampler_name, scheduler, positive, negative, EUCBZJorhognNSnYSMyloZOBZaIXmOxH, afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV=1.0):
-        return VrTyfkloViDyVJTqJFiYkcbkozdWrKWO(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, qWZgfPzZGdBXrbWzvrSHUmcFFjBFiMVr, TMepbhrhtxHODfHDPkWDjgPPPikciJwm, cfg, sampler_name, scheduler, positive, negative, EUCBZJorhognNSnYSMyloZOBZaIXmOxH, afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV=afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV)
-class TbqdfYdqjaIWoRxYYwvNctpyyzwjXrDr:
+
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "sample"
+
+    CATEGORY = "sampling"
+
+    def sample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=1.0):
+        return common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=denoise)
+
+class KSamplerAdvanced:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required":
                     {"model": ("MODEL",),
                     "add_noise": (["enable", "disable"], ),
                     "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                    "sampler_name": (quasar.samplers.fISBgXprrvVNVCupajVDXGsVRGuyiyHR.SAMPLERS, ),
-                    "scheduler": (quasar.samplers.fISBgXprrvVNVCupajVDXGsVRGuyiyHR.SCHEDULERS, ),
+                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
                     "latent_image": ("LATENT", ),
@@ -1014,330 +1254,403 @@ class TbqdfYdqjaIWoRxYYwvNctpyyzwjXrDr:
                     "return_with_leftover_noise": (["disable", "enable"], ),
                      }
                 }
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("LATENT",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "sample"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "sampling"
-    def kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, add_noise, noise_seed, TMepbhrhtxHODfHDPkWDjgPPPikciJwm, cfg, sampler_name, scheduler, positive, negative, EUCBZJorhognNSnYSMyloZOBZaIXmOxH, start_at_step, end_at_step, return_with_leftover_noise, afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV=1.0):
-        SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg = True
+
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "sample"
+
+    CATEGORY = "sampling"
+
+    def sample(self, model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
+        force_full_denoise = True
         if return_with_leftover_noise == "enable":
-            SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg = False
-        fyayyJDxffYaNOsUuSdLGHwdKplWmvvE = False
+            force_full_denoise = False
+        disable_noise = False
         if add_noise == "disable":
-            fyayyJDxffYaNOsUuSdLGHwdKplWmvvE = True
-        return VrTyfkloViDyVJTqJFiYkcbkozdWrKWO(VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, noise_seed, TMepbhrhtxHODfHDPkWDjgPPPikciJwm, cfg, sampler_name, scheduler, positive, negative, EUCBZJorhognNSnYSMyloZOBZaIXmOxH, afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV=afSgIXbCyfvlQaPfcxHjFSVBhUfKNkhV, fyayyJDxffYaNOsUuSdLGHwdKplWmvvE=fyayyJDxffYaNOsUuSdLGHwdKplWmvvE, start_step=start_at_step, last_step=end_at_step, SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg=SdroGuzHgzxvYzlDqyYiuwcZSghgRDUg)
-class cOwvLoELrBaqKtFDUcUFTaWlGFiYoejW:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.type = "output"
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prefix_append = ""
+            disable_noise = True
+        return common_ksampler(model, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=denoise, disable_noise=disable_noise, start_step=start_at_step, last_step=end_at_step, force_full_denoise=force_full_denoise)
+
+class SaveImage:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.type = "output"
+        self.prefix_append = ""
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": 
                     {"images": ("IMAGE", ),
                      "filename_prefix": ("STRING", {"default": "QuasarUI"})},
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ()
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "save_images"
-    AQnTlfqkrmdAAnLjLNUFibEHomwVhMHv = True
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image"
-    def zgTRIkFoAJNadBuBoRNGQrkOHouUAJeT(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, kgLFMdERvjTWIqzUwaTgEZNsXvktcIDW, azafsUqgjjnMJDTDVblsTwqgMmfrAEPm="QuasarUI", qKBREHoSgcMHYVCNTapmPyODbBOyQAyv=None, extra_pnginfo=None):
-        azafsUqgjjnMJDTDVblsTwqgMmfrAEPm += rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prefix_append
-        NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ, EijzAwkTdadIdbBCcDEUbEYNNcstskwi, azafsUqgjjnMJDTDVblsTwqgMmfrAEPm = folder_paths.RzAZobMvYWLmMtiqbeSollhpzISOJhWp(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, kgLFMdERvjTWIqzUwaTgEZNsXvktcIDW[0].BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1], kgLFMdERvjTWIqzUwaTgEZNsXvktcIDW[0].BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0])
-        NRctuwUflnRJCsQaTaCNgYJowifAWPqJ = list()
-        for eLyJtroPthPCROYWyMphoIrGatNOOXCO in kgLFMdERvjTWIqzUwaTgEZNsXvktcIDW:
-            HCXmerBqIMuTscBONzTGKYapYSxWTYHo = 255. * eLyJtroPthPCROYWyMphoIrGatNOOXCO.cpu().numpy()
-            UaFpXseNaoqfcpsDACQmTguYDZsTArhs = Image.fromarray(np.WfkwoxQSNMJYbojfdczjmvPaQWPEJurJ(HCXmerBqIMuTscBONzTGKYapYSxWTYHo, 0, 255).astype(np.uint8))
-            bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi = None
-            if not DukiculvUpjhZIVvaGinshRSKLSTgVVl.disable_metadata:
-                bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi = PngInfo()
-                if qKBREHoSgcMHYVCNTapmPyODbBOyQAyv is not None:
-                    bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi.add_text("prompt", json.dumps(qKBREHoSgcMHYVCNTapmPyODbBOyQAyv))
+
+    RETURN_TYPES = ()
+    FUNCTION = "save_images"
+
+    OUTPUT_NODE = True
+
+    CATEGORY = "image"
+
+    def save_images(self, images, filename_prefix="QuasarUI", prompt=None, extra_pnginfo=None):
+        filename_prefix += self.prefix_append
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
+        results = list()
+        for image in images:
+            i = 255. * image.cpu().numpy()
+            img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+            metadata = None
+            if not args.disable_metadata:
+                metadata = PngInfo()
+                if prompt is not None:
+                    metadata.add_text("prompt", json.dumps(prompt))
                 if extra_pnginfo is not None:
-                    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in extra_pnginfo:
-                        bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi.add_text(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, json.dumps(extra_pnginfo[NECAaWUrFGIXcLimrerEYmxYIykQBfXb]))
-            GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = f"{filename}_{counter:05}_.png"
-            UaFpXseNaoqfcpsDACQmTguYDZsTArhs.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, GGrVUpHsMvVvEYhZgyWAlwaKJQserwts), pnginfo=bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi, compress_level=4)
-            NRctuwUflnRJCsQaTaCNgYJowifAWPqJ.append({
-                "filename": GGrVUpHsMvVvEYhZgyWAlwaKJQserwts,
-                "subfolder": EijzAwkTdadIdbBCcDEUbEYNNcstskwi,
-                "type": rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.type
+                    for x in extra_pnginfo:
+                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+            file = f"{filename}_{counter:05}_.png"
+            img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
+            results.append({
+                "filename": file,
+                "subfolder": subfolder,
+                "type": self.type
             })
-            etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ += 1
-        return { "ui": { "images": NRctuwUflnRJCsQaTaCNgYJowifAWPqJ } }
-class UeQFaPokrKNDAXwXltiJjZbftArgTtGT(cOwvLoELrBaqKtFDUcUFTaWlGFiYoejW):
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.type = "temp"
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in range(5))
+            counter += 1
+
+        return { "ui": { "images": results } }
+
+class PreviewImage(SaveImage):
+    def __init__(self):
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
+        self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required":
                     {"images": ("IMAGE", ), },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
-class zyddvzayUcTOalKoSNRLJCQrFGCFpvrU:
+
+class LoadImage:
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        GhiEkpNFOqhdputxuaWhbKlilzZXSMPs = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.path.isfile(os.path.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f))]
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
         return {"required":
-                    {"image": (sorted(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE), {"image_upload": True})},
+                    {"image": (sorted(files), {"image_upload": True})},
                 }
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image"
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE", "MASK")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_image"
-    def OBmpZvjoFEKdwVxWYqgLagVWDtIbtRlf(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-        SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq = folder_paths.OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
-        HCXmerBqIMuTscBONzTGKYapYSxWTYHo = Image.open(SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq)
-        HCXmerBqIMuTscBONzTGKYapYSxWTYHo = ImageOps.exif_transpose(HCXmerBqIMuTscBONzTGKYapYSxWTYHo)
-        eLyJtroPthPCROYWyMphoIrGatNOOXCO = HCXmerBqIMuTscBONzTGKYapYSxWTYHo.convert("RGB")
-        eLyJtroPthPCROYWyMphoIrGatNOOXCO = np.array(eLyJtroPthPCROYWyMphoIrGatNOOXCO).astype(np.float32) / 255.0
-        eLyJtroPthPCROYWyMphoIrGatNOOXCO = torch.from_numpy(eLyJtroPthPCROYWyMphoIrGatNOOXCO)[None,]
-        if 'A' in HCXmerBqIMuTscBONzTGKYapYSxWTYHo.getbands():
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = np.array(HCXmerBqIMuTscBONzTGKYapYSxWTYHo.getchannel('A')).astype(np.float32) / 255.0
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = 1. - torch.from_numpy(KHpRlHOzblljQyskecSxzUuWZtneWwta)
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("IMAGE", "MASK")
+    FUNCTION = "load_image"
+    def load_image(self, image):
+        image_path = folder_paths.get_annotated_filepath(image)
+        i = Image.open(image_path)
+        i = ImageOps.exif_transpose(i)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        image = torch.from_numpy(image)[None,]
+        if 'A' in i.getbands():
+            mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+            mask = 1. - torch.from_numpy(mask)
         else:
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = torch.zeros((64,64), DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu")
-        return (eLyJtroPthPCROYWyMphoIrGatNOOXCO, KHpRlHOzblljQyskecSxzUuWZtneWwta)
+            mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+        return (image, mask)
+
     @classmethod
-    def xChqCjJamsdgOcXgHPiSyUitQVgwKEUj(uPePujIqMVDrwNvZQxJajkuaQFAcacjA, eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-        SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq = folder_paths.OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
-        FTosLGldclAzaiNbwuLMIEtXfrZQpTnU = hashlib.sha256()
-        with open(SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq, 'rb') as f:
-            FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.update(f.read())
-        return FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.digest().hex()
+    def IS_CHANGED(s, image):
+        image_path = folder_paths.get_annotated_filepath(image)
+        m = hashlib.sha256()
+        with open(image_path, 'rb') as f:
+            m.update(f.read())
+        return m.digest().hex()
+
     @classmethod
-    def zdUBozptADSRFmScDjrsNpGclJRkfHVt(uPePujIqMVDrwNvZQxJajkuaQFAcacjA, eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-        if not folder_paths.LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-            return "Invalid image file: {}".format(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
+    def VALIDATE_INPUTS(s, image):
+        if not folder_paths.exists_annotated_filepath(image):
+            return "Invalid image file: {}".format(image)
+
         return True
-class ZeEjviALyZWDytVVOgXIdcLgXBMXFprt:
-    depiPHfHHXveRYPQjXQESGsHTSNrrUjS = ["alpha", "red", "green", "blue"]
+
+class LoadImageMask:
+    _color_channels = ["alpha", "red", "green", "blue"]
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        GhiEkpNFOqhdputxuaWhbKlilzZXSMPs = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = [f for f in os.listdir(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs) if os.path.isfile(os.path.join(GhiEkpNFOqhdputxuaWhbKlilzZXSMPs, f))]
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
         return {"required":
-                    {"image": (sorted(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE), {"image_upload": True}),
-                     "channel": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.depiPHfHHXveRYPQjXQESGsHTSNrrUjS, ), }
+                    {"image": (sorted(files), {"image_upload": True}),
+                     "channel": (s._color_channels, ), }
                 }
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "mask"
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("MASK",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "load_image"
-    def OBmpZvjoFEKdwVxWYqgLagVWDtIbtRlf(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, eLyJtroPthPCROYWyMphoIrGatNOOXCO, EiApFIHKVDYyxTYijPXtjyqRuQDlhpED):
-        SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq = folder_paths.OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
-        HCXmerBqIMuTscBONzTGKYapYSxWTYHo = Image.open(SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq)
-        HCXmerBqIMuTscBONzTGKYapYSxWTYHo = ImageOps.exif_transpose(HCXmerBqIMuTscBONzTGKYapYSxWTYHo)
-        if HCXmerBqIMuTscBONzTGKYapYSxWTYHo.getbands() != ("R", "G", "B", "A"):
-            HCXmerBqIMuTscBONzTGKYapYSxWTYHo = HCXmerBqIMuTscBONzTGKYapYSxWTYHo.convert("RGBA")
-        KHpRlHOzblljQyskecSxzUuWZtneWwta = None
-        cjHIelcAqVoHWdLcgzuZiBumKNTVADsY = EiApFIHKVDYyxTYijPXtjyqRuQDlhpED[0].upper()
-        if cjHIelcAqVoHWdLcgzuZiBumKNTVADsY in HCXmerBqIMuTscBONzTGKYapYSxWTYHo.getbands():
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = np.array(HCXmerBqIMuTscBONzTGKYapYSxWTYHo.getchannel(cjHIelcAqVoHWdLcgzuZiBumKNTVADsY)).astype(np.float32) / 255.0
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = torch.from_numpy(KHpRlHOzblljQyskecSxzUuWZtneWwta)
-            if cjHIelcAqVoHWdLcgzuZiBumKNTVADsY == 'A':
-                KHpRlHOzblljQyskecSxzUuWZtneWwta = 1. - KHpRlHOzblljQyskecSxzUuWZtneWwta
+
+    CATEGORY = "mask"
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "load_image"
+    def load_image(self, image, channel):
+        image_path = folder_paths.get_annotated_filepath(image)
+        i = Image.open(image_path)
+        i = ImageOps.exif_transpose(i)
+        if i.getbands() != ("R", "G", "B", "A"):
+            i = i.convert("RGBA")
+        mask = None
+        c = channel[0].upper()
+        if c in i.getbands():
+            mask = np.array(i.getchannel(c)).astype(np.float32) / 255.0
+            mask = torch.from_numpy(mask)
+            if c == 'A':
+                mask = 1. - mask
         else:
-            KHpRlHOzblljQyskecSxzUuWZtneWwta = torch.zeros((64,64), DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu")
-        return (KHpRlHOzblljQyskecSxzUuWZtneWwta,)
+            mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+        return (mask,)
+
     @classmethod
-    def xChqCjJamsdgOcXgHPiSyUitQVgwKEUj(uPePujIqMVDrwNvZQxJajkuaQFAcacjA, eLyJtroPthPCROYWyMphoIrGatNOOXCO, EiApFIHKVDYyxTYijPXtjyqRuQDlhpED):
-        SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq = folder_paths.OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
-        FTosLGldclAzaiNbwuLMIEtXfrZQpTnU = hashlib.sha256()
-        with open(SsDANhHMZfeDdUZakZVrHtRdKyhJyvRq, 'rb') as f:
-            FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.update(f.read())
-        return FTosLGldclAzaiNbwuLMIEtXfrZQpTnU.digest().hex()
+    def IS_CHANGED(s, image, channel):
+        image_path = folder_paths.get_annotated_filepath(image)
+        m = hashlib.sha256()
+        with open(image_path, 'rb') as f:
+            m.update(f.read())
+        return m.digest().hex()
+
     @classmethod
-    def zdUBozptADSRFmScDjrsNpGclJRkfHVt(uPePujIqMVDrwNvZQxJajkuaQFAcacjA, eLyJtroPthPCROYWyMphoIrGatNOOXCO, EiApFIHKVDYyxTYijPXtjyqRuQDlhpED):
-        if not folder_paths.LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-            return "Invalid image file: {}".format(eLyJtroPthPCROYWyMphoIrGatNOOXCO)
-        if EiApFIHKVDYyxTYijPXtjyqRuQDlhpED not in uPePujIqMVDrwNvZQxJajkuaQFAcacjA.depiPHfHHXveRYPQjXQESGsHTSNrrUjS:
-            return "Invalid color channel: {}".format(EiApFIHKVDYyxTYijPXtjyqRuQDlhpED)
+    def VALIDATE_INPUTS(s, image, channel):
+        if not folder_paths.exists_annotated_filepath(image):
+            return "Invalid image file: {}".format(image)
+
+        if channel not in s._color_channels:
+            return "Invalid color channel: {}".format(channel)
+
         return True
-class ekKhxNsDPHXIAPxHfenkHUzPgvyWmMyZ:
-    nTMejTWQGKEJaifVMLgCiAYoxptTnZdn = ["nearest-exact", "bilinear", "area", "bicubic"]
-    XcQdZHKZQDcRHNbXHMmBlmIhMHVffMUf = ["disabled", "center"]
+
+class ImageScale:
+    upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic"]
+    crop_methods = ["disabled", "center"]
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "image": ("IMAGE",), "upscale_method": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.nTMejTWQGKEJaifVMLgCiAYoxptTnZdn,),
-                              "width": ("INT", {"default": 512, "min": 1, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 1}),
-                              "height": ("INT", {"default": 512, "min": 1, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 1}),
-                              "crop": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.XcQdZHKZQDcRHNbXHMmBlmIhMHVffMUf,)}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "upscale"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image/upscaling"
-    def VFbOpUjlPHhNgAvxtBCPRqDCJyPQDVlx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, eLyJtroPthPCROYWyMphoIrGatNOOXCO, upscale_method, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, CWEytKkepwhdVJpGxZvfxcoPmAcpotMo):
-        bfpFhSQCEeSgZQwablzNZDcPruUlpnjs = eLyJtroPthPCROYWyMphoIrGatNOOXCO.movedim(-1,1)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = quasar.utils.common_upscale(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, upscale_method, CWEytKkepwhdVJpGxZvfxcoPmAcpotMo)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = uPePujIqMVDrwNvZQxJajkuaQFAcacjA.movedim(1,-1)
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class kIkOMEFMfxtUMzRvnvuUdHpvEUCmIJKi:
-    nTMejTWQGKEJaifVMLgCiAYoxptTnZdn = ["nearest-exact", "bilinear", "area", "bicubic"]
+    def INPUT_TYPES(s):
+        return {"required": { "image": ("IMAGE",), "upscale_method": (s.upscale_methods,),
+                              "width": ("INT", {"default": 512, "min": 1, "max": MAX_RESOLUTION, "step": 1}),
+                              "height": ("INT", {"default": 512, "min": 1, "max": MAX_RESOLUTION, "step": 1}),
+                              "crop": (s.crop_methods,)}}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "upscale"
+
+    CATEGORY = "image/upscaling"
+
+    def upscale(self, image, upscale_method, width, height, crop):
+        samples = image.movedim(-1,1)
+        s = quasar.utils.common_upscale(samples, width, height, upscale_method, crop)
+        s = s.movedim(1,-1)
+        return (s,)
+
+class ImageScaleBy:
+    upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic"]
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "image": ("IMAGE",), "upscale_method": (uPePujIqMVDrwNvZQxJajkuaQFAcacjA.nTMejTWQGKEJaifVMLgCiAYoxptTnZdn,),
+    def INPUT_TYPES(s):
+        return {"required": { "image": ("IMAGE",), "upscale_method": (s.upscale_methods,),
                               "scale_by": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 8.0, "step": 0.01}),}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "upscale"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image/upscaling"
-    def VFbOpUjlPHhNgAvxtBCPRqDCJyPQDVlx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, eLyJtroPthPCROYWyMphoIrGatNOOXCO, upscale_method, scale_by):
-        bfpFhSQCEeSgZQwablzNZDcPruUlpnjs = eLyJtroPthPCROYWyMphoIrGatNOOXCO.movedim(-1,1)
-        QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz = round(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3] * scale_by)
-        yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM = round(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2] * scale_by)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = quasar.utils.common_upscale(bfpFhSQCEeSgZQwablzNZDcPruUlpnjs, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, upscale_method, "disabled")
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = uPePujIqMVDrwNvZQxJajkuaQFAcacjA.movedim(1,-1)
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class oxjdRXmocXYCgrBJmPvTNNexvWbVGCXw:
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "upscale"
+
+    CATEGORY = "image/upscaling"
+
+    def upscale(self, image, upscale_method, scale_by):
+        samples = image.movedim(-1,1)
+        width = round(samples.shape[3] * scale_by)
+        height = round(samples.shape[2] * scale_by)
+        s = quasar.utils.common_upscale(samples, width, height, upscale_method, "disabled")
+        s = s.movedim(1,-1)
+        return (s,)
+
+class ImageInvert:
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "image": ("IMAGE",)}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "invert"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image"
-    def oolYJHbVDuylUOWWjzbEQnlxkISHBtdp(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, eLyJtroPthPCROYWyMphoIrGatNOOXCO):
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = 1.0 - eLyJtroPthPCROYWyMphoIrGatNOOXCO
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class MCaSNQSNUViNxaJnQXXUGtZJsbXoekYu:
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "invert"
+
+    CATEGORY = "image"
+
+    def invert(self, image):
+        s = 1.0 - image
+        return (s,)
+
+class ImageBatch:
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {"required": { "image1": ("IMAGE",), "image2": ("IMAGE",)}}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "batch"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image"
-    def IEfFCfCTfyvJvVHxiDPsIOnopGWoUJhP(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, image1, AHpbOSBPqIZltNBkRsJfnveOWolgiLMI):
-        if image1.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1:] != AHpbOSBPqIZltNBkRsJfnveOWolgiLMI.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1:]:
-            AHpbOSBPqIZltNBkRsJfnveOWolgiLMI = quasar.utils.common_upscale(AHpbOSBPqIZltNBkRsJfnveOWolgiLMI.movedim(-1,1), image1.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2], image1.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1], "bilinear", "center").movedim(1,-1)
-        uPePujIqMVDrwNvZQxJajkuaQFAcacjA = torch.cat((image1, AHpbOSBPqIZltNBkRsJfnveOWolgiLMI), yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=0)
-        return (uPePujIqMVDrwNvZQxJajkuaQFAcacjA,)
-class nmMKoEkwXQFTTciXhCTpkqkBwDxGYqMr:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc="cpu"):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "batch"
+
+    CATEGORY = "image"
+
+    def batch(self, image1, image2):
+        if image1.shape[1:] != image2.shape[1:]:
+            image2 = quasar.utils.common_upscale(image2.movedim(-1,1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1,-1)
+        s = torch.cat((image1, image2), dim=0)
+        return (s,)
+
+class EmptyImage:
+    def __init__(self, device="cpu"):
+        self.device = device
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
-        return {"required": { "width": ("INT", {"default": 512, "min": 1, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 1}),
-                              "height": ("INT", {"default": 512, "min": 1, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 1}),
+    def INPUT_TYPES(s):
+        return {"required": { "width": ("INT", {"default": 512, "min": 1, "max": MAX_RESOLUTION, "step": 1}),
+                              "height": ("INT", {"default": 512, "min": 1, "max": MAX_RESOLUTION, "step": 1}),
                               "batch_size": ("INT", {"default": 1, "min": 1, "max": 64}),
                               "color": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFF, "step": 1, "display": "color"}),
                               }}
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE",)
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "generate"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image"
-    def cMNLLVrjBWvAYnKLhGgZwcTNuoUSsokk(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, batch_size=1, color=0):
-        r = torch.full([batch_size, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, 1], ((color >> 16) & 0xFF) / 0xFF)
-        zjSCLdcRnfaSDwMwtPZkXXzptdHpOEDh = torch.full([batch_size, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, 1], ((color >> 8) & 0xFF) / 0xFF)
-        b = torch.full([batch_size, yhGxnlfJCKaDHyDtiYhJHxHFcooDKiMM, QfeoFYGsEQNWblsqXsRKWQpzeXgWujaz, 1], ((color) & 0xFF) / 0xFF)
-        return (torch.cat((r, zjSCLdcRnfaSDwMwtPZkXXzptdHpOEDh, b), yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=-1), )
-class HqsPvyaghocPmHpPPQvZsgJWCpoFqXfm:
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "generate"
+
+    CATEGORY = "image"
+
+    def generate(self, width, height, batch_size=1, color=0):
+        r = torch.full([batch_size, height, width, 1], ((color >> 16) & 0xFF) / 0xFF)
+        g = torch.full([batch_size, height, width, 1], ((color >> 8) & 0xFF) / 0xFF)
+        b = torch.full([batch_size, height, width, 1], ((color) & 0xFF) / 0xFF)
+        return (torch.cat((r, g, b), dim=-1), )
+
+class ImagePadForOutpaint:
+
     @classmethod
-    def hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl(uPePujIqMVDrwNvZQxJajkuaQFAcacjA):
+    def INPUT_TYPES(s):
         return {
             "required": {
                 "image": ("IMAGE",),
-                "left": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                "top": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                "right": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                "bottom": ("INT", {"default": 0, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 8}),
-                "feathering": ("INT", {"default": 40, "min": 0, "max": tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq, "step": 1}),
+                "left": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                "top": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                "right": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                "bottom": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 8}),
+                "feathering": ("INT", {"default": 40, "min": 0, "max": MAX_RESOLUTION, "step": 1}),
             }
         }
-    KmrPlNMyCntWtQIuwTzhYketzPaLUxAX = ("IMAGE", "MASK")
-    DCeBXQFyPFIKUXphdMmctDGwHwXgHyTw = "expand_image"
-    VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH = "image"
-    def aUJekyQRJTAnITLgFUCxRMExgCogGzNM(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, eLyJtroPthPCROYWyMphoIrGatNOOXCO, left, top, right, bottom, feathering):
-        tbuZnqNEmikCJaKNSLmSqWpMDYVUBzXX, qmVBooQzqysdVWXJerZDBEhryENmpgND, zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ, LpoIYArCEUCzsxAjgXNuHOsXqmCHmxOf = eLyJtroPthPCROYWyMphoIrGatNOOXCO.vqDBJgidQufnKyAltPYRqiKGjmztArDJ()
-        igalOJmhTttdqurwERHFojRFQRQLJPMJ = torch.zeros(
-            (tbuZnqNEmikCJaKNSLmSqWpMDYVUBzXX, qmVBooQzqysdVWXJerZDBEhryENmpgND + top + bottom, zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ + left + right, LpoIYArCEUCzsxAjgXNuHOsXqmCHmxOf),
-            DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32,
+
+    RETURN_TYPES = ("IMAGE", "MASK")
+    FUNCTION = "expand_image"
+
+    CATEGORY = "image"
+
+    def expand_image(self, image, left, top, right, bottom, feathering):
+        d1, d2, d3, d4 = image.size()
+
+        new_image = torch.zeros(
+            (d1, d2 + top + bottom, d3 + left + right, d4),
+            dtype=torch.float32,
         )
-        igalOJmhTttdqurwERHFojRFQRQLJPMJ[:, top:top + qmVBooQzqysdVWXJerZDBEhryENmpgND, left:left + zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ, :] = eLyJtroPthPCROYWyMphoIrGatNOOXCO
-        KHpRlHOzblljQyskecSxzUuWZtneWwta = torch.ones(
-            (qmVBooQzqysdVWXJerZDBEhryENmpgND + top + bottom, zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ + left + right),
-            DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32,
+        new_image[:, top:top + d2, left:left + d3, :] = image
+
+        mask = torch.ones(
+            (d2 + top + bottom, d3 + left + right),
+            dtype=torch.float32,
         )
-        XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = torch.zeros(
-            (qmVBooQzqysdVWXJerZDBEhryENmpgND, zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ),
-            DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=torch.float32
+
+        t = torch.zeros(
+            (d2, d3),
+            dtype=torch.float32
         )
-        if feathering > 0 and feathering * 2 < qmVBooQzqysdVWXJerZDBEhryENmpgND and feathering * 2 < zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ:
-            for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(qmVBooQzqysdVWXJerZDBEhryENmpgND):
-                for VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ in range(zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ):
-                    rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = HCXmerBqIMuTscBONzTGKYapYSxWTYHo if top != 0 else qmVBooQzqysdVWXJerZDBEhryENmpgND
-                    nMsmwuJOaPgHDsSpElTYkmfVCoEpsdoF = qmVBooQzqysdVWXJerZDBEhryENmpgND - HCXmerBqIMuTscBONzTGKYapYSxWTYHo if bottom != 0 else qmVBooQzqysdVWXJerZDBEhryENmpgND
-                    DSNpLYIYzkPZezQjHTLFFaVwYPmeIZJD = VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ if left != 0 else zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ
-                    LorRfJYMeVebKyQuJLWXNrhpvJfaKjIm = zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ - VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ if right != 0 else zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ
-                    TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo = min(rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG, nMsmwuJOaPgHDsSpElTYkmfVCoEpsdoF, DSNpLYIYzkPZezQjHTLFFaVwYPmeIZJD, LorRfJYMeVebKyQuJLWXNrhpvJfaKjIm)
-                    if TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo >= feathering:
+
+        if feathering > 0 and feathering * 2 < d2 and feathering * 2 < d3:
+
+            for i in range(d2):
+                for j in range(d3):
+                    dt = i if top != 0 else d2
+                    db = d2 - i if bottom != 0 else d2
+
+                    dl = j if left != 0 else d3
+                    dr = d3 - j if right != 0 else d3
+
+                    d = min(dt, db, dl, dr)
+
+                    if d >= feathering:
                         continue
-                    powGafreWfwlSAqPpTpUhFgpFVqCPavl = (feathering - TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo) / feathering
-                    XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz[HCXmerBqIMuTscBONzTGKYapYSxWTYHo, VyjoFEMsihtolZHiuwJuxJKmDsIroAsQ] = powGafreWfwlSAqPpTpUhFgpFVqCPavl * powGafreWfwlSAqPpTpUhFgpFVqCPavl
-        KHpRlHOzblljQyskecSxzUuWZtneWwta[top:top + qmVBooQzqysdVWXJerZDBEhryENmpgND, left:left + zaSBgPHyzfhxuJsBivIQNoqOsOoJYGsQ] = XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz
-        return (igalOJmhTttdqurwERHFojRFQRQLJPMJ, KHpRlHOzblljQyskecSxzUuWZtneWwta)
-wJhMfuyrPNjllkMCYXdJHMhubCAizKhP = {
-    "KSampler": fISBgXprrvVNVCupajVDXGsVRGuyiyHR,
-    "CheckpointLoaderSimple": rrffnjNRHZdVtoFFMasAclfpghoZjVny,
-    "CLIPTextEncode": xFugYlszeGKAKGYYiugpgdmBdgLdixjN,
-    "CLIPSetLastLayer": LlMizUiJpMXLbfAHRtmaTRtawJCkifXa,
-    "VAEDecode": tkeFAusZeYzBDPFSpXbBAbSiGuguweLJ,
-    "VAEEncode": yHdOrZGLzaZsuJPMNoADlrOQJtKypbUC,
-    "VAEEncodeForInpaint": XcLrUEEGwySqZlhOsrsQexLVMCIATlUX,
-    "VAELoader": AuhSmKRAtBABiDBVlzvkmHPAQcReZjMt,
-    "EmptyLatentImage": zIvxPokXhsKQUkwRRjDGfhTCiBLEdtiP,
-    "LatentUpscale": nnaIKRoFlXjuwnjMXMUxgnefIWJmKJCF,
-    "LatentUpscaleBy": cmbmlESGPTsYIXObNNeWTijDvbyxFcvY,
-    "LatentFromBatch": BjeSWOzISSYoyQOEAUTNgdoiiiyDqqkI,
-    "RepeatLatentBatch": adIeuebYdlahZUgrpwIFCsqBprKAwwnF,
-    "SaveImage": cOwvLoELrBaqKtFDUcUFTaWlGFiYoejW,
-    "PreviewImage": UeQFaPokrKNDAXwXltiJjZbftArgTtGT,
-    "LoadImage": zyddvzayUcTOalKoSNRLJCQrFGCFpvrU,
-    "LoadImageMask": ZeEjviALyZWDytVVOgXIdcLgXBMXFprt,
-    "ImageScale": ekKhxNsDPHXIAPxHfenkHUzPgvyWmMyZ,
-    "ImageScaleBy": kIkOMEFMfxtUMzRvnvuUdHpvEUCmIJKi,
-    "ImageInvert": oxjdRXmocXYCgrBJmPvTNNexvWbVGCXw,
-    "ImageBatch": MCaSNQSNUViNxaJnQXXUGtZJsbXoekYu,
-    "ImagePadForOutpaint": HqsPvyaghocPmHpPPQvZsgJWCpoFqXfm,
-    "EmptyImage": nmMKoEkwXQFTTciXhCTpkqkBwDxGYqMr,
-    "ConditioningAverage ": lkWhhWnSlSzqLNbmCZhegjWlIcKUZzIc ,
-    "ConditioningCombine": qvtLCeXRQPHPReAlvcQavnYuAcYQHAdD,
-    "ConditioningConcat": VXMFcQDwHLDiOqVxzpyZwaXkTroGCAPs,
-    "ConditioningSetArea": uiryePJpXaKctwLymJTRGmDYTnmFpOVu,
-    "ConditioningSetAreaPercentage": MOhYaVYOzpeAtEFqcdIAWHKLQcntTzGT,
-    "ConditioningSetMask": sGJAjzbAeEjMjezMdZmhSjpUrztuIxrd,
-    "KSamplerAdvanced": TbqdfYdqjaIWoRxYYwvNctpyyzwjXrDr,
-    "SetLatentNoiseMask": arKbozbiqKYljDImFotqJXydUptICTsb,
-    "LatentComposite": gYGSnDAIZlHJnpEujwAuWZmOtsaZAMvG,
-    "LatentBlend": ijfkEMojxbOOfagzcQRAdBkeUApzlBrc,
-    "LatentRotate": WOgqIJshXGCopywgtFStTTikxaMHHKaW,
-    "LatentFlip": eakUMNdfxMfNUbHaLnvvpbbxcStUaAyg,
-    "LatentCrop": bRRgXVaHGoMyxYkieovkraXGdqMmbIfw,
-    "LoraLoader": tWARkCwiRcNpBDFPksBMZyyZlnZeQKXT,
-    "CLIPLoader": wjTFuRtlDVnDUEKlDqDyfyFIojrwJSZB,
-    "UNETLoader": ZJIPzHKaCxfzJZCrIPDhFmCviGVBHwxT,
-    "DualCLIPLoader": wFxydWVsOuPMENdbkVzPjDhmMOqXFXMA,
-    "CLIPVisionEncode": dirxAbDzGLspwIXNciTiCbXOItASPyRD,
-    "StyleModelApply": SOjubiEONXRlmSXXxhVtITwyixpxICwa,
-    "unCLIPConditioning": YDCxaWxzbjsFNDcwFDNikWNamdFKYEJr,
-    "ControlNetApply": mVdMRJHDdUUxGEmDqyogULmBPSgLFyjR,
-    "ControlNetApplyAdvanced": KSblUWNSuJYUKDpCFiDcqJtyOSxtwxBN,
-    "ControlNetLoader": YNFxJlmnzZYMUgkvImenKmRbdZZaHHKo,
-    "DiffControlNetLoader": zQYTVSuLxhISGqACelxrijpNlRcWHRPc,
-    "StyleModelLoader": WyUqJFjBBSkvXHOuTDxxHFYkYqJqzebh,
-    "CLIPVisionLoader": VBGplsVXOYjOSHSeaszMPcfeqtPzrirl,
-    "VAEDecodeTiled": CcxzNqovaHQVHpxKUeCssGusFOficgdF,
-    "VAEEncodeTiled": GnDUARhnfPPMFDGTRWPeOnvfVZuTBjBJ,
-    "unCLIPCheckpointLoader": qGILltCyOYXZISZAQqJTdClRJVMIyVhd,
-    "GLIGENLoader": pmpJQceZGpDQRSmOmKyZwIscUkTsJOkN,
-    "GLIGENTextBoxApply": tYtrMfFbaFUvQdAhLmTEXiDxugViLiCm,
-    "CheckpointLoader": gJrMIsATfnXkyxPPuPvhyrflWJwbfiOu,
-    "DiffusersLoader": bsDPHyAnZXnIosnIiQuPBGqfEMEJIqBd,
-    "LoadLatent": VTKGSJncLiFeXyZiGvTCgFXfSARuMFAd,
-    "SaveLatent": KNkmvkLrAPwddvOOzCKLuJvoplliUlqI,
-    "ConditioningZeroOut": MbOIIXitffUZYmaOhrWLoXmkaSHBaWAJ,
-    "ConditioningSetTimestepRange": xkewWZVEtrrwkpVxpgXOzhuLNUDrAyoA,
+
+                    v = (feathering - d) / feathering
+
+                    t[i, j] = v * v
+
+        mask[top:top + d2, left:left + d3] = t
+
+        return (new_image, mask)
+
+
+NODE_CLASS_MAPPINGS = {
+    "KSampler": KSampler,
+    "CheckpointLoaderSimple": CheckpointLoaderSimple,
+    "CLIPTextEncode": CLIPTextEncode,
+    "CLIPSetLastLayer": CLIPSetLastLayer,
+    "VAEDecode": VAEDecode,
+    "VAEEncode": VAEEncode,
+    "VAEEncodeForInpaint": VAEEncodeForInpaint,
+    "VAELoader": VAELoader,
+    "EmptyLatentImage": EmptyLatentImage,
+    "LatentUpscale": LatentUpscale,
+    "LatentUpscaleBy": LatentUpscaleBy,
+    "LatentFromBatch": LatentFromBatch,
+    "RepeatLatentBatch": RepeatLatentBatch,
+    "SaveImage": SaveImage,
+    "PreviewImage": PreviewImage,
+    "LoadImage": LoadImage,
+    "LoadImageMask": LoadImageMask,
+    "ImageScale": ImageScale,
+    "ImageScaleBy": ImageScaleBy,
+    "ImageInvert": ImageInvert,
+    "ImageBatch": ImageBatch,
+    "ImagePadForOutpaint": ImagePadForOutpaint,
+    "EmptyImage": EmptyImage,
+    "ConditioningAverage ": ConditioningAverage ,
+    "ConditioningCombine": ConditioningCombine,
+    "ConditioningConcat": ConditioningConcat,
+    "ConditioningSetArea": ConditioningSetArea,
+    "ConditioningSetAreaPercentage": ConditioningSetAreaPercentage,
+    "ConditioningSetMask": ConditioningSetMask,
+    "KSamplerAdvanced": KSamplerAdvanced,
+    "SetLatentNoiseMask": SetLatentNoiseMask,
+    "LatentComposite": LatentComposite,
+    "LatentBlend": LatentBlend,
+    "LatentRotate": LatentRotate,
+    "LatentFlip": LatentFlip,
+    "LatentCrop": LatentCrop,
+    "LoraLoader": LoraLoader,
+    "CLIPLoader": CLIPLoader,
+    "UNETLoader": UNETLoader,
+    "DualCLIPLoader": DualCLIPLoader,
+    "CLIPVisionEncode": CLIPVisionEncode,
+    "StyleModelApply": StyleModelApply,
+    "unCLIPConditioning": unCLIPConditioning,
+    "ControlNetApply": ControlNetApply,
+    "ControlNetApplyAdvanced": ControlNetApplyAdvanced,
+    "ControlNetLoader": ControlNetLoader,
+    "DiffControlNetLoader": DiffControlNetLoader,
+    "StyleModelLoader": StyleModelLoader,
+    "CLIPVisionLoader": CLIPVisionLoader,
+    "VAEDecodeTiled": VAEDecodeTiled,
+    "VAEEncodeTiled": VAEEncodeTiled,
+    "unCLIPCheckpointLoader": unCLIPCheckpointLoader,
+    "GLIGENLoader": GLIGENLoader,
+    "GLIGENTextBoxApply": GLIGENTextBoxApply,
+
+    "CheckpointLoader": CheckpointLoader,
+    "DiffusersLoader": DiffusersLoader,
+
+    "LoadLatent": LoadLatent,
+    "SaveLatent": SaveLatent,
+
+    "ConditioningZeroOut": ConditioningZeroOut,
+    "ConditioningSetTimestepRange": ConditioningSetTimestepRange,
 }
-fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf = {
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    # Sampling
     "KSampler": "KSampler",
     "KSamplerAdvanced": "KSampler (Advanced)",
+    # Loaders
     "CheckpointLoader": "Load Checkpoint (With Config)",
     "CheckpointLoaderSimple": "Load Checkpoint",
     "VAELoader": "Load VAE",
@@ -1348,6 +1661,7 @@ fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf = {
     "StyleModelLoader": "Load Style Model",
     "CLIPVisionLoader": "Load CLIP Vision",
     "UpscaleModelLoader": "Load Upscale Model",
+    # Conditioning
     "CLIPVisionEncode": "CLIP Vision Encode",
     "StyleModelApply": "Apply Style Model",
     "CLIPTextEncode": "CLIP Text Encode (Prompt)",
@@ -1360,6 +1674,7 @@ fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf = {
     "ConditioningSetMask": "Conditioning (Set Mask)",
     "ControlNetApply": "Apply ControlNet",
     "ControlNetApplyAdvanced": "Apply ControlNet (Advanced)",
+    # Latent
     "VAEEncodeForInpaint": "VAE Encode (for Inpainting)",
     "SetLatentNoiseMask": "Set Latent Noise Mask",
     "VAEDecode": "VAE Decode",
@@ -1374,6 +1689,7 @@ fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf = {
     "LatentBlend": "Latent Blend",
     "LatentFromBatch" : "Latent From Batch",
     "RepeatLatentBatch": "Repeat Latent Batch",
+    # Image
     "SaveImage": "Save Image",
     "PreviewImage": "Preview Image",
     "LoadImage": "Load Image",
@@ -1384,75 +1700,85 @@ fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf = {
     "ImageInvert": "Invert Image",
     "ImagePadForOutpaint": "Pad Image for Outpainting",
     "ImageBatch": "Batch Images",
+    # _for_testing
     "VAEDecodeTiled": "VAE Decode (Tiled)",
     "VAEEncodeTiled": "VAE Encode (Tiled)",
 }
-OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ = {}
-def VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, ignore=set()):
-    tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = os.path.basename(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
-    if os.path.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp):
-        YrPeqrQYIiCxLZFaspxcenNGsDJCGTQo = os.path.splitext(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
-        tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = YrPeqrQYIiCxLZFaspxcenNGsDJCGTQo[0]
+
+EXTENSION_WEB_DIRS = {}
+
+def load_custom_node(module_path, ignore=set()):
+    module_name = os.path.basename(module_path)
+    if os.path.isfile(module_path):
+        sp = os.path.splitext(module_path)
+        module_name = sp[0]
     try:
-        if os.path.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp):
-            module_spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)
-            mUseerIsvzYRsklATJBKxbxJiqbRUjQq = os.path.split(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)[0]
+        if os.path.isfile(module_path):
+            module_spec = importlib.util.spec_from_file_location(module_name, module_path)
+            module_dir = os.path.split(module_path)[0]
         else:
-            module_spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, os.path.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "__init__.py"))
-            mUseerIsvzYRsklATJBKxbxJiqbRUjQq = XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp
-        module = importlib.util.module_from_spec(wFboHlUzaysMqHAXRfCClEiaEHkJKBhv)
-        sys.modules[tieEujcveVfDzVXIDWvRBbuhQgiLzcLd] = FRIBQCDfDDxIonplwxvPCicvOmmOgYPC
-        wFboHlUzaysMqHAXRfCClEiaEHkJKBhv.loader.exec_module(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC)
-        if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY") is not None:
-            YCwPMrCfndvbAsdSRIxJujNhkijrxjqq = os.path.abspath(os.path.join(mUseerIsvzYRsklATJBKxbxJiqbRUjQq, getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "WEB_DIRECTORY")))
-            if os.path.isdir(YCwPMrCfndvbAsdSRIxJujNhkijrxjqq):
-                OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ[tieEujcveVfDzVXIDWvRBbuhQgiLzcLd] = YCwPMrCfndvbAsdSRIxJujNhkijrxjqq
-        if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_CLASS_MAPPINGS") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_CLASS_MAPPINGS") is not None:
-            for name in FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP:
+            module_spec = importlib.util.spec_from_file_location(module_name, os.path.join(module_path, "__init__.py"))
+            module_dir = module_path
+
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_name] = module
+        module_spec.loader.exec_module(module)
+
+        if hasattr(module, "WEB_DIRECTORY") and getattr(module, "WEB_DIRECTORY") is not None:
+            web_dir = os.path.abspath(os.path.join(module_dir, getattr(module, "WEB_DIRECTORY")))
+            if os.path.isdir(web_dir):
+                EXTENSION_WEB_DIRS[module_name] = web_dir
+
+        if hasattr(module, "NODE_CLASS_MAPPINGS") and getattr(module, "NODE_CLASS_MAPPINGS") is not None:
+            for name in module.NODE_CLASS_MAPPINGS:
                 if name not in ignore:
-                    wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[name] = FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[name]
-            if hasattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_DISPLAY_NAME_MAPPINGS") and getattr(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC, "NODE_DISPLAY_NAME_MAPPINGS") is not None:
-                fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf.update(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC.fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf)
+                    NODE_CLASS_MAPPINGS[name] = module.NODE_CLASS_MAPPINGS[name]
+            if hasattr(module, "NODE_DISPLAY_NAME_MAPPINGS") and getattr(module, "NODE_DISPLAY_NAME_MAPPINGS") is not None:
+                NODE_DISPLAY_NAME_MAPPINGS.update(module.NODE_DISPLAY_NAME_MAPPINGS)
             return True
         else:
             print(f"Skip {module_path} module for custom nodes due to the lack of NODE_CLASS_MAPPINGS.")
             return False
-    except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
+    except Exception as e:
         print(traceback.format_exc())
         print(f"Cannot import {module_path} module for custom nodes:", e)
         return False
-def dcfAcZtKluJqyIGNEuRjJvrqFDjMRAov():
-    xGHXeNMXhwogNiYpBBpsWEKxnckwdywG = set(wJhMfuyrPNjllkMCYXdJHMhubCAizKhP.keys())
-    ilqocNyegtMYlXcyAFNfxWmTetNNqjnj = folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("custom_nodes")
+
+def load_custom_nodes():
+    base_node_names = set(NODE_CLASS_MAPPINGS.keys())
+    node_paths = folder_paths.get_folder_paths("custom_nodes")
     node_import_times = []
-    for tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ in ilqocNyegtMYlXcyAFNfxWmTetNNqjnj:
-        HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl = os.listdir(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ)
-        if "__pycache__" in HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl:
-            HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl.remove("__pycache__")
-        for uzcEftlpQdaRTMylsKksTMmyjgzcrlLK in HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl:
-            XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp = os.path.join(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ, uzcEftlpQdaRTMylsKksTMmyjgzcrlLK)
-            if os.path.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) and os.path.splitext(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp)[1] != ".py": continue
-            if XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp.endswith(".disabled"): continue
-            NxDTHICOqkfnhyLwtejLSCWiivMDAyZv = time.perf_counter()
-            syoCixXNjFxZAimZmlHgvNsypzGRqzuD = VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, xGHXeNMXhwogNiYpBBpsWEKxnckwdywG)
+    for custom_node_path in node_paths:
+        possible_modules = os.listdir(custom_node_path)
+        if "__pycache__" in possible_modules:
+            possible_modules.remove("__pycache__")
+
+        for possible_module in possible_modules:
+            module_path = os.path.join(custom_node_path, possible_module)
+            if os.path.isfile(module_path) and os.path.splitext(module_path)[1] != ".py": continue
+            if module_path.endswith(".disabled"): continue
+            time_before = time.perf_counter()
+            success = load_custom_node(module_path, base_node_names)
             node_import_times.append((time.perf_counter() - time_before, module_path, success))
+
     if len(node_import_times) > 0:
         print("\nImport times for custom nodes:")
         for n in sorted(node_import_times):
-            if zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[2]:
+            if n[2]:
                 import_message = ""
             else:
                 import_message = " (IMPORT FAILED)"
             print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
         print()
-def TfsMRLhzuJSfPYCmvEXkbVNjMGyUQnEL():
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_hypernetwork.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_upscale_model.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_post_processing.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_mask.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_rebatch.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_model_merging.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_tomesd.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_clip_sdxl.py"))
-    VVKZvVLFAmyrpzGZnQKVirGaBCVRzrra(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_canny.py"))
-    dcfAcZtKluJqyIGNEuRjJvrqFDjMRAov()
+
+def init_custom_nodes():
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_hypernetwork.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_upscale_model.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_post_processing.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_mask.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_rebatch.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_model_merging.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_tomesd.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_clip_sdxl.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "quasar_extras"), "nodes_canny.py"))
+    load_custom_nodes()

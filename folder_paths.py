@@ -1,179 +1,235 @@
 import os
 import time
-hZQMFPwtakjynkeurEyZiPAYMqwfPAZc = set(['.ckpt', '.pt', '.bin', '.pth', '.safetensors'])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG = {}
-TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC = os.path.dirname(os.path.realpath(__file__))
-iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM = os.path.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, "models")
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["checkpoints"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "checkpoints")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["configs"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "configs")], [".yaml"])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["loras"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "loras")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["vae"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "vae")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["clip"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "clip")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["unet"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "unet")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["clip_vision"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "clip_vision")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["style_models"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "style_models")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["embeddings"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "embeddings")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["diffusers"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "diffusers")], ["folder"])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["vae_approx"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "vae_approx")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["controlnet"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "controlnet"), os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "t2i_adapter")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["gligen"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "gligen")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["upscale_models"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "upscale_models")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["custom_nodes"] = ([os.path.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, "custom_nodes")], [])
-RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG["hypernetworks"] = ([os.path.join(iTgDKqnzsINaQjOfADlnzvTrjwAMQoHM, "hypernetworks")], hZQMFPwtakjynkeurEyZiPAYMqwfPAZc)
-GtSyetIaLksMxiwaHjRuEDPDczomOxfB = os.path.join(os.path.dirname(os.path.realpath(__file__)), "output")
-sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temp")
-JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input")
-JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM = {}
-if not os.path.exists(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP):
-    os.makedirs(JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP)
-def QaqVOGrCQsMzyJzwFXeqRMUkMfnKwrHp(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh):
-    global GtSyetIaLksMxiwaHjRuEDPDczomOxfB
-    GtSyetIaLksMxiwaHjRuEDPDczomOxfB = DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh
-def UjFfHXPSSdYnVuSiGnNlPxKKudSjKFNY(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP):
-    global sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX
-    sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX = CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP
-def gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo():
-    global GtSyetIaLksMxiwaHjRuEDPDczomOxfB
-    return GtSyetIaLksMxiwaHjRuEDPDczomOxfB
-def PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq():
-    global sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX
-    return sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX
-def oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS():
-    global JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP
-    return JVnqMUCDCOqhSclOtgLoQNuaQwivvlwP
-def kxrHWrKUsAImLcADDJwQctHfTpGpGvug(type_name):
+
+supported_pt_extensions = set(['.ckpt', '.pt', '.bin', '.pth', '.safetensors'])
+
+folder_names_and_paths = {}
+
+base_path = os.path.dirname(os.path.realpath(__file__))
+models_dir = os.path.join(base_path, "models")
+folder_names_and_paths["checkpoints"] = ([os.path.join(models_dir, "checkpoints")], supported_pt_extensions)
+folder_names_and_paths["configs"] = ([os.path.join(models_dir, "configs")], [".yaml"])
+
+folder_names_and_paths["loras"] = ([os.path.join(models_dir, "loras")], supported_pt_extensions)
+folder_names_and_paths["vae"] = ([os.path.join(models_dir, "vae")], supported_pt_extensions)
+folder_names_and_paths["clip"] = ([os.path.join(models_dir, "clip")], supported_pt_extensions)
+folder_names_and_paths["unet"] = ([os.path.join(models_dir, "unet")], supported_pt_extensions)
+folder_names_and_paths["clip_vision"] = ([os.path.join(models_dir, "clip_vision")], supported_pt_extensions)
+folder_names_and_paths["style_models"] = ([os.path.join(models_dir, "style_models")], supported_pt_extensions)
+folder_names_and_paths["embeddings"] = ([os.path.join(models_dir, "embeddings")], supported_pt_extensions)
+folder_names_and_paths["diffusers"] = ([os.path.join(models_dir, "diffusers")], ["folder"])
+folder_names_and_paths["vae_approx"] = ([os.path.join(models_dir, "vae_approx")], supported_pt_extensions)
+
+folder_names_and_paths["controlnet"] = ([os.path.join(models_dir, "controlnet"), os.path.join(models_dir, "t2i_adapter")], supported_pt_extensions)
+folder_names_and_paths["gligen"] = ([os.path.join(models_dir, "gligen")], supported_pt_extensions)
+
+folder_names_and_paths["upscale_models"] = ([os.path.join(models_dir, "upscale_models")], supported_pt_extensions)
+
+folder_names_and_paths["custom_nodes"] = ([os.path.join(base_path, "custom_nodes")], [])
+
+folder_names_and_paths["hypernetworks"] = ([os.path.join(models_dir, "hypernetworks")], supported_pt_extensions)
+
+output_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "output")
+temp_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temp")
+input_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input")
+
+filename_list_cache = {}
+
+if not os.path.exists(input_directory):
+    os.makedirs(input_directory)
+
+def set_output_directory(output_dir):
+    global output_directory
+    output_directory = output_dir
+
+def set_temp_directory(temp_dir):
+    global temp_directory
+    temp_directory = temp_dir
+
+def get_output_directory():
+    global output_directory
+    return output_directory
+
+def get_temp_directory():
+    global temp_directory
+    return temp_directory
+
+def get_input_directory():
+    global input_directory
+    return input_directory
+
+
+#NOTE: used in http server so don't put folders that should not be accessed remotely
+def get_directory_by_type(type_name):
     if type_name == "output":
-        return gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo()
+        return get_output_directory()
     if type_name == "temp":
-        return PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
+        return get_temp_directory()
     if type_name == "input":
-        return oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
+        return get_input_directory()
     return None
-def ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(name):
+
+
+# determine base_dir rely on annotation if name is 'filename.ext [annotation]' format
+# otherwise use default_path as base_dir
+def annotated_filepath(name):
     if name.endswith("[output]"):
-        qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo()
+        base_dir = get_output_directory()
         name = name[:-9]
     elif name.endswith("[input]"):
-        qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
+        base_dir = get_input_directory()
         name = name[:-8]
     elif name.endswith("[temp]"):
-        qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
+        base_dir = get_temp_directory()
         name = name[:-7]
     else:
         return name, None
-    return name, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ
-def OPtRRiXTVYmRqsnzHEbbUWCzjjPfVhOl(name, default_dir=None):
-    name, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(name)
-    if qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ is None:
+
+    return name, base_dir
+
+
+def get_annotated_filepath(name, default_dir=None):
+    name, base_dir = annotated_filepath(name)
+
+    if base_dir is None:
         if default_dir is not None:
-            qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = default_dir
+            base_dir = default_dir
         else:
-            qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
-    return os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, name)
-def LuEtoKSPwnkgulAqhArQxPlLlkJrpWJM(name):
-    name, qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(name)
-    if qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ is None:
-        qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ = oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()  
-    jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(qQaBpsOaFfJUnrTGkifLbJyCyczdakPQ, name)
-    return os.path.exists(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
-def tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, full_folder_path):
-    global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
-    if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ in RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG:
-        RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ][0].append(full_folder_path)
+            base_dir = get_input_directory()  # fallback path
+
+    return os.path.join(base_dir, name)
+
+
+def exists_annotated_filepath(name):
+    name, base_dir = annotated_filepath(name)
+
+    if base_dir is None:
+        base_dir = get_input_directory()  # fallback path
+
+    filepath = os.path.join(base_dir, name)
+    return os.path.exists(filepath)
+
+
+def add_model_folder_path(folder_name, full_folder_path):
+    global folder_names_and_paths
+    if folder_name in folder_names_and_paths:
+        folder_names_and_paths[folder_name][0].append(full_folder_path)
     else:
-        RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ] = ([full_folder_path], set())
-def HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
-    return RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ][0][:]
-def obGgHnWHZHxVqLnvnUwXaOsmgUVmduqj(directory, hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs=None):
+        folder_names_and_paths[folder_name] = ([full_folder_path], set())
+
+def get_folder_paths(folder_name):
+    return folder_names_and_paths[folder_name][0][:]
+
+def recursive_search(directory, excluded_dir_names=None):
     if not os.path.isdir(directory):
         return [], {}
-    if hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs is None:
-        hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs = []
-    EpPkhmvnuPCNYOnbTkWPbRocxmdOwtHI = []
-    tMqhONnNTXdwHJmOQatOuImsYofVgJxi = {directory: os.path.getmtime(directory)}
-    for XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP, mkvCrqyejrekyuWxgtHkShApwhhCDyMu in os.walk(directory, followlinks=True, topdown=True):
-        fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP[:] = [TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo for TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo in fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP if TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo not in hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs]
-        for cUwDjpDYeDLcRutcYgVbXhXpxYeYFdHt in mkvCrqyejrekyuWxgtHkShApwhhCDyMu:
-            qNWMfFLBJiRgAvaCCCCahKsWaeudkTaD = os.path.relpath(os.path.join(XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, cUwDjpDYeDLcRutcYgVbXhXpxYeYFdHt), directory)
-            EpPkhmvnuPCNYOnbTkWPbRocxmdOwtHI.append(qNWMfFLBJiRgAvaCCCCahKsWaeudkTaD)
-        for TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo in fCAMhpfBWcaJjstQXXJyoBiwKjkwqxdP:
-            path = os.path.join(XCrmLuQijIRiBbHWvECkfaKyKAGmZfFW, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo)
-            tMqhONnNTXdwHJmOQatOuImsYofVgJxi[path] = os.path.getmtime(path)
-    return EpPkhmvnuPCNYOnbTkWPbRocxmdOwtHI, tMqhONnNTXdwHJmOQatOuImsYofVgJxi
-def ogrHHnnoHaDAeFerfHoOKjouTxChktKm(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE, HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv):
-    return sorted(list(filter(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: os.path.splitext(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)[-1].lower() in HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv, DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE)))
-def TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM):
-    global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
-    if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ not in RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG:
+
+    if excluded_dir_names is None:
+        excluded_dir_names = []
+
+    result = []
+    dirs = {directory: os.path.getmtime(directory)}
+    for dirpath, subdirs, filenames in os.walk(directory, followlinks=True, topdown=True):
+        subdirs[:] = [d for d in subdirs if d not in excluded_dir_names]
+        for file_name in filenames:
+            relative_path = os.path.relpath(os.path.join(dirpath, file_name), directory)
+            result.append(relative_path)
+        for d in subdirs:
+            path = os.path.join(dirpath, d)
+            dirs[path] = os.path.getmtime(path)
+    return result, dirs
+
+def filter_files_extensions(files, extensions):
+    return sorted(list(filter(lambda a: os.path.splitext(a)[-1].lower() in extensions, files)))
+
+
+
+def get_full_path(folder_name, filename):
+    global folder_names_and_paths
+    if folder_name not in folder_names_and_paths:
         return None
-    LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu = RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ]
-    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.path.relpath(os.path.join("/", VpsbOZzufynrTFUvvRofTQeRCOCIKJOM), "/")
-    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu[0]:
-        BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = os.path.join(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-        if os.path.isfile(BvZbFoQIcgYmFXROwptYbIKgzYJORrYY):
-            return BvZbFoQIcgYmFXROwptYbIKgzYJORrYY
+    folders = folder_names_and_paths[folder_name]
+    filename = os.path.relpath(os.path.join("/", filename), "/")
+    for x in folders[0]:
+        full_path = os.path.join(x, filename)
+        if os.path.isfile(full_path):
+            return full_path
+
     return None
-def wZITfTxkrUGlgkNhyVkQeGQnBOOGviUn(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
-    global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
-    GgpaBLoBmoIhHNvNAUUHscrTPvveyTGt = set()
-    LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu = RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ]
-    MeRskWbjCfHyBXapOnnGcEMlMZxTeiIR = {}
-    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu[0]:
-        DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE, ZBGyBxxmhCoTmaItLhabPXHZIdhzfXYB = obGgHnWHZHxVqLnvnUwXaOsmgUVmduqj(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, hycpXyDmpuOeQeuwvqXUjhiJtDOFTONs=[".git"])
-        GgpaBLoBmoIhHNvNAUUHscrTPvveyTGt.update(ogrHHnnoHaDAeFerfHoOKjouTxChktKm(DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE, LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu[1]))
-        MeRskWbjCfHyBXapOnnGcEMlMZxTeiIR = {**MeRskWbjCfHyBXapOnnGcEMlMZxTeiIR, **ZBGyBxxmhCoTmaItLhabPXHZIdhzfXYB}
-    return (sorted(list(GgpaBLoBmoIhHNvNAUUHscrTPvveyTGt)), MeRskWbjCfHyBXapOnnGcEMlMZxTeiIR, time.perf_counter())
-def cbzhDWvXQBiEgEVdjzZaBlkWnnmGvfgj(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
-    global JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM
-    global RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG
-    if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ not in JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM:
+
+def get_filename_list_(folder_name):
+    global folder_names_and_paths
+    output_list = set()
+    folders = folder_names_and_paths[folder_name]
+    output_folders = {}
+    for x in folders[0]:
+        files, folders_all = recursive_search(x, excluded_dir_names=[".git"])
+        output_list.update(filter_files_extensions(files, folders[1]))
+        output_folders = {**output_folders, **folders_all}
+
+    return (sorted(list(output_list)), output_folders, time.perf_counter())
+
+def cached_filename_list_(folder_name):
+    global filename_list_cache
+    global folder_names_and_paths
+    if folder_name not in filename_list_cache:
         return None
-    iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ]
-    if time.perf_counter() < (iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[2] + 0.5):
-        return iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
-    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1]:
-        ufReozYqFDHrDJiiCgVhHqnMnsesjFSb = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1][NECAaWUrFGIXcLimrerEYmxYIykQBfXb]
-        OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX = NECAaWUrFGIXcLimrerEYmxYIykQBfXb
-        if os.path.getmtime(OwJCTJVwyMUEtfjtMzVQMjEELeqLNhyX) != ufReozYqFDHrDJiiCgVhHqnMnsesjFSb:
+    out = filename_list_cache[folder_name]
+    if time.perf_counter() < (out[2] + 0.5):
+        return out
+    for x in out[1]:
+        time_modified = out[1][x]
+        folder = x
+        if os.path.getmtime(folder) != time_modified:
             return None
-    LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu = RtqMYVjkHvPjjwaAjZzZiDKOhSnoAwQG[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ]
-    for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in LjTAnyqWGFlIaOwfqQTfGKbkmjrAjQnu[0]:
-        if os.path.isdir(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-            if NECAaWUrFGIXcLimrerEYmxYIykQBfXb not in iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[1]:
+
+    folders = folder_names_and_paths[folder_name]
+    for x in folders[0]:
+        if os.path.isdir(x):
+            if x not in out[1]:
                 return None
-    return iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
-def DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ):
-    iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = cbzhDWvXQBiEgEVdjzZaBlkWnnmGvfgj(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ)
-    if iqymPVpxyjOWChGwBkTemSzHJbnJdAIz is None:
-        iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = wZITfTxkrUGlgkNhyVkQeGQnBOOGviUn(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ)
-        global JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM
-        JyZmzIiPwdUaqrBdrvxSwDliHEuoQwXM[OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ] = iqymPVpxyjOWChGwBkTemSzHJbnJdAIz
-    return list(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[0])
-def RzAZobMvYWLmMtiqbeSollhpzISOJhWp(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, image_width=0, image_height=0):
-    def kvXDIOWWdUPJRythbyaKVomFIZtNHPIf(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM):
-        EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL = len(os.path.basename(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
-        mAocOLWlgMJvPYVmSRndfhQdAcKHgPwi = VpsbOZzufynrTFUvvRofTQeRCOCIKJOM[:EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL + 1]
+
+    return out
+
+def get_filename_list(folder_name):
+    out = cached_filename_list_(folder_name)
+    if out is None:
+        out = get_filename_list_(folder_name)
+        global filename_list_cache
+        filename_list_cache[folder_name] = out
+    return list(out[0])
+
+def get_save_image_path(filename_prefix, output_dir, image_width=0, image_height=0):
+    def map_filename(filename):
+        prefix_len = len(os.path.basename(filename_prefix))
+        prefix = filename[:prefix_len + 1]
         try:
-            hCVGAfCArAJbgwQyBsUtCdmTkaFHlUwI = int(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM[EHPJUgMmqUaZlktbaRCBTfLvSXvWOHtL + 1:].split('_')[0])
+            digits = int(filename[prefix_len + 1:].split('_')[0])
         except:
-            hCVGAfCArAJbgwQyBsUtCdmTkaFHlUwI = 0
-        return (hCVGAfCArAJbgwQyBsUtCdmTkaFHlUwI, mAocOLWlgMJvPYVmSRndfhQdAcKHgPwi)
-    def UWfTdcFvxzbgLumqlxvZmrHJBBJcgAIR(input, image_width, image_height):
+            digits = 0
+        return (digits, prefix)
+
+    def compute_vars(input, image_width, image_height):
         input = input.replace("%width%", str(image_width))
         input = input.replace("%height%", str(image_height))
         return input
-    azafsUqgjjnMJDTDVblsTwqgMmfrAEPm = UWfTdcFvxzbgLumqlxvZmrHJBBJcgAIR(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm, image_width, image_height)
-    EijzAwkTdadIdbBCcDEUbEYNNcstskwi = os.path.dirname(os.path.normpath(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
-    VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.path.basename(os.path.normpath(azafsUqgjjnMJDTDVblsTwqgMmfrAEPm))
-    NSnmtWjKbAQhROMkmRknqzSaUCojgOin = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, EijzAwkTdadIdbBCcDEUbEYNNcstskwi)
-    if os.path.commonpath((DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, os.path.abspath(NSnmtWjKbAQhROMkmRknqzSaUCojgOin))) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
+
+    filename_prefix = compute_vars(filename_prefix, image_width, image_height)
+
+    subfolder = os.path.dirname(os.path.normpath(filename_prefix))
+    filename = os.path.basename(os.path.normpath(filename_prefix))
+
+    full_output_folder = os.path.join(output_dir, subfolder)
+
+    if os.path.commonpath((output_dir, os.path.abspath(full_output_folder))) != output_dir:
         print("Saving image outside the output folder is not allowed.")
         return {}
+
     try:
-        etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ = max(filter(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: GlZreLQjBCiBptpFgmbsMbhjFlMgPVav[1][:-1] == VpsbOZzufynrTFUvvRofTQeRCOCIKJOM and GlZreLQjBCiBptpFgmbsMbhjFlMgPVav[1][-1] == "_", map(kvXDIOWWdUPJRythbyaKVomFIZtNHPIf, os.listdir(NSnmtWjKbAQhROMkmRknqzSaUCojgOin))))[0] + 1
+        counter = max(filter(lambda a: a[1][:-1] == filename and a[1][-1] == "_", map(map_filename, os.listdir(full_output_folder))))[0] + 1
     except ValueError:
-        etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ = 1
+        counter = 1
     except FileNotFoundError:
-        os.makedirs(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, exist_ok=True)
-        etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ = 1
-    return NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, etmXhuRDTfPuCYAlpkCmiMFiODmDHghZ, EijzAwkTdadIdbBCcDEUbEYNNcstskwi, azafsUqgjjnMJDTDVblsTwqgMmfrAEPm
+        os.makedirs(full_output_folder, exist_ok=True)
+        counter = 1
+    return full_output_folder, filename, counter, subfolder, filename_prefix

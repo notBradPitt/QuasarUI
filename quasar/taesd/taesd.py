@@ -1,49 +1,65 @@
 #!/usr/bin/env python3
+"""
+Tiny AutoEncoder for Stable Diffusion
+(DNN for encoding / decoding SD's latent space)
+"""
 import torch
 import torch.nn as nn
-def VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(n_in, n_out, **kwargs):
-    return nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(n_in, n_out, 3, sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP=1, **kwargs)
-class dpfnYoNSApllTfgzQyCcRJKPGHYjggia(nn.Module):
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return torch.tanh(NECAaWUrFGIXcLimrerEYmxYIykQBfXb / 3) * 3
-class BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(nn.Module):
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, n_in, n_out):
+
+def conv(n_in, n_out, **kwargs):
+    return nn.Conv2d(n_in, n_out, 3, padding=1, **kwargs)
+
+class Clamp(nn.Module):
+    def forward(self, x):
+        return torch.tanh(x / 3) * 3
+
+class Block(nn.Module):
+    def __init__(self, n_in, n_out):
         super().__init__()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm = nn.Sequential(VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(n_in, n_out), nn.ReLU(), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(n_out, n_out), nn.ReLU(), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(n_out, n_out))
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.skip = nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(n_in, n_out, 1, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False) if n_in != n_out else nn.Identity()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fuse = nn.ReLU()
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.fuse(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(NECAaWUrFGIXcLimrerEYmxYIykQBfXb) + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.skip(NECAaWUrFGIXcLimrerEYmxYIykQBfXb))
-def HAhRJZDsPfbaJIpLwjOXFEkHqjueFULJ():
+        self.conv = nn.Sequential(conv(n_in, n_out), nn.ReLU(), conv(n_out, n_out), nn.ReLU(), conv(n_out, n_out))
+        self.skip = nn.Conv2d(n_in, n_out, 1, bias=False) if n_in != n_out else nn.Identity()
+        self.fuse = nn.ReLU()
+    def forward(self, x):
+        return self.fuse(self.conv(x) + self.skip(x))
+
+def Encoder():
     return nn.Sequential(
-        VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(3, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64),
-        VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 64, NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=2, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64),
-        VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 64, NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=2, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64),
-        VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 64, NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd=2, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64),
-        VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 4),
+        conv(3, 64), Block(64, 64),
+        conv(64, 64, stride=2, bias=False), Block(64, 64), Block(64, 64), Block(64, 64),
+        conv(64, 64, stride=2, bias=False), Block(64, 64), Block(64, 64), Block(64, 64),
+        conv(64, 64, stride=2, bias=False), Block(64, 64), Block(64, 64), Block(64, 64),
+        conv(64, 4),
     )
-def KfKIubLWuMYndZytaOVMUrnTLHiwPiVV():
+
+def Decoder():
     return nn.Sequential(
-        dpfnYoNSApllTfgzQyCcRJKPGHYjggia(), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(4, 64), nn.ReLU(),
-        BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), nn.kjruhryvXAQxnjJDeOXqTJbBrTkRFQSk(scale_factor=2), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 64, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False),
-        BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), nn.kjruhryvXAQxnjJDeOXqTJbBrTkRFQSk(scale_factor=2), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 64, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False),
-        BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), nn.kjruhryvXAQxnjJDeOXqTJbBrTkRFQSk(scale_factor=2), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 64, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False),
-        BTYbrqbRvGGOjbsUzDMkWIBzNvOJUbif(64, 64), VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm(64, 3),
+        Clamp(), conv(4, 64), nn.ReLU(),
+        Block(64, 64), Block(64, 64), Block(64, 64), nn.Upsample(scale_factor=2), conv(64, 64, bias=False),
+        Block(64, 64), Block(64, 64), Block(64, 64), nn.Upsample(scale_factor=2), conv(64, 64, bias=False),
+        Block(64, 64), Block(64, 64), Block(64, 64), nn.Upsample(scale_factor=2), conv(64, 64, bias=False),
+        Block(64, 64), conv(64, 3),
     )
-class CFXvAYULVpQFvvdJNHbevhEXAaaPZtnO(nn.Module):
-    pPAfAhpjQLUeBOeVGPCztdIPaafFqoFu = 3
-    YfkmagSHlCMAQtchSRvkRwdqcFVXTcKL = 0.5
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, encoder_path="taesd_encoder.pth", decoder_path="taesd_decoder.pth"):
+
+class TAESD(nn.Module):
+    latent_magnitude = 3
+    latent_shift = 0.5
+
+    def __init__(self, encoder_path="taesd_encoder.pth", decoder_path="taesd_decoder.pth"):
+        """Initialize pretrained TAESD on the given device from the given checkpoints."""
         super().__init__()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.encoder = HAhRJZDsPfbaJIpLwjOXFEkHqjueFULJ()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.decoder = KfKIubLWuMYndZytaOVMUrnTLHiwPiVV()
+        self.encoder = Encoder()
+        self.decoder = Decoder()
         if encoder_path is not None:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.encoder.OVlRwgmJvqggImaZMfxKZfQnVYfyhIsc(torch.yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz(encoder_path, map_location="cpu", weights_only=True))
+            self.encoder.load_state_dict(torch.load(encoder_path, map_location="cpu", weights_only=True))
         if decoder_path is not None:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.decoder.OVlRwgmJvqggImaZMfxKZfQnVYfyhIsc(torch.yjjLwfEWtXKFjwwmuqReIXUDoGaUzfxz(decoder_path, map_location="cpu", weights_only=True))
+            self.decoder.load_state_dict(torch.load(decoder_path, map_location="cpu", weights_only=True))
+
     @staticmethod
-    def TROuNVXftwVbUVYFwriuVbfjZaLMQOHg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb.div(2 * CFXvAYULVpQFvvdJNHbevhEXAaaPZtnO.pPAfAhpjQLUeBOeVGPCztdIPaafFqoFu).add(CFXvAYULVpQFvvdJNHbevhEXAaaPZtnO.YfkmagSHlCMAQtchSRvkRwdqcFVXTcKL).clamp(0, 1)
+    def scale_latents(x):
+        """raw latents -> [0, 1]"""
+        return x.div(2 * TAESD.latent_magnitude).add(TAESD.latent_shift).clamp(0, 1)
+
     @staticmethod
-    def UciIVErOIRBvhxJjpGpBdTssyhbfGtLg(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
-        return NECAaWUrFGIXcLimrerEYmxYIykQBfXb.sub(CFXvAYULVpQFvvdJNHbevhEXAaaPZtnO.YfkmagSHlCMAQtchSRvkRwdqcFVXTcKL).mul(2 * CFXvAYULVpQFvvdJNHbevhEXAaaPZtnO.pPAfAhpjQLUeBOeVGPCztdIPaafFqoFu)
+    def unscale_latents(x):
+        """[0, 1] -> raw latents"""
+        return x.sub(TAESD.latent_shift).mul(2 * TAESD.latent_magnitude)

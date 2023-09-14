@@ -2,6 +2,7 @@ import os
 import sys
 import asyncio
 import traceback
+
 import nodes
 import folder_paths
 import execution
@@ -13,6 +14,7 @@ import struct
 from PIL import Image, ImageOps
 from PIL.PngImagePlugin import PngInfo
 from io import BytesIO
+
 try:
     import aiohttp
     from aiohttp import web
@@ -22,488 +24,607 @@ except ImportError:
     print("or")
     print("pip install -r requirements.txt")
     sys.exit()
+
 import mimetypes
-from quasar.cli_args import DukiculvUpjhZIVvaGinshRSKLSTgVVl
+from quasar.cli_args import args
 import quasar.utils
 import quasar.model_management
-class hFTRCQDJXYjBTBYxdLVBThHQwQEdvZRj:
-    fdlOyZPXWscvoPcQnxxSXdTqmBFxYGDC = 1
-    aMTOakoNisHgzZsgUrJBfNFbowQFDzvw = 2
-async def xorVUCSjBcCTFixHnjvWgKQmsHYbOoVo(function, JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO):
+
+
+class BinaryEventTypes:
+    PREVIEW_IMAGE = 1
+    UNENCODED_PREVIEW_IMAGE = 2
+
+async def send_socket_catch_exception(function, message):
     try:
-        await function(JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO)
+        await function(message)
     except (aiohttp.ClientError, aiohttp.ClientPayloadError, ConnectionResetError) as err:
         print("send error:", err)
+
 @web.middleware
-async def gTdSYsyqSyzZdxppfmfsQjsLzkfgXAWR(request: web.Request, TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk):
-    HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk: web.Response = await TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk(request)
+async def cache_control(request: web.Request, handler):
+    response: web.Response = await handler(request)
     if request.path.endswith('.js') or request.path.endswith('.css'):
-        HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk.NUSNKSqfxpvkMAXRONBFajOilLgzJzSm.setdefault('Cache-Control', 'no-cache')
-    return HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk
-def kVJnBFzyJfOcsuvfeUuXqelGIlFkuGfz(allowed_origin: str):
+        response.headers.setdefault('Cache-Control', 'no-cache')
+    return response
+
+def create_cors_middleware(allowed_origin: str):
     @web.middleware
-    async def WYeSZQeouHqjIGTlhjoOULhovHfQOTjM(request: web.Request, TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk):
-        if request.RISfvMcsyLUOJmTUeflroCerpGkgEWru == "OPTIONS":
-            HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk = web.Response()
+    async def cors_middleware(request: web.Request, handler):
+        if request.method == "OPTIONS":
+            # Pre-flight request. Reply successfully:
+            response = web.Response()
         else:
-            HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk = await TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk(request)
-        HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk.NUSNKSqfxpvkMAXRONBFajOilLgzJzSm['Access-Control-Allow-Origin'] = allowed_origin
-        HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk.NUSNKSqfxpvkMAXRONBFajOilLgzJzSm['Access-Control-Allow-Methods'] = 'POST, GET, DELETE, PUT, OPTIONS'
-        HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk.NUSNKSqfxpvkMAXRONBFajOilLgzJzSm['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk.NUSNKSqfxpvkMAXRONBFajOilLgzJzSm['Access-Control-Allow-Credentials'] = 'true'
-        return HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk
-    return WYeSZQeouHqjIGTlhjoOULhovHfQOTjM
-class vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd():
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK):
-        vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd.instance = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS
+            response = await handler(request)
+
+        response.headers['Access-Control-Allow-Origin'] = allowed_origin
+        response.headers['Access-Control-Allow-Methods'] = 'POST, GET, DELETE, PUT, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
+
+    return cors_middleware
+
+class PromptServer():
+    def __init__(self, loop):
+        PromptServer.instance = self
+
         mimetypes.init()
         mimetypes.types_map['.js'] = 'application/javascript; charset=utf-8'
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.supports = ["custom_nodes_from_web"]
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue = None
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK = ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.messages = asyncio.Queue()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD = 0
-        ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD = [gTdSYsyqSyzZdxppfmfsQjsLzkfgXAWR]
-        if DukiculvUpjhZIVvaGinshRSKLSTgVVl.enable_cors_header:
-            ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD.append(kVJnBFzyJfOcsuvfeUuXqelGIlFkuGfz(DukiculvUpjhZIVvaGinshRSKLSTgVVl.enable_cors_header))
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app = web.Application(client_max_size=104857600, ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD=ERfeZxZHuDRYhLDbLyBUSFlhtNGNkADD)
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets = dict()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root = os.path.join(os.path.dirname(
+
+        self.supports = ["custom_nodes_from_web"]
+        self.prompt_queue = None
+        self.loop = loop
+        self.messages = asyncio.Queue()
+        self.number = 0
+
+        middlewares = [cache_control]
+        if args.enable_cors_header:
+            middlewares.append(create_cors_middleware(args.enable_cors_header))
+
+        self.app = web.Application(client_max_size=104857600, middlewares=middlewares)
+        self.sockets = dict()
+        self.web_root = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), "web")
-        bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP = web.RouteTableDef()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP = bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.last_node_id = None
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.client_id = None
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.on_prompt_handlers = []
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get('/ws')
-        async def QoURWDAcNYtjrCckygOtFKpOeuMgBDQL(request):
-            xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi = web.WebSocketResponse()
-            await xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi.prepare(request)
-            JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF.get('clientId', '')
-            if JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT:
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets.pop(JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT, None)
+        routes = web.RouteTableDef()
+        self.routes = routes
+        self.last_node_id = None
+        self.client_id = None
+
+        self.on_prompt_handlers = []
+
+        @routes.get('/ws')
+        async def websocket_handler(request):
+            ws = web.WebSocketResponse()
+            await ws.prepare(request)
+            sid = request.rel_url.query.get('clientId', '')
+            if sid:
+                # Reusing existing session, remove old
+                self.sockets.pop(sid, None)
             else:
-                JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT = uuid.uuid4().hex
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets[JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT] = xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi
+                sid = uuid.uuid4().hex
+
+            self.sockets[sid] = ws
+
             try:
-                await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BUmulCEcJXhvafjQvItCTXiuvSjzjSFf("status", { "status": rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.yvrrxYUiqVgrQsYWMxXZEJxnLIUXDnbr(), 'sid': JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT }, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT)
-                if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.client_id == JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT and rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.last_node_id is not None:
-                    await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BUmulCEcJXhvafjQvItCTXiuvSjzjSFf("executing", { "node": rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.last_node_id }, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT)
-                async for ajOmIBaJxAXoIDFumJtKcydIEAgfQgwV in xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi:
-                    if ajOmIBaJxAXoIDFumJtKcydIEAgfQgwV.type == aiohttp.WSMsgType.ERROR:
-                        print('ws connection closed with exception %s' % xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi.exception())
+                # Send initial state to the new client
+                await self.send("status", { "status": self.get_queue_info(), 'sid': sid }, sid)
+                # On reconnect if we are the currently executing client send the current node
+                if self.client_id == sid and self.last_node_id is not None:
+                    await self.send("executing", { "node": self.last_node_id }, sid)
+                    
+                async for msg in ws:
+                    if msg.type == aiohttp.WSMsgType.ERROR:
+                        print('ws connection closed with exception %s' % ws.exception())
             finally:
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets.pop(JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT, None)
-            return xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/")
-        async def FGJeUnySFrmAvzDAPVrFYSXjeWbMRfbH(request):
-            return web.FileResponse(os.path.join(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, "index.html"))
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/embeddings")
-        def hmlvbUOjPqAxkIEFxrNPhdBXMFcIlqYU(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-            CQDUGzeqFbhJuPQwIUXzCwYMkQNapRqX = folder_paths.DYvodbeLLCWlQGasCGeYTFNFKZRpPvmd("embeddings")
-            return web.json_response(list(map(lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: os.path.splitext(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)[0], CQDUGzeqFbhJuPQwIUXzCwYMkQNapRqX)))
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/extensions")
-        async def asqcLFixlaHkeYsvIjaQBKNMuqurkiju(request):
-            DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.path.join(
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, 'extensions/**/*.js'), recursive=True)
-            HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv = list(map(lambda f: "/" + os.path.relpath(f, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root).replace("\\", "/"), files))
-            for name, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
-                DTcHrFlDIwbrZDZHTOmAOTxRFqptCgyE = glob.glob(os.path.join(dir, '**/*.js'), recursive=True)
-                HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv.extend(list(map(lambda f: "/extensions/" + urllib.parse.quote(
+                self.sockets.pop(sid, None)
+            return ws
+
+        @routes.get("/")
+        async def get_root(request):
+            return web.FileResponse(os.path.join(self.web_root, "index.html"))
+
+        @routes.get("/embeddings")
+        def get_embeddings(self):
+            embeddings = folder_paths.get_filename_list("embeddings")
+            return web.json_response(list(map(lambda a: os.path.splitext(a)[0], embeddings)))
+
+        @routes.get("/extensions")
+        async def get_extensions(request):
+            files = glob.glob(os.path.join(
+                self.web_root, 'extensions/**/*.js'), recursive=True)
+            
+            extensions = list(map(lambda f: "/" + os.path.relpath(f, self.web_root).replace("\\", "/"), files))
+            
+            for name, dir in nodes.EXTENSION_WEB_DIRS.items():
+                files = glob.glob(os.path.join(dir, '**/*.js'), recursive=True)
+                extensions.extend(list(map(lambda f: "/extensions/" + urllib.parse.quote(
                     name) + "/" + os.path.relpath(f, dir).replace("\\", "/"), files)))
-            return web.json_response(HnjgYzcYVPzWBFjtnXmWmmBUkGpTxjgv)
-        def mZYpkoTuRffoqoPxsmINFTYRYhLkpbHy(ZYvUveSnZKyFJUuTpSPHWUbByngGqELv):
-            if ZYvUveSnZKyFJUuTpSPHWUbByngGqELv is None:
-                ZYvUveSnZKyFJUuTpSPHWUbByngGqELv = "input"
-            if ZYvUveSnZKyFJUuTpSPHWUbByngGqELv == "input":
-                cDlRhmZPZRskqARoapdcoOJOluPSwrzz = folder_paths.oLxzopmIeTVwZiWTpRvVAVRpJiaEjmiS()
-            elif ZYvUveSnZKyFJUuTpSPHWUbByngGqELv == "temp":
-                cDlRhmZPZRskqARoapdcoOJOluPSwrzz = folder_paths.PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
-            elif ZYvUveSnZKyFJUuTpSPHWUbByngGqELv == "output":
-                cDlRhmZPZRskqARoapdcoOJOluPSwrzz = folder_paths.gZpMXpjIEjIdWmJXOqOJEBRXYgziLydo()
-            return cDlRhmZPZRskqARoapdcoOJOluPSwrzz, ZYvUveSnZKyFJUuTpSPHWUbByngGqELv
-        def CQuEhVDJIArLptcdZJgLHnckLEDjrJtL(PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF, xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV=None):
-            eLyJtroPthPCROYWyMphoIrGatNOOXCO = PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF.get("image")
-            BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo = PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF.get("overwrite")
-            HgateTCGVeCKZNrFaoAbeXCcKNQOyZRh = PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF.get("type")
-            mylQdErZMSvGLdXwKApSMtgbzVdSovfN, HgateTCGVeCKZNrFaoAbeXCcKNQOyZRh = mZYpkoTuRffoqoPxsmINFTYRYhLkpbHy(HgateTCGVeCKZNrFaoAbeXCcKNQOyZRh)
-            if eLyJtroPthPCROYWyMphoIrGatNOOXCO and eLyJtroPthPCROYWyMphoIrGatNOOXCO.GGrVUpHsMvVvEYhZgyWAlwaKJQserwts:
-                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = eLyJtroPthPCROYWyMphoIrGatNOOXCO.VpsbOZzufynrTFUvvRofTQeRCOCIKJOM
-                if not VpsbOZzufynrTFUvvRofTQeRCOCIKJOM:
+
+            return web.json_response(extensions)
+
+        def get_dir_by_type(dir_type):
+            if dir_type is None:
+                dir_type = "input"
+
+            if dir_type == "input":
+                type_dir = folder_paths.get_input_directory()
+            elif dir_type == "temp":
+                type_dir = folder_paths.get_temp_directory()
+            elif dir_type == "output":
+                type_dir = folder_paths.get_output_directory()
+
+            return type_dir, dir_type
+
+        def image_upload(post, image_save_function=None):
+            image = post.get("image")
+            overwrite = post.get("overwrite")
+
+            image_upload_type = post.get("type")
+            upload_dir, image_upload_type = get_dir_by_type(image_upload_type)
+
+            if image and image.file:
+                filename = image.filename
+                if not filename:
                     return web.Response(status=400)
-                EijzAwkTdadIdbBCcDEUbEYNNcstskwi = PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF.get("subfolder", "")
-                NSnmtWjKbAQhROMkmRknqzSaUCojgOin = os.path.join(mylQdErZMSvGLdXwKApSMtgbzVdSovfN, os.path.normpath(EijzAwkTdadIdbBCcDEUbEYNNcstskwi))
-                jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.abspath(os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM))
-                if os.path.commonpath((mylQdErZMSvGLdXwKApSMtgbzVdSovfN, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)) != mylQdErZMSvGLdXwKApSMtgbzVdSovfN:
+
+                subfolder = post.get("subfolder", "")
+                full_output_folder = os.path.join(upload_dir, os.path.normpath(subfolder))
+                filepath = os.path.abspath(os.path.join(full_output_folder, filename))
+
+                if os.path.commonpath((upload_dir, filepath)) != upload_dir:
                     return web.Response(status=400)
-                if not os.path.exists(NSnmtWjKbAQhROMkmRknqzSaUCojgOin):
-                    os.makedirs(NSnmtWjKbAQhROMkmRknqzSaUCojgOin)
-                split = os.path.splitext(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                if BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo is not None and (BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo == "true" or BqdnPlWzJYaJGGbgGrYQRDAElzLESGqo == "1"):
+
+                if not os.path.exists(full_output_folder):
+                    os.makedirs(full_output_folder)
+
+                split = os.path.splitext(filename)
+
+                if overwrite is not None and (overwrite == "true" or overwrite == "1"):
                     pass
                 else:
-                    HCXmerBqIMuTscBONzTGKYapYSxWTYHo = 1
-                    while os.path.exists(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh):
-                        VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = f"{split[0]} ({i}){split[1]}"
-                        jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh = os.path.join(NSnmtWjKbAQhROMkmRknqzSaUCojgOin, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                        HCXmerBqIMuTscBONzTGKYapYSxWTYHo += 1
-                if xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV is not None:
-                    xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV(eLyJtroPthPCROYWyMphoIrGatNOOXCO, PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh)
+                    i = 1
+                    while os.path.exists(filepath):
+                        filename = f"{split[0]} ({i}){split[1]}"
+                        filepath = os.path.join(full_output_folder, filename)
+                        i += 1
+
+                if image_save_function is not None:
+                    image_save_function(image, post, filepath)
                 else:
-                    with open(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh, "wb") as f:
-                        f.write(eLyJtroPthPCROYWyMphoIrGatNOOXCO.GGrVUpHsMvVvEYhZgyWAlwaKJQserwts.read())
-                return web.json_response({"name" : VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, "subfolder": EijzAwkTdadIdbBCcDEUbEYNNcstskwi, "type": HgateTCGVeCKZNrFaoAbeXCcKNQOyZRh})
+                    with open(filepath, "wb") as f:
+                        f.write(image.file.read())
+
+                return web.json_response({"name" : filename, "subfolder": subfolder, "type": image_upload_type})
             else:
                 return web.Response(status=400)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF("/upload/image")
-        async def AgNlpBFoKqqXUHWAiSqEkQkHeOqOCAvG(request):
-            PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF = await request.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF()
-            return CQuEhVDJIArLptcdZJgLHnckLEDjrJtL(PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF("/upload/mask")
-        async def uDKedUzkPtlGfpUUUFLibyltaGqNEXzl(request):
-            PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF = await request.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF()
-            def xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV(eLyJtroPthPCROYWyMphoIrGatNOOXCO, PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF, jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh):
-                OOliRAzneaJzEAQSAVWehbKoxVRnGhvj = json.loads(PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF.get("original_ref"))
-                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM, DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(OOliRAzneaJzEAQSAVWehbKoxVRnGhvj['filename'])
-                if VpsbOZzufynrTFUvvRofTQeRCOCIKJOM[0] == '/' or '..' in VpsbOZzufynrTFUvvRofTQeRCOCIKJOM:
+
+        @routes.post("/upload/image")
+        async def upload_image(request):
+            post = await request.post()
+            return image_upload(post)
+
+
+        @routes.post("/upload/mask")
+        async def upload_mask(request):
+            post = await request.post()
+
+            def image_save_function(image, post, filepath):
+                original_ref = json.loads(post.get("original_ref"))
+                filename, output_dir = folder_paths.annotated_filepath(original_ref['filename'])
+
+                # validation for security: prevent accessing arbitrary path
+                if filename[0] == '/' or '..' in filename:
                     return web.Response(status=400)
-                if DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh is None:
-                    type = OOliRAzneaJzEAQSAVWehbKoxVRnGhvj.get("type", "output")
-                    DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.kxrHWrKUsAImLcADDJwQctHfTpGpGvug(type)
-                if DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh is None:
+
+                if output_dir is None:
+                    type = original_ref.get("type", "output")
+                    output_dir = folder_paths.get_directory_by_type(type)
+
+                if output_dir is None:
                     return web.Response(status=400)
-                if OOliRAzneaJzEAQSAVWehbKoxVRnGhvj.get("subfolder", "") != "":
-                    sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, OOliRAzneaJzEAQSAVWehbKoxVRnGhvj["subfolder"])
-                    if os.path.commonpath((os.path.abspath(sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN), DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
+
+                if original_ref.get("subfolder", "") != "":
+                    full_output_dir = os.path.join(output_dir, original_ref["subfolder"])
+                    if os.path.commonpath((os.path.abspath(full_output_dir), output_dir)) != output_dir:
                         return web.Response(status=403)
-                    DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN
-                GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                if os.path.isfile(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts):
-                    with Image.open(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts) as qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA:
-                        bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi = PngInfo()
-                        if hasattr(qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA,'text'):
-                            for nyrzKxQtioheHIZujafABgijbCjrWhBU in qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA.text:
-                                bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi.add_text(nyrzKxQtioheHIZujafABgijbCjrWhBU, qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA.text[nyrzKxQtioheHIZujafABgijbCjrWhBU])
-                        qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA = qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA.convert('RGBA')
-                        yxgMZgGuVGbXWHfPgRydDWQbFQUtVHCR = Image.open(eLyJtroPthPCROYWyMphoIrGatNOOXCO.GGrVUpHsMvVvEYhZgyWAlwaKJQserwts).convert('RGBA')
-                        orissTTPtmtXIpKSMqkLrXaJamNDAofA = yxgMZgGuVGbXWHfPgRydDWQbFQUtVHCR.getchannel('A')
-                        qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA.putalpha(orissTTPtmtXIpKSMqkLrXaJamNDAofA)
-                        qMMEmvbOxpYzEAqulxKrFTpyCOrlCFTA.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(jGKkchjlDQuvRrYKaTApaOEWXvxjRZoh, compress_level=4, pnginfo=bpGrrorhUTFbOXgOoJWMtNiVeQXHqzbi)
-            return CQuEhVDJIArLptcdZJgLHnckLEDjrJtL(PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF, xJzyJWyjsuhrwoIFRCpWeXDLAVxVqiuV)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/view")
-        async def RwavKKLCFmtLOTSQzYgsWaUvMCptvylN(request):
-            if "filename" in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
-                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF["filename"]
-                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM,DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.ZouPnEJNuptYlYBxNIdTXWRhksIQlBbt(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                if VpsbOZzufynrTFUvvRofTQeRCOCIKJOM[0] == '/' or '..' in VpsbOZzufynrTFUvvRofTQeRCOCIKJOM:
+                    output_dir = full_output_dir
+
+                file = os.path.join(output_dir, filename)
+
+                if os.path.isfile(file):
+                    with Image.open(file) as original_pil:
+                        metadata = PngInfo()
+                        if hasattr(original_pil,'text'):
+                            for key in original_pil.text:
+                                metadata.add_text(key, original_pil.text[key])
+                        original_pil = original_pil.convert('RGBA')
+                        mask_pil = Image.open(image.file).convert('RGBA')
+
+                        # alpha copy
+                        new_alpha = mask_pil.getchannel('A')
+                        original_pil.putalpha(new_alpha)
+                        original_pil.save(filepath, compress_level=4, pnginfo=metadata)
+
+            return image_upload(post, image_save_function)
+
+        @routes.get("/view")
+        async def view_image(request):
+            if "filename" in request.rel_url.query:
+                filename = request.rel_url.query["filename"]
+                filename,output_dir = folder_paths.annotated_filepath(filename)
+
+                # validation for security: prevent accessing arbitrary path
+                if filename[0] == '/' or '..' in filename:
                     return web.Response(status=400)
-                if DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh is None:
-                    type = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF.get("type", "output")
-                    DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = folder_paths.kxrHWrKUsAImLcADDJwQctHfTpGpGvug(type)
-                if DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh is None:
+
+                if output_dir is None:
+                    type = request.rel_url.query.get("type", "output")
+                    output_dir = folder_paths.get_directory_by_type(type)
+
+                if output_dir is None:
                     return web.Response(status=400)
-                if "subfolder" in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
-                    sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF["subfolder"])
-                    if os.path.commonpath((os.path.abspath(sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN), DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)) != DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh:
+
+                if "subfolder" in request.rel_url.query:
+                    full_output_dir = os.path.join(output_dir, request.rel_url.query["subfolder"])
+                    if os.path.commonpath((os.path.abspath(full_output_dir), output_dir)) != output_dir:
                         return web.Response(status=403)
-                    DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = sfJCZlvyEBNJKYZMOKZyjCBnsTwFUBVN
-                VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = os.path.basename(VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                GGrVUpHsMvVvEYhZgyWAlwaKJQserwts = os.path.join(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-                if os.path.isfile(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts):
-                    if 'preview' in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
-                        with Image.open(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts) as UaFpXseNaoqfcpsDACQmTguYDZsTArhs:
-                            FEjKaKqRBlOIxhuZQpcgqPPBnnOomKXF = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF['preview'].split(';')
-                            FpFMukbJEDsuvLMXLpkzFqwVQIiIOwjy = FEjKaKqRBlOIxhuZQpcgqPPBnnOomKXF[0]
-                            if FpFMukbJEDsuvLMXLpkzFqwVQIiIOwjy not in ['webp', 'jpeg'] or 'a' in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF.get('channel', ''):
-                                FpFMukbJEDsuvLMXLpkzFqwVQIiIOwjy = 'webp'
-                            VjCDDDhoOBHYwICKnNldLuMUvRwnLMaR = 90
-                            if FEjKaKqRBlOIxhuZQpcgqPPBnnOomKXF[-1].isdigit():
-                                VjCDDDhoOBHYwICKnNldLuMUvRwnLMaR = int(FEjKaKqRBlOIxhuZQpcgqPPBnnOomKXF[-1])
-                            cwkONaVGEoylzHtriwkevQTGYiyvAsuQ = BytesIO()
-                            if FpFMukbJEDsuvLMXLpkzFqwVQIiIOwjy in ['jpeg'] or request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF.get('channel', '') == 'rgb':
-                                UaFpXseNaoqfcpsDACQmTguYDZsTArhs = UaFpXseNaoqfcpsDACQmTguYDZsTArhs.convert("RGB")
-                            UaFpXseNaoqfcpsDACQmTguYDZsTArhs.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(cwkONaVGEoylzHtriwkevQTGYiyvAsuQ, format=FpFMukbJEDsuvLMXLpkzFqwVQIiIOwjy, VjCDDDhoOBHYwICKnNldLuMUvRwnLMaR=VjCDDDhoOBHYwICKnNldLuMUvRwnLMaR)
-                            cwkONaVGEoylzHtriwkevQTGYiyvAsuQ.seek(0)
-                            return web.Response(body=cwkONaVGEoylzHtriwkevQTGYiyvAsuQ.read(), content_type=f'image/{image_format}',
-                                                NUSNKSqfxpvkMAXRONBFajOilLgzJzSm={"Content-Disposition": f"filename=\"{filename}\""})
-                    if 'channel' not in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
-                        EiApFIHKVDYyxTYijPXtjyqRuQDlhpED = 'rgba'
+                    output_dir = full_output_dir
+
+                filename = os.path.basename(filename)
+                file = os.path.join(output_dir, filename)
+
+                if os.path.isfile(file):
+                    if 'preview' in request.rel_url.query:
+                        with Image.open(file) as img:
+                            preview_info = request.rel_url.query['preview'].split(';')
+                            image_format = preview_info[0]
+                            if image_format not in ['webp', 'jpeg'] or 'a' in request.rel_url.query.get('channel', ''):
+                                image_format = 'webp'
+
+                            quality = 90
+                            if preview_info[-1].isdigit():
+                                quality = int(preview_info[-1])
+
+                            buffer = BytesIO()
+                            if image_format in ['jpeg'] or request.rel_url.query.get('channel', '') == 'rgb':
+                                img = img.convert("RGB")
+                            img.save(buffer, format=image_format, quality=quality)
+                            buffer.seek(0)
+
+                            return web.Response(body=buffer.read(), content_type=f'image/{image_format}',
+                                                headers={"Content-Disposition": f"filename=\"{filename}\""})
+
+                    if 'channel' not in request.rel_url.query:
+                        channel = 'rgba'
                     else:
-                        EiApFIHKVDYyxTYijPXtjyqRuQDlhpED = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF["channel"]
-                    if EiApFIHKVDYyxTYijPXtjyqRuQDlhpED == 'rgb':
-                        with Image.open(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts) as UaFpXseNaoqfcpsDACQmTguYDZsTArhs:
-                            if UaFpXseNaoqfcpsDACQmTguYDZsTArhs.bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC == "RGBA":
-                                r, zjSCLdcRnfaSDwMwtPZkXXzptdHpOEDh, b, GlZreLQjBCiBptpFgmbsMbhjFlMgPVav = UaFpXseNaoqfcpsDACQmTguYDZsTArhs.split()
-                                QiolJCrFzjsIjSCGOIYlUuUaUNGXSmFx = Image.merge('RGB', (r, zjSCLdcRnfaSDwMwtPZkXXzptdHpOEDh, b))
+                        channel = request.rel_url.query["channel"]
+
+                    if channel == 'rgb':
+                        with Image.open(file) as img:
+                            if img.mode == "RGBA":
+                                r, g, b, a = img.split()
+                                new_img = Image.merge('RGB', (r, g, b))
                             else:
-                                QiolJCrFzjsIjSCGOIYlUuUaUNGXSmFx = UaFpXseNaoqfcpsDACQmTguYDZsTArhs.convert("RGB")
-                            cwkONaVGEoylzHtriwkevQTGYiyvAsuQ = BytesIO()
-                            QiolJCrFzjsIjSCGOIYlUuUaUNGXSmFx.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(cwkONaVGEoylzHtriwkevQTGYiyvAsuQ, format='PNG')
-                            cwkONaVGEoylzHtriwkevQTGYiyvAsuQ.seek(0)
-                            return web.Response(body=cwkONaVGEoylzHtriwkevQTGYiyvAsuQ.read(), content_type='image/png',
-                                                NUSNKSqfxpvkMAXRONBFajOilLgzJzSm={"Content-Disposition": f"filename=\"{filename}\""})
-                    elif EiApFIHKVDYyxTYijPXtjyqRuQDlhpED == 'a':
-                        with Image.open(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts) as UaFpXseNaoqfcpsDACQmTguYDZsTArhs:
-                            if UaFpXseNaoqfcpsDACQmTguYDZsTArhs.bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC == "RGBA":
-                                _, _, _, GlZreLQjBCiBptpFgmbsMbhjFlMgPVav = UaFpXseNaoqfcpsDACQmTguYDZsTArhs.split()
+                                new_img = img.convert("RGB")
+
+                            buffer = BytesIO()
+                            new_img.save(buffer, format='PNG')
+                            buffer.seek(0)
+
+                            return web.Response(body=buffer.read(), content_type='image/png',
+                                                headers={"Content-Disposition": f"filename=\"{filename}\""})
+
+                    elif channel == 'a':
+                        with Image.open(file) as img:
+                            if img.mode == "RGBA":
+                                _, _, _, a = img.split()
                             else:
-                                GlZreLQjBCiBptpFgmbsMbhjFlMgPVav = Image.new('L', UaFpXseNaoqfcpsDACQmTguYDZsTArhs.vqDBJgidQufnKyAltPYRqiKGjmztArDJ, 255)
-                            MhtYuxrhaZZkjDcNfnetYDZLnHJurlFD = Image.new('RGBA', UaFpXseNaoqfcpsDACQmTguYDZsTArhs.vqDBJgidQufnKyAltPYRqiKGjmztArDJ)
-                            MhtYuxrhaZZkjDcNfnetYDZLnHJurlFD.putalpha(GlZreLQjBCiBptpFgmbsMbhjFlMgPVav)
-                            ysblJMcISKiGdMQiuXmzpZVCiHhPWccA = BytesIO()
-                            MhtYuxrhaZZkjDcNfnetYDZLnHJurlFD.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(ysblJMcISKiGdMQiuXmzpZVCiHhPWccA, format='PNG')
-                            ysblJMcISKiGdMQiuXmzpZVCiHhPWccA.seek(0)
-                            return web.Response(body=ysblJMcISKiGdMQiuXmzpZVCiHhPWccA.read(), content_type='image/png',
-                                                NUSNKSqfxpvkMAXRONBFajOilLgzJzSm={"Content-Disposition": f"filename=\"{filename}\""})
+                                a = Image.new('L', img.size, 255)
+
+                            # alpha img
+                            alpha_img = Image.new('RGBA', img.size)
+                            alpha_img.putalpha(a)
+                            alpha_buffer = BytesIO()
+                            alpha_img.save(alpha_buffer, format='PNG')
+                            alpha_buffer.seek(0)
+
+                            return web.Response(body=alpha_buffer.read(), content_type='image/png',
+                                                headers={"Content-Disposition": f"filename=\"{filename}\""})
                     else:
-                        return web.FileResponse(GGrVUpHsMvVvEYhZgyWAlwaKJQserwts, NUSNKSqfxpvkMAXRONBFajOilLgzJzSm={"Content-Disposition": f"filename=\"{filename}\""})
+                        return web.FileResponse(file, headers={"Content-Disposition": f"filename=\"{filename}\""})
+
             return web.Response(status=404)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/view_metadata/{folder_name}")
-        async def YAtkowzUhzXxiigGvKTjgrslNGRktWWe(request):
-            OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ = request.match_info.get("folder_name", None)
-            if OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ is None:
+
+        @routes.get("/view_metadata/{folder_name}")
+        async def view_metadata(request):
+            folder_name = request.match_info.get("folder_name", None)
+            if folder_name is None:
                 return web.Response(status=404)
-            if not "filename" in request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF:
+            if not "filename" in request.rel_url.query:
                 return web.Response(status=404)
-            VpsbOZzufynrTFUvvRofTQeRCOCIKJOM = request.rel_url.oFxedobBnFbKeewIgTfUgblKziGvmndF["filename"]
-            if not VpsbOZzufynrTFUvvRofTQeRCOCIKJOM.endswith(".safetensors"):
+
+            filename = request.rel_url.query["filename"]
+            if not filename.endswith(".safetensors"):
                 return web.Response(status=404)
-            aCpBstybtvNanefrpKNRDFwTyFdYYqmv = folder_paths.TIUEGMgxYSpXjfhmEGzFnNfGAqtlBBKE(OiSDAWttaBayZhaRXvjSPjBrXgoDRtfZ, VpsbOZzufynrTFUvvRofTQeRCOCIKJOM)
-            if aCpBstybtvNanefrpKNRDFwTyFdYYqmv is None:
+
+            safetensors_path = folder_paths.get_full_path(folder_name, filename)
+            if safetensors_path is None:
                 return web.Response(status=404)
-            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = quasar.utils.safetensors_header(aCpBstybtvNanefrpKNRDFwTyFdYYqmv, jedJBMoSqKrLwfdHJIPJxgtLxmLgQAQz=1024*1024)
-            if iqymPVpxyjOWChGwBkTemSzHJbnJdAIz is None:
+            out = quasar.utils.safetensors_header(safetensors_path, max_size=1024*1024)
+            if out is None:
                 return web.Response(status=404)
-            rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG = json.loads(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz)
-            if not "__metadata__" in rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG:
+            dt = json.loads(out)
+            if not "__metadata__" in dt:
                 return web.Response(status=404)
-            return web.json_response(rYtAWlTfuJKXWhYOjYFOlRbQzowyoxFG["__metadata__"])
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/system_stats")
-        async def lTeCmGwVHMgHEdPdTvDbShdpjolGRgNP(request):
-            fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = quasar.model_management.aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
-            LKGttefzMHbQsSCFJjKbAWGhbIpBWTal = quasar.model_management.CIUMTWevcFrsyhsNplwosYXuEZxYMCyJ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-            RLmugukEYkxzfSCKaEWBGZuHSEOQCFCb, CPmfbKHPexHTdMyYTkWLcWJyDYQUgVoh = quasar.model_management.vJrdZOBBaEUjLkobsDWKZVCBOAICHZyg(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, torch_total_too=True)
-            kbasCXwVBHYxjnfxoYMePJNFwjOQJuuH, mqBKvQSkDHBcoMjHYqBSBckPFVKkaKxr = quasar.model_management.pEiuPTHzmozHhNpBwWGAaONYuNGSpuqI(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, torch_free_too=True)
-            zrNEqtwItZmzpRltVnSBfgdEAifrcRDg = {
+            return web.json_response(dt["__metadata__"])
+
+        @routes.get("/system_stats")
+        async def get_queue(request):
+            device = quasar.model_management.get_torch_device()
+            device_name = quasar.model_management.get_torch_device_name(device)
+            vram_total, torch_vram_total = quasar.model_management.get_total_memory(device, torch_total_too=True)
+            vram_free, torch_vram_free = quasar.model_management.get_free_memory(device, torch_free_too=True)
+            system_stats = {
                 "system": {
                     "os": os.name,
-                    "python_version": sys.AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ,
+                    "python_version": sys.version,
                     "embedded_python": os.path.split(os.path.split(sys.executable)[0])[1] == "python_embeded"
                 },
                 "devices": [
                     {
-                        "name": LKGttefzMHbQsSCFJjKbAWGhbIpBWTal,
-                        "type": fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.type,
-                        "index": fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc.index,
-                        "vram_total": RLmugukEYkxzfSCKaEWBGZuHSEOQCFCb,
-                        "vram_free": kbasCXwVBHYxjnfxoYMePJNFwjOQJuuH,
-                        "torch_vram_total": CPmfbKHPexHTdMyYTkWLcWJyDYQUgVoh,
-                        "torch_vram_free": mqBKvQSkDHBcoMjHYqBSBckPFVKkaKxr,
+                        "name": device_name,
+                        "type": device.type,
+                        "index": device.index,
+                        "vram_total": vram_total,
+                        "vram_free": vram_free,
+                        "torch_vram_total": torch_vram_total,
+                        "torch_vram_free": torch_vram_free,
                     }
                 ]
             }
-            return web.json_response(zrNEqtwItZmzpRltVnSBfgdEAifrcRDg)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/prompt")
-        async def rtuFHpSyZqnkZElxUNzYjhOTHfGAVlrQ(request):
-            return web.json_response(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.yvrrxYUiqVgrQsYWMxXZEJxnLIUXDnbr())
-        def UummXdFvEtxfcoqHSKXTIifWtbqQRdVX(xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK):
-            jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA = nodes.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP[xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK]
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi = {}
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['input'] = jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.hGTeyOvpHejlssWPjkjTHIgcOKnCfnQl()
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['output'] = jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.KmrPlNMyCntWtQIuwTzhYketzPaLUxAX
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['output_is_list'] = jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.OUTPUT_IS_LIST if hasattr(jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA, 'OUTPUT_IS_LIST') else [False] * len(jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.KmrPlNMyCntWtQIuwTzhYketzPaLUxAX)
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['output_name'] = jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.vnnDnTEtmjYBCExrcduKGXUgKSzKzhcS if hasattr(jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA, 'RETURN_NAMES') else dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['output']
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['name'] = xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['display_name'] = nodes.fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf[xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK] if xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK in nodes.fCNmqhLiPJmYYCEegZyrwHUKFhfIrdcf.keys() else xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['description'] = jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.DESCRIPTION if hasattr(jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA,'DESCRIPTION') else ''
-            dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['category'] = 'sd'
-            if hasattr(jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA, 'OUTPUT_NODE') and jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.AQnTlfqkrmdAAnLjLNUFibEHomwVhMHv == True:
-                dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['output_node'] = True
+            return web.json_response(system_stats)
+
+        @routes.get("/prompt")
+        async def get_prompt(request):
+            return web.json_response(self.get_queue_info())
+
+        def node_info(node_class):
+            obj_class = nodes.NODE_CLASS_MAPPINGS[node_class]
+            info = {}
+            info['input'] = obj_class.INPUT_TYPES()
+            info['output'] = obj_class.RETURN_TYPES
+            info['output_is_list'] = obj_class.OUTPUT_IS_LIST if hasattr(obj_class, 'OUTPUT_IS_LIST') else [False] * len(obj_class.RETURN_TYPES)
+            info['output_name'] = obj_class.RETURN_NAMES if hasattr(obj_class, 'RETURN_NAMES') else info['output']
+            info['name'] = node_class
+            info['display_name'] = nodes.NODE_DISPLAY_NAME_MAPPINGS[node_class] if node_class in nodes.NODE_DISPLAY_NAME_MAPPINGS.keys() else node_class
+            info['description'] = obj_class.DESCRIPTION if hasattr(obj_class,'DESCRIPTION') else ''
+            info['category'] = 'sd'
+            if hasattr(obj_class, 'OUTPUT_NODE') and obj_class.OUTPUT_NODE == True:
+                info['output_node'] = True
             else:
-                dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['output_node'] = False
-            if hasattr(jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA, 'CATEGORY'):
-                dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi['category'] = jKcSNUDNgDXASzMmWRVTLbRKsfRcUIvA.VHBvQQsdmXccHUVkiKRmkuIiUnjOTicH
-            return dkvGBiZkeLIFANNbVKlbQzLVBVedCkgi
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/object_info")
-        async def IgCCqmDgQOjwZyymVGxeYLwFOkwlFSMe(request):
-            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = {}
-            for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in nodes.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP:
-                iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[NECAaWUrFGIXcLimrerEYmxYIykQBfXb] = UummXdFvEtxfcoqHSKXTIifWtbqQRdVX(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-            return web.json_response(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/object_info/{node_class}")
-        async def UNonCACVdrzPWedMqIyrIufNXCirUFCg(request):
-            xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK = request.match_info.get("node_class", None)
-            iqymPVpxyjOWChGwBkTemSzHJbnJdAIz = {}
-            if (xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK is not None) and (xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK in nodes.wJhMfuyrPNjllkMCYXdJHMhubCAizKhP):
-                iqymPVpxyjOWChGwBkTemSzHJbnJdAIz[xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK] = UummXdFvEtxfcoqHSKXTIifWtbqQRdVX(xSOZmNYxpkmvdctjGrQpCBJzXGRyWToK)
-            return web.json_response(iqymPVpxyjOWChGwBkTemSzHJbnJdAIz)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/history")
-        async def nglQBfzxqztJKZZGNtEyLrQsaKQhyjMg(request):
-            return web.json_response(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.nglQBfzxqztJKZZGNtEyLrQsaKQhyjMg())
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/history/{prompt_id}")
-        async def nglQBfzxqztJKZZGNtEyLrQsaKQhyjMg(request):
-            AFursZnPuECGUFTkCjDbdYIYmtroiqfB = request.match_info.get("prompt_id", None)
-            return web.json_response(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.nglQBfzxqztJKZZGNtEyLrQsaKQhyjMg(AFursZnPuECGUFTkCjDbdYIYmtroiqfB=AFursZnPuECGUFTkCjDbdYIYmtroiqfB))
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.get("/queue")
-        async def lTeCmGwVHMgHEdPdTvDbShdpjolGRgNP(request):
-            zKQRdGZVnNjWfkbPqEGUhWMPvfpeQAoa = {}
-            YjhaLUBJRBuzruLsvXqjqFRZVGPPYlsN = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.zcXnzbKBPZhuUbUDbBKQYruWvmnWjdXd()
-            zKQRdGZVnNjWfkbPqEGUhWMPvfpeQAoa['queue_running'] = YjhaLUBJRBuzruLsvXqjqFRZVGPPYlsN[0]
-            zKQRdGZVnNjWfkbPqEGUhWMPvfpeQAoa['queue_pending'] = YjhaLUBJRBuzruLsvXqjqFRZVGPPYlsN[1]
-            return web.json_response(zKQRdGZVnNjWfkbPqEGUhWMPvfpeQAoa)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF("/prompt")
-        async def mEvhoLvejJJzUuEqSHnnuwmtQVWdYrvI(request):
+                info['output_node'] = False
+
+            if hasattr(obj_class, 'CATEGORY'):
+                info['category'] = obj_class.CATEGORY
+            return info
+
+        @routes.get("/object_info")
+        async def get_object_info(request):
+            out = {}
+            for x in nodes.NODE_CLASS_MAPPINGS:
+                out[x] = node_info(x)
+            return web.json_response(out)
+
+        @routes.get("/object_info/{node_class}")
+        async def get_object_info_node(request):
+            node_class = request.match_info.get("node_class", None)
+            out = {}
+            if (node_class is not None) and (node_class in nodes.NODE_CLASS_MAPPINGS):
+                out[node_class] = node_info(node_class)
+            return web.json_response(out)
+
+        @routes.get("/history")
+        async def get_history(request):
+            return web.json_response(self.prompt_queue.get_history())
+
+        @routes.get("/history/{prompt_id}")
+        async def get_history(request):
+            prompt_id = request.match_info.get("prompt_id", None)
+            return web.json_response(self.prompt_queue.get_history(prompt_id=prompt_id))
+
+        @routes.get("/queue")
+        async def get_queue(request):
+            queue_info = {}
+            current_queue = self.prompt_queue.get_current_queue()
+            queue_info['queue_running'] = current_queue[0]
+            queue_info['queue_pending'] = current_queue[1]
+            return web.json_response(queue_info)
+
+        @routes.post("/prompt")
+        async def post_prompt(request):
             print("got prompt")
-            cicSAkZRUdRnvxwIyGEfxgqfUluMPHFp = 200
-            gKOqsXKiMHyMfJdNkNEvdnivNsNJKQyW = ""
-            UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH =  await request.json()
-            UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CVlpsFZpCaBNCNZqToOXuOcHyMwPHNGp(UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH)
-            if "number" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD = float(UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH['number'])
+            resp_code = 200
+            out_string = ""
+            json_data =  await request.json()
+            json_data = self.trigger_on_prompt(json_data)
+
+            if "number" in json_data:
+                number = float(json_data['number'])
             else:
-                FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD
-                if "front" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                    if UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH['front']:
-                        FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD = -FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD += 1
-            if "prompt" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                qKBREHoSgcMHYVCNTapmPyODbBOyQAyv = UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH["prompt"]
-                ERUVMXIoRhkepyeqXbuVyzEnnckUwodx = execution.qcwCQLkogrkGqZWctxxXKVKWwxbopaRJ(qKBREHoSgcMHYVCNTapmPyODbBOyQAyv)
-                vngfynKJfsHLAoqKbHSpKIzjZdROnsZl = {}
-                if "extra_data" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                    vngfynKJfsHLAoqKbHSpKIzjZdROnsZl = UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH["extra_data"]
-                if "client_id" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                    vngfynKJfsHLAoqKbHSpKIzjZdROnsZl["client_id"] = UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH["client_id"]
-                if ERUVMXIoRhkepyeqXbuVyzEnnckUwodx[0]:
-                    AFursZnPuECGUFTkCjDbdYIYmtroiqfB = str(uuid.uuid4())
-                    brFZitjOvbNclhdGWVUAWGSUfhOfcWsy = ERUVMXIoRhkepyeqXbuVyzEnnckUwodx[2]
-                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.CCOVuLEMeFpoufRVtjDeWqHtFSDTjTzt((FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD, AFursZnPuECGUFTkCjDbdYIYmtroiqfB, qKBREHoSgcMHYVCNTapmPyODbBOyQAyv, vngfynKJfsHLAoqKbHSpKIzjZdROnsZl, brFZitjOvbNclhdGWVUAWGSUfhOfcWsy))
-                    HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk = {"prompt_id": AFursZnPuECGUFTkCjDbdYIYmtroiqfB, "number": FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD, "node_errors": ERUVMXIoRhkepyeqXbuVyzEnnckUwodx[3]}
-                    return web.json_response(HQlvpyIUUfnfAqKdXyNavyxWXIZkebhk)
+                number = self.number
+                if "front" in json_data:
+                    if json_data['front']:
+                        number = -number
+
+                self.number += 1
+
+            if "prompt" in json_data:
+                prompt = json_data["prompt"]
+                valid = execution.validate_prompt(prompt)
+                extra_data = {}
+                if "extra_data" in json_data:
+                    extra_data = json_data["extra_data"]
+
+                if "client_id" in json_data:
+                    extra_data["client_id"] = json_data["client_id"]
+                if valid[0]:
+                    prompt_id = str(uuid.uuid4())
+                    outputs_to_execute = valid[2]
+                    self.prompt_queue.put((number, prompt_id, prompt, extra_data, outputs_to_execute))
+                    response = {"prompt_id": prompt_id, "number": number, "node_errors": valid[3]}
+                    return web.json_response(response)
                 else:
-                    print("invalid prompt:", ERUVMXIoRhkepyeqXbuVyzEnnckUwodx[1])
-                    return web.json_response({"error": ERUVMXIoRhkepyeqXbuVyzEnnckUwodx[1], "node_errors": ERUVMXIoRhkepyeqXbuVyzEnnckUwodx[3]}, status=400)
+                    print("invalid prompt:", valid[1])
+                    return web.json_response({"error": valid[1], "node_errors": valid[3]}, status=400)
             else:
                 return web.json_response({"error": "no prompt", "node_errors": []}, status=400)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF("/queue")
-        async def xnLrDuhtzPuICRupoCUtupkUrhDRSaQZ(request):
-            UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH =  await request.json()
-            if "clear" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                if UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH["clear"]:
-                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.DlgdOtYbsMDZaSavoSpBEHOHGoWiupuW()
-            if "delete" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ = UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH['delete']
-                for qfBoniFmTgUvqdSyxjmQmiqYnGgWUrtJ in HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ:
-                    WjfJkXCHHmiThFKVEkbbSZBLRoMVLsSb = lambda GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: GlZreLQjBCiBptpFgmbsMbhjFlMgPVav[1] == qfBoniFmTgUvqdSyxjmQmiqYnGgWUrtJ
-                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.kqUSARiqrpbKPOIIpqEzyhrJfaGKBQOs(WjfJkXCHHmiThFKVEkbbSZBLRoMVLsSb)
+
+        @routes.post("/queue")
+        async def post_queue(request):
+            json_data =  await request.json()
+            if "clear" in json_data:
+                if json_data["clear"]:
+                    self.prompt_queue.wipe_queue()
+            if "delete" in json_data:
+                to_delete = json_data['delete']
+                for id_to_delete in to_delete:
+                    delete_func = lambda a: a[1] == id_to_delete
+                    self.prompt_queue.delete_queue_item(delete_func)
+
             return web.Response(status=200)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF("/interrupt")
-        async def cDLSlLAYYyynyKofSxecnMFzjtnzxHAR(request):
-            nodes.NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM()
+
+        @routes.post("/interrupt")
+        async def post_interrupt(request):
+            nodes.interrupt_processing()
             return web.Response(status=200)
-        @bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP.PWqGBaLAYfSwazFeBMSGmrXYXGQgzIGF("/history")
-        async def jqPRRzSOTSyvsahholjQokYZyXoxyIAm(request):
-            UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH =  await request.json()
-            if "clear" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                if UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH["clear"]:
-                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.BfUFoNCsskLewFIQhwJteOlDlTrsiYeM()
-            if "delete" in UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH:
-                HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ = UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH['delete']
-                for qfBoniFmTgUvqdSyxjmQmiqYnGgWUrtJ in HZgFvSCHHvndfkOsuWOqyKgtGBOkAfAZ:
-                    rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.SWoBIKPEDgMZbmxkAhUBljmIrxWgVfpt(qfBoniFmTgUvqdSyxjmQmiqYnGgWUrtJ)
+
+        @routes.post("/history")
+        async def post_history(request):
+            json_data =  await request.json()
+            if "clear" in json_data:
+                if json_data["clear"]:
+                    self.prompt_queue.wipe_history()
+            if "delete" in json_data:
+                to_delete = json_data['delete']
+                for id_to_delete in to_delete:
+                    self.prompt_queue.delete_history_item(id_to_delete)
+
             return web.Response(status=200)
-    def grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.bodEVTWCiQtEgnHDFZUfegjtZIcDqMqP)
-        for name, dir in nodes.OhQOpxGGCySHXalbRgaNhmvFYyGbOLxZ.items():
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi([
+        
+    def add_routes(self):
+        self.app.add_routes(self.routes)
+
+        for name, dir in nodes.EXTENSION_WEB_DIRS.items():
+            self.app.add_routes([
                 web.static('/extensions/' + urllib.parse.quote(name), dir, follow_symlinks=True),
             ])
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi([
-            web.static('/', rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.web_root, follow_symlinks=True),
+
+        self.app.add_routes([
+            web.static('/', self.web_root, follow_symlinks=True),
         ])
-    def yvrrxYUiqVgrQsYWMxXZEJxnLIUXDnbr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        GjFngyPEbvmyWKdohCWlJwQdGDmPFMJv = {}
-        xUhsMmEzWOLseFZzkBPJkyceMytFEhem = {}
-        xUhsMmEzWOLseFZzkBPJkyceMytFEhem['queue_remaining'] = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.prompt_queue.EtRSdUTbsAGPQTWeOVUeVvGClCQoJfey()
-        GjFngyPEbvmyWKdohCWlJwQdGDmPFMJv['exec_info'] = xUhsMmEzWOLseFZzkBPJkyceMytFEhem
-        return GjFngyPEbvmyWKdohCWlJwQdGDmPFMJv
-    async def BUmulCEcJXhvafjQvItCTXiuvSjzjSFf(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=None):
-        if event == hFTRCQDJXYjBTBYxdLVBThHQwQEdvZRj.aMTOakoNisHgzZsgUrJBfNFbowQFDzvw:
-            await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HRgKozExpPGXCQOHNUJqBLOKMbbpygDL(data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT)
+
+    def get_queue_info(self):
+        prompt_info = {}
+        exec_info = {}
+        exec_info['queue_remaining'] = self.prompt_queue.get_tasks_remaining()
+        prompt_info['exec_info'] = exec_info
+        return prompt_info
+
+    async def send(self, event, data, sid=None):
+        if event == BinaryEventTypes.UNENCODED_PREVIEW_IMAGE:
+            await self.send_image(data, sid=sid)
         elif isinstance(data, (bytes, bytearray)):
-            await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xcZrutSLQCYZqeDsqlFkiSCGgszjvDJQ(event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT)
+            await self.send_bytes(event, data, sid)
         else:
-            await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.JIuLLknKmvoFbWnxxCtVPWyssUoyssdx(event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT)
-    def HnYMlAkqypeGWCsLNNuJoKhoyIgGBdGl(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, event, data):
+            await self.send_json(event, data, sid)
+
+    def encode_bytes(self, event, data):
         if not isinstance(event, int):
             raise RuntimeError(f"Binary event types must be integers, got {event}")
-        xHwjpgVIeTCBxNVsGEaIQthrVWPRVtKV = struct.pack(">I", event)
-        JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO = bytearray(xHwjpgVIeTCBxNVsGEaIQthrVWPRVtKV)
-        JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO.extend(data)
-        return JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO
-    async def HRgKozExpPGXCQOHNUJqBLOKMbbpygDL(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, image_data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=None):
-        gMAqwKbAmPSlNutbEQLabUMOSMWTaXiL = image_data[0]
-        eLyJtroPthPCROYWyMphoIrGatNOOXCO = image_data[1]
-        jedJBMoSqKrLwfdHJIPJxgtLxmLgQAQz = image_data[2]
-        if jedJBMoSqKrLwfdHJIPJxgtLxmLgQAQz is not None:
+
+        packed = struct.pack(">I", event)
+        message = bytearray(packed)
+        message.extend(data)
+        return message
+
+    async def send_image(self, image_data, sid=None):
+        image_type = image_data[0]
+        image = image_data[1]
+        max_size = image_data[2]
+        if max_size is not None:
             if hasattr(Image, 'Resampling'):
-                VfgMvQQburvHcuDSjykMqzSDOZbAXdKI = Image.Resampling.BILINEAR
+                resampling = Image.Resampling.BILINEAR
             else:
-                VfgMvQQburvHcuDSjykMqzSDOZbAXdKI = Image.ANTIALIAS
-            eLyJtroPthPCROYWyMphoIrGatNOOXCO = ImageOps.contain(eLyJtroPthPCROYWyMphoIrGatNOOXCO, (jedJBMoSqKrLwfdHJIPJxgtLxmLgQAQz, jedJBMoSqKrLwfdHJIPJxgtLxmLgQAQz), VfgMvQQburvHcuDSjykMqzSDOZbAXdKI)
-        iwfbrvoNITTgpyVOMmWYZJdmSsUUGkkP = 1
-        if gMAqwKbAmPSlNutbEQLabUMOSMWTaXiL == "JPEG":
-            iwfbrvoNITTgpyVOMmWYZJdmSsUUGkkP = 1
-        elif gMAqwKbAmPSlNutbEQLabUMOSMWTaXiL == "PNG":
-            iwfbrvoNITTgpyVOMmWYZJdmSsUUGkkP = 2
-        DefwnHgSlTOAvAStuPkwnHTNmIMWaKYl = BytesIO()
-        KDzzBWHjlQwFzHaklntHThjQWIdWuhMw = struct.pack(">I", iwfbrvoNITTgpyVOMmWYZJdmSsUUGkkP)
-        DefwnHgSlTOAvAStuPkwnHTNmIMWaKYl.write(KDzzBWHjlQwFzHaklntHThjQWIdWuhMw)
-        eLyJtroPthPCROYWyMphoIrGatNOOXCO.PXhZDpeqZAdDBfrowpMPOPAWwzXhVAFM(DefwnHgSlTOAvAStuPkwnHTNmIMWaKYl, format=gMAqwKbAmPSlNutbEQLabUMOSMWTaXiL, VjCDDDhoOBHYwICKnNldLuMUvRwnLMaR=95, compress_level=4)
-        ljJUDoqGBoyPevlyawCUEFbfPKfJQjML = DefwnHgSlTOAvAStuPkwnHTNmIMWaKYl.getvalue()
-        await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xcZrutSLQCYZqeDsqlFkiSCGgszjvDJQ(hFTRCQDJXYjBTBYxdLVBThHQwQEdvZRj.fdlOyZPXWscvoPcQnxxSXdTqmBFxYGDC, ljJUDoqGBoyPevlyawCUEFbfPKfJQjML, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT)
-    async def xcZrutSLQCYZqeDsqlFkiSCGgszjvDJQ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=None):
-        JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.HnYMlAkqypeGWCsLNNuJoKhoyIgGBdGl(event, data)
-        if JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT is None:
-            for xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets.values():
-                await xorVUCSjBcCTFixHnjvWgKQmsHYbOoVo(xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi.xcZrutSLQCYZqeDsqlFkiSCGgszjvDJQ, JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO)
-        elif JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets:
-            await xorVUCSjBcCTFixHnjvWgKQmsHYbOoVo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets[JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT].xcZrutSLQCYZqeDsqlFkiSCGgszjvDJQ, JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO)
-    async def JIuLLknKmvoFbWnxxCtVPWyssUoyssdx(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=None):
-        JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO = {"type": event, "data": data}
-        if JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT is None:
-            for xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets.values():
-                await xorVUCSjBcCTFixHnjvWgKQmsHYbOoVo(xMUuFtzQyRMgVTNGJlNLnSTHJqLOlsTi.JIuLLknKmvoFbWnxxCtVPWyssUoyssdx, JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO)
-        elif JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets:
-            await xorVUCSjBcCTFixHnjvWgKQmsHYbOoVo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.sockets[JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT].JIuLLknKmvoFbWnxxCtVPWyssUoyssdx, JWcvhhSkkAOvOUymGHSWwtMPsUYfbjKO)
-    def qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT=None):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK.call_soon_threadsafe(
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.messages.put_nowait, (event, data, JSUFYNwccnkWErsvCCtXGLoDRqOUNtXT))
-    def YpzwdlwzVFOboyfWmWHyngylauEuTbaZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa("status", { "status": rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.yvrrxYUiqVgrQsYWMxXZEJxnLIUXDnbr() })
-    async def EBskPkRhwxVtGrdnQMhAvswjrxSyPepP(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+                resampling = Image.ANTIALIAS
+
+            image = ImageOps.contain(image, (max_size, max_size), resampling)
+        type_num = 1
+        if image_type == "JPEG":
+            type_num = 1
+        elif image_type == "PNG":
+            type_num = 2
+
+        bytesIO = BytesIO()
+        header = struct.pack(">I", type_num)
+        bytesIO.write(header)
+        image.save(bytesIO, format=image_type, quality=95, compress_level=4)
+        preview_bytes = bytesIO.getvalue()
+        await self.send_bytes(BinaryEventTypes.PREVIEW_IMAGE, preview_bytes, sid=sid)
+
+    async def send_bytes(self, event, data, sid=None):
+        message = self.encode_bytes(event, data)
+
+        if sid is None:
+            for ws in self.sockets.values():
+                await send_socket_catch_exception(ws.send_bytes, message)
+        elif sid in self.sockets:
+            await send_socket_catch_exception(self.sockets[sid].send_bytes, message)
+
+    async def send_json(self, event, data, sid=None):
+        message = {"type": event, "data": data}
+
+        if sid is None:
+            for ws in self.sockets.values():
+                await send_socket_catch_exception(ws.send_json, message)
+        elif sid in self.sockets:
+            await send_socket_catch_exception(self.sockets[sid].send_json, message)
+
+    def send_sync(self, event, data, sid=None):
+        self.loop.call_soon_threadsafe(
+            self.messages.put_nowait, (event, data, sid))
+
+    def queue_updated(self):
+        self.send_sync("status", { "status": self.get_queue_info() })
+
+    async def publish_loop(self):
         while True:
-            ajOmIBaJxAXoIDFumJtKcydIEAgfQgwV = await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.messages.get()
-            await rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BUmulCEcJXhvafjQvItCTXiuvSjzjSFf(*ajOmIBaJxAXoIDFumJtKcydIEAgfQgwV)
-    async def tUuYqnLjDXuftYgMagGpmrobxWgfcbgq(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True, ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN=None):
-        yVReFCGZqyhbsCCIGNXbTYqonqUiCuEW = web.AppRunner(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.app, access_log=None)
-        await yVReFCGZqyhbsCCIGNXbTYqonqUiCuEW.setup()
-        xXGxFfTDOPkklznafEFItQoDSdFWqQFg = web.TCPSite(yVReFCGZqyhbsCCIGNXbTYqonqUiCuEW, CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port)
-        await xXGxFfTDOPkklznafEFItQoDSdFWqQFg.tUuYqnLjDXuftYgMagGpmrobxWgfcbgq()
-        if CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv == '':
-            CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv = '0.0.0.0'
-        if aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS:
+            msg = await self.messages.get()
+            await self.send(*msg)
+
+    async def start(self, address, port, verbose=True, call_on_start=None):
+        runner = web.AppRunner(self.app, access_log=None)
+        await runner.setup()
+        site = web.TCPSite(runner, address, port)
+        await site.start()
+
+        if address == '':
+            address = '0.0.0.0'
+        if verbose:
             print("Starting server\n")
-            print("To see the GUI go to: http://{}:{}".format(CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port))
-        if ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN is not None:
-            ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN(CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port)
-    def sWnpCvuipWBHCCscTxhKjaajtVJfMBbv(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.on_prompt_handlers.append(TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk)
-    def CVlpsFZpCaBNCNZqToOXuOcHyMwPHNGp(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH):
-        for TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.on_prompt_handlers:
+            print("To see the GUI go to: http://{}:{}".format(address, port))
+        if call_on_start is not None:
+            call_on_start(address, port)
+
+    def add_on_prompt_handler(self, handler):
+        self.on_prompt_handlers.append(handler)
+
+    def trigger_on_prompt(self, json_data):
+        for handler in self.on_prompt_handlers:
             try:
-                UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH = TQLMHpzrGHfkKPXOsLxdKBpLrtwSARMk(UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH)
-            except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
+                json_data = handler(json_data)
+            except Exception as e:
                 print(f"[ERROR] An error occurred during the on_prompt_handler processing")
                 traceback.print_exc()
-        return UqQOtoIhkZOOuTekBZnxaFPJmmrLOkwH
+
+        return json_data

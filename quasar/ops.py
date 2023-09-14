@@ -1,40 +1,46 @@
 import torch
 from contextlib import contextmanager
-class DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(torch.nn.Module):
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, CaDEyeKgggeATJmmSMQfpwrQVIOWCNYZ: int, out_features: int, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB: bool = True,
-                 fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None) -> None:
-        umZdJQgruqrzWHqlMeOMCFLXiRcMXftU = {'device': fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, 'dtype': DDRQlhrNSGpwTrokWitkZipdfbAqBFxv}
+
+class Linear(torch.nn.Module):
+    def __init__(self, in_features: int, out_features: int, bias: bool = True,
+                 device=None, dtype=None) -> None:
+        factory_kwargs = {'device': device, 'dtype': dtype}
         super().__init__()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.CaDEyeKgggeATJmmSMQfpwrQVIOWCNYZ = CaDEyeKgggeATJmmSMQfpwrQVIOWCNYZ
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.out_features = out_features
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RXBOtvKSHQkBvdKDbckmnlphvVygYURP = torch.nn.Parameter(torch.empty((out_features, CaDEyeKgggeATJmmSMQfpwrQVIOWCNYZ), **umZdJQgruqrzWHqlMeOMCFLXiRcMXftU))
-        if PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB = torch.nn.Parameter(torch.empty(out_features, **umZdJQgruqrzWHqlMeOMCFLXiRcMXftU))
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = torch.nn.Parameter(torch.empty((out_features, in_features), **factory_kwargs))
+        if bias:
+            self.bias = torch.nn.Parameter(torch.empty(out_features, **factory_kwargs))
         else:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.register_parameter('bias', None)
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, input):
-        return torch.nn.functional.BJkSsAwbTZLfucgvGkDLcVEiRIlYJCmK(input, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.RXBOtvKSHQkBvdKDbckmnlphvVygYURP, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB)
-class LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(torch.nn.LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK):
-    def aCVQaExWrhOtDHYNBOpNqDYwnQcDfELX(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
+            self.register_parameter('bias', None)
+
+    def forward(self, input):
+        return torch.nn.functional.linear(input, self.weight, self.bias)
+
+class Conv2d(torch.nn.Conv2d):
+    def reset_parameters(self):
         return None
-def XqmPajboESpTdLShIQpHOQZiwGoVuVAj(ipYTWVOPDpfJXeTFApPIgldytQSaUFdk, *DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs):
-    if ipYTWVOPDpfJXeTFApPIgldytQSaUFdk == 2:
-        return LcFcvNeYCKrBHlNkoWrkqdbxdkNCJBBK(*DukiculvUpjhZIVvaGinshRSKLSTgVVl, **kwargs)
+
+def conv_nd(dims, *args, **kwargs):
+    if dims == 2:
+        return Conv2d(*args, **kwargs)
     else:
         raise ValueError(f"unsupported dimensions: {dims}")
+
 @contextmanager
-def IrDLdQvZwoTcwEdvQwjctORJpoyNBtmZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None): 
-    VVsVSxdTdXwWwTDWceKvxnnBtSJtjNgJ = torch.nn.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO
-    zbrhqmrvUbiWPPJEQSZhpsMuMaPqHeyb = fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc
-    CkkOBEecwlNqkjxpRoIgqtALyFCTpjox = DDRQlhrNSGpwTrokWitkZipdfbAqBFxv
-    def JjInEJOGFNGUYXIaJVQpXPIzrZtHnaIA(CaDEyeKgggeATJmmSMQfpwrQVIOWCNYZ: int, out_features: int, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB: bool = True, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None):
-        if zbrhqmrvUbiWPPJEQSZhpsMuMaPqHeyb is not None:
-            fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = zbrhqmrvUbiWPPJEQSZhpsMuMaPqHeyb
-        if CkkOBEecwlNqkjxpRoIgqtALyFCTpjox is not None:
-            DDRQlhrNSGpwTrokWitkZipdfbAqBFxv = CkkOBEecwlNqkjxpRoIgqtALyFCTpjox
-        return DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(CaDEyeKgggeATJmmSMQfpwrQVIOWCNYZ, out_features, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-    torch.nn.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO = JjInEJOGFNGUYXIaJVQpXPIzrZtHnaIA
+def use_quasar_ops(device=None, dtype=None): # Kind of an ugly hack but I can't think of a better way
+    old_torch_nn_linear = torch.nn.Linear
+    force_device = device
+    force_dtype = dtype
+    def linear_with_dtype(in_features: int, out_features: int, bias: bool = True, device=None, dtype=None):
+        if force_device is not None:
+            device = force_device
+        if force_dtype is not None:
+            dtype = force_dtype
+        return Linear(in_features, out_features, bias=bias, device=device, dtype=dtype)
+
+    torch.nn.Linear = linear_with_dtype
     try:
         yield
     finally:
-        torch.nn.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO = VVsVSxdTdXwWwTDWceKvxnnBtSJtjNgJ
+        torch.nn.Linear = old_torch_nn_linear

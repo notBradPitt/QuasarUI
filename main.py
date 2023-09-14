@@ -1,156 +1,195 @@
 import quasar.options
-quasar.options.IZlmpVpsExBNzXqpCvVtdeNnXwLWoAAJ()
+quasar.options.enable_args_parsing()
+
 import os
 import importlib.util
 import folder_paths
 import time
-def fiAlZuPsdeRSZmhCFsdMbvCbOnmzcmdp():
-    def jwYQYNSSQBHfZtwDIriJhTfttvOkxlrq(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
-        tieEujcveVfDzVXIDWvRBbuhQgiLzcLd = os.path.splitext(QvimMcbvePOnJmwCatidzBJmEZiYzzYA)[0]
+
+def execute_prestartup_script():
+    def execute_script(script_path):
+        module_name = os.path.splitext(script_path)[0]
         try:
-            spec = importlib.util.spec_from_file_location(tieEujcveVfDzVXIDWvRBbuhQgiLzcLd, QvimMcbvePOnJmwCatidzBJmEZiYzzYA)
-            module = importlib.util.module_from_spec(tGbdsHvGtwbCVaXZaEuAlbGSnOHDESEH)
-            tGbdsHvGtwbCVaXZaEuAlbGSnOHDESEH.loader.exec_module(FRIBQCDfDDxIonplwxvPCicvOmmOgYPC)
+            spec = importlib.util.spec_from_file_location(module_name, script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
             return True
-        except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
+        except Exception as e:
             print(f"Failed to execute startup-script: {script_path} / {e}")
         return False
-    ilqocNyegtMYlXcyAFNfxWmTetNNqjnj = folder_paths.HXYNxZJQjELjaaxuKjoZoxFzWaIvOYmT("custom_nodes")
-    for tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ in ilqocNyegtMYlXcyAFNfxWmTetNNqjnj:
-        HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl = os.listdir(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ)
-        qAglvKZFHtpKgbAknmdlQpAolXyaYQdS = []
-        for uzcEftlpQdaRTMylsKksTMmyjgzcrlLK in HkkqgQWYDLsuxsCvbAqAGbfYAPmyFswl:
-            XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp = os.path.join(tbhgVJfBEgGoZORDUqSjCwMtYKScIpcZ, uzcEftlpQdaRTMylsKksTMmyjgzcrlLK)
-            if os.path.isfile(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp) or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp.endswith(".disabled") or XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp == "__pycache__":
+
+    node_paths = folder_paths.get_folder_paths("custom_nodes")
+    for custom_node_path in node_paths:
+        possible_modules = os.listdir(custom_node_path)
+        node_prestartup_times = []
+
+        for possible_module in possible_modules:
+            module_path = os.path.join(custom_node_path, possible_module)
+            if os.path.isfile(module_path) or module_path.endswith(".disabled") or module_path == "__pycache__":
                 continue
-            QvimMcbvePOnJmwCatidzBJmEZiYzzYA = os.path.join(XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, "prestartup_script.py")
-            if os.path.exists(QvimMcbvePOnJmwCatidzBJmEZiYzzYA):
-                NxDTHICOqkfnhyLwtejLSCWiivMDAyZv = time.perf_counter()
-                syoCixXNjFxZAimZmlHgvNsypzGRqzuD = jwYQYNSSQBHfZtwDIriJhTfttvOkxlrq(QvimMcbvePOnJmwCatidzBJmEZiYzzYA)
-                qAglvKZFHtpKgbAknmdlQpAolXyaYQdS.append((time.perf_counter() - NxDTHICOqkfnhyLwtejLSCWiivMDAyZv, XWKGqxiJgzdJvlFfjMTZuUNvLEbEKBVp, syoCixXNjFxZAimZmlHgvNsypzGRqzuD))
-    if len(qAglvKZFHtpKgbAknmdlQpAolXyaYQdS) > 0:
+
+            script_path = os.path.join(module_path, "prestartup_script.py")
+            if os.path.exists(script_path):
+                time_before = time.perf_counter()
+                success = execute_script(script_path)
+                node_prestartup_times.append((time.perf_counter() - time_before, module_path, success))
+    if len(node_prestartup_times) > 0:
         print("\nPrestartup times for custom nodes:")
-        for zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK in sorted(qAglvKZFHtpKgbAknmdlQpAolXyaYQdS):
-            if zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK[2]:
+        for n in sorted(node_prestartup_times):
+            if n[2]:
                 import_message = ""
             else:
                 import_message = " (PRESTARTUP FAILED)"
             print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
         print()
-fiAlZuPsdeRSZmhCFsdMbvCbOnmzcmdp()
+
+execute_prestartup_script()
+
+
+# Main code
 import asyncio
 import itertools
 import shutil
 import threading
 import gc
-from quasar.cli_args import DukiculvUpjhZIVvaGinshRSKLSTgVVl
+
+from quasar.cli_args import args
+
 if os.name == "nt":
     import logging
     logging.getLogger("xformers").addFilter(lambda record: 'A matching Triton is not available' not in record.getMessage())
+
 if __name__ == "__main__":
-    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.cuda_device is not None:
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(DukiculvUpjhZIVvaGinshRSKLSTgVVl.cuda_device)
-        print("Set cuda device to:", DukiculvUpjhZIVvaGinshRSKLSTgVVl.cuda_device)
+    if args.cuda_device is not None:
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(args.cuda_device)
+        print("Set cuda device to:", args.cuda_device)
+
     import cuda_malloc
+
 import quasar.utils
 import yaml
+
 import execution
 import server
-from server import hFTRCQDJXYjBTBYxdLVBThHQwQEdvZRj
-from nodes import TfsMRLhzuJSfPYCmvEXkbVNjMGyUQnEL
+from server import BinaryEventTypes
+from nodes import init_custom_nodes
 import quasar.model_management
-def KnPBtjgmTKnDuTyELBtdwPigNgqGEWRe():
-    fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc = quasar.model_management.aIQypJefEzoiiobeXriYBEHMJwDTvZWS()
-    LKGttefzMHbQsSCFJjKbAWGhbIpBWTal = quasar.model_management.CIUMTWevcFrsyhsNplwosYXuEZxYMCyJ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-    KnPBtjgmTKnDuTyELBtdwPigNgqGEWRe = False
-    if "cudaMallocAsync" in LKGttefzMHbQsSCFJjKbAWGhbIpBWTal:
-        for b in cuda_malloc.DPdsgMLrkYdIWcefoYKOhMaNyPDCvYMl:
-            if b in LKGttefzMHbQsSCFJjKbAWGhbIpBWTal:
-                KnPBtjgmTKnDuTyELBtdwPigNgqGEWRe = True
-        if KnPBtjgmTKnDuTyELBtdwPigNgqGEWRe:
+
+def cuda_malloc_warning():
+    device = quasar.model_management.get_torch_device()
+    device_name = quasar.model_management.get_torch_device_name(device)
+    cuda_malloc_warning = False
+    if "cudaMallocAsync" in device_name:
+        for b in cuda_malloc.blacklist:
+            if b in device_name:
+                cuda_malloc_warning = True
+        if cuda_malloc_warning:
             print("\nWARNING: this card most likely does not support cuda-malloc, if you get \"CUDA error\" please run QuasarUI with: --disable-cuda-malloc\n")
-def YuFVcvfYKKjsoLiAOeZDsRkUvHoaNoGJ(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, REDIKAYZymAzMirxFmomyJtEGktwcqlE):
-    dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO = execution.peTrImVAySgqncNtKhRfuATBVRUZsjwA(REDIKAYZymAzMirxFmomyJtEGktwcqlE)
+
+def prompt_worker(q, server):
+    e = execution.PromptExecutor(server)
     while True:
-        ygFiYnqtfEqFJmbillPxtHRxsUoFqqJk, KGzGLMSBbGKBdjAeEfKInlpESGsdlTUh = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.get()
-        ihaNQKdxZGasqdzeRCwvNWxFnUeHDoIz = time.perf_counter()
-        AFursZnPuECGUFTkCjDbdYIYmtroiqfB = ygFiYnqtfEqFJmbillPxtHRxsUoFqqJk[1]
-        dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO.ikeEiwtXFGzELzZxqxOCxIpkRiAYGmXd(ygFiYnqtfEqFJmbillPxtHRxsUoFqqJk[2], AFursZnPuECGUFTkCjDbdYIYmtroiqfB, ygFiYnqtfEqFJmbillPxtHRxsUoFqqJk[3], ygFiYnqtfEqFJmbillPxtHRxsUoFqqJk[4])
-        mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.lrvDEWUQkaldxPekEUbBYhwXCnIgotQY(KGzGLMSBbGKBdjAeEfKInlpESGsdlTUh, dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO.outputs_ui)
-        if REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id is not None:
-            REDIKAYZymAzMirxFmomyJtEGktwcqlE.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa("executing", { "node": None, "prompt_id": AFursZnPuECGUFTkCjDbdYIYmtroiqfB }, REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id)
-        print("Prompt executed in {:.2f} seconds".format(time.perf_counter() - ihaNQKdxZGasqdzeRCwvNWxFnUeHDoIz))
+        item, item_id = q.get()
+        execution_start_time = time.perf_counter()
+        prompt_id = item[1]
+        e.execute(item[2], prompt_id, item[3], item[4])
+        q.task_done(item_id, e.outputs_ui)
+        if server.client_id is not None:
+            server.send_sync("executing", { "node": None, "prompt_id": prompt_id }, server.client_id)
+
+        print("Prompt executed in {:.2f} seconds".format(time.perf_counter() - execution_start_time))
         gc.collect()
-        quasar.model_management.sIeWDNiYvNWPLHobyjQHaTvlWZnazsHi()
-async def BWWtIKBYOUwJuXEKziUqMRbzaRFsBIkz(REDIKAYZymAzMirxFmomyJtEGktwcqlE, CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv='', port=8188, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True, ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN=None):
-    await asyncio.gather(REDIKAYZymAzMirxFmomyJtEGktwcqlE.tUuYqnLjDXuftYgMagGpmrobxWgfcbgq(CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS, ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN), REDIKAYZymAzMirxFmomyJtEGktwcqlE.EBskPkRhwxVtGrdnQMhAvswjrxSyPepP())
-def HLlvCRPdqgoEmbXuEpDcAJYkJdkyKVNb(REDIKAYZymAzMirxFmomyJtEGktwcqlE):
-    def UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP(value, total, YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM):
-        quasar.model_management.cufzYbsmvfzVPCacJuRroKjPAHWqOusW()
-        REDIKAYZymAzMirxFmomyJtEGktwcqlE.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa("progress", {"value": value, "max": total}, REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id)
-        if YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM is not None:
-            REDIKAYZymAzMirxFmomyJtEGktwcqlE.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa(hFTRCQDJXYjBTBYxdLVBThHQwQEdvZRj.aMTOakoNisHgzZsgUrJBfNFbowQFDzvw, YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM, REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id)
-    quasar.utils.set_progress_bar_global_hook(UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP)
-def NkleSZdBjwAMaearQpaODmfIoMUveLqT():
-    CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP = folder_paths.PlSKGeZYRqtlMHiaBRCToWuXDcNhJEvq()
-    if os.path.exists(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP):
-        shutil.rmtree(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP, ignore_errors=True)
-def zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(yaml_path):
+        quasar.model_management.soft_empty_cache()
+
+async def run(server, address='', port=8188, verbose=True, call_on_start=None):
+    await asyncio.gather(server.start(address, port, verbose, call_on_start), server.publish_loop())
+
+
+def hijack_progress(server):
+    def hook(value, total, preview_image):
+        quasar.model_management.throw_exception_if_processing_interrupted()
+        server.send_sync("progress", {"value": value, "max": total}, server.client_id)
+        if preview_image is not None:
+            server.send_sync(BinaryEventTypes.UNENCODED_PREVIEW_IMAGE, preview_image, server.client_id)
+    quasar.utils.set_progress_bar_global_hook(hook)
+
+
+def cleanup_temp():
+    temp_dir = folder_paths.get_temp_directory()
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def load_extra_path_config(yaml_path):
     with open(yaml_path, 'r') as stream:
-        hNBxbvKCDbRukyaGMnSKVERydVUZJyCM = yaml.safe_load(stream)
-    for cjHIelcAqVoHWdLcgzuZiBumKNTVADsY in hNBxbvKCDbRukyaGMnSKVERydVUZJyCM:
-        QKIKvYBMolksXjWiJoSbIyYIABFZufbg = hNBxbvKCDbRukyaGMnSKVERydVUZJyCM[cjHIelcAqVoHWdLcgzuZiBumKNTVADsY]
-        if QKIKvYBMolksXjWiJoSbIyYIABFZufbg is None:
+        config = yaml.safe_load(stream)
+    for c in config:
+        conf = config[c]
+        if conf is None:
             continue
-        TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC = None
-        if "base_path" in QKIKvYBMolksXjWiJoSbIyYIABFZufbg:
-            TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC = QKIKvYBMolksXjWiJoSbIyYIABFZufbg.pop("base_path")
-        for NECAaWUrFGIXcLimrerEYmxYIykQBfXb in QKIKvYBMolksXjWiJoSbIyYIABFZufbg:
-            for ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW in QKIKvYBMolksXjWiJoSbIyYIABFZufbg[NECAaWUrFGIXcLimrerEYmxYIykQBfXb].split("\n"):
-                if len(ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW) == 0:
+        base_path = None
+        if "base_path" in conf:
+            base_path = conf.pop("base_path")
+        for x in conf:
+            for y in conf[x].split("\n"):
+                if len(y) == 0:
                     continue
-                BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = ZljqvWVaiqYAYdTFzQHSTXFDKwgstKaW
-                if TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC is not None:
-                    BvZbFoQIcgYmFXROwptYbIKgzYJORrYY = os.path.join(TkQiWYaXtJuzzefZQkRCbaAzWTYQqpiC, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
-                print("Adding extra search path", NECAaWUrFGIXcLimrerEYmxYIykQBfXb, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
-                folder_paths.tXboLlrRieKqwPeTtnDtKOeZJiYAGlLt(NECAaWUrFGIXcLimrerEYmxYIykQBfXb, BvZbFoQIcgYmFXROwptYbIKgzYJORrYY)
+                full_path = y
+                if base_path is not None:
+                    full_path = os.path.join(base_path, full_path)
+                print("Adding extra search path", x, full_path)
+                folder_paths.add_model_folder_path(x, full_path)
+
+
 if __name__ == "__main__":
-    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX:
-        CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP = os.path.join(os.path.abspath(DukiculvUpjhZIVvaGinshRSKLSTgVVl.sBxeZEvOLuqHjzzCBAVYRZTjCrezBxCX), "temp")
+    if args.temp_directory:
+        temp_dir = os.path.join(os.path.abspath(args.temp_directory), "temp")
         print(f"Setting temp directory to: {temp_dir}")
-        folder_paths.UjFfHXPSSdYnVuSiGnNlPxKKudSjKFNY(CtmzHSDvDEVGVbXeTIhzZgbBXVjSiNhP)
-    NkleSZdBjwAMaearQpaODmfIoMUveLqT()
-    ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK = asyncio.new_event_loop()
-    asyncio.set_event_loop(ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK)
-    REDIKAYZymAzMirxFmomyJtEGktwcqlE = REDIKAYZymAzMirxFmomyJtEGktwcqlE.vxgUWtGASLBuXQMagWKiaxUXGvlvRxWd(ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK)
-    mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = execution.djbvqxsurYqUcvHzsaPmWWgRGaFgiGbE(REDIKAYZymAzMirxFmomyJtEGktwcqlE)
-    EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg = os.path.join(os.path.dirname(os.path.realpath(__file__)), "extra_model_paths.yaml")
-    if os.path.isfile(EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg):
-        zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(EcvkidkjTkvyHmbgHsPGhLENbgvlnFrg)
-    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.extra_model_paths_config:
-        for MJafEhTfEBNmQGXzAAFXwUBXvYOtnghP in itertools.chain(*DukiculvUpjhZIVvaGinshRSKLSTgVVl.extra_model_paths_config):
-            zYJvlSsZPNSyAxXKyIVgLLaXOnmbkgic(MJafEhTfEBNmQGXzAAFXwUBXvYOtnghP)
-    TfsMRLhzuJSfPYCmvEXkbVNjMGyUQnEL()
-    KnPBtjgmTKnDuTyELBtdwPigNgqGEWRe()
-    REDIKAYZymAzMirxFmomyJtEGktwcqlE.grMbBVhUPmxLYqHuLTMYkwVmMccNhUyi()
-    HLlvCRPdqgoEmbXuEpDcAJYkJdkyKVNb(REDIKAYZymAzMirxFmomyJtEGktwcqlE)
-    threading.Thread(GaEZlYKiAryhWRjBEPreKAKYPxvvvvNo=YuFVcvfYKKjsoLiAOeZDsRkUvHoaNoGJ, daemon=True, DukiculvUpjhZIVvaGinshRSKLSTgVVl=(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, REDIKAYZymAzMirxFmomyJtEGktwcqlE,)).tUuYqnLjDXuftYgMagGpmrobxWgfcbgq()
-    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.GtSyetIaLksMxiwaHjRuEDPDczomOxfB:
-        DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh = os.path.abspath(DukiculvUpjhZIVvaGinshRSKLSTgVVl.GtSyetIaLksMxiwaHjRuEDPDczomOxfB)
+        folder_paths.set_temp_directory(temp_dir)
+    cleanup_temp()
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    server = server.PromptServer(loop)
+    q = execution.PromptQueue(server)
+
+    extra_model_paths_config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "extra_model_paths.yaml")
+    if os.path.isfile(extra_model_paths_config_path):
+        load_extra_path_config(extra_model_paths_config_path)
+
+    if args.extra_model_paths_config:
+        for config_path in itertools.chain(*args.extra_model_paths_config):
+            load_extra_path_config(config_path)
+
+    init_custom_nodes()
+
+    cuda_malloc_warning()
+
+    server.add_routes()
+    hijack_progress(server)
+
+    threading.Thread(target=prompt_worker, daemon=True, args=(q, server,)).start()
+
+    if args.output_directory:
+        output_dir = os.path.abspath(args.output_directory)
         print(f"Setting output directory to: {output_dir}")
-        folder_paths.QaqVOGrCQsMzyJzwFXeqRMUkMfnKwrHp(DIUNPQiJKWsgpSdsJVPWmcWtoPKBTsdh)
-    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.quick_test_for_ci:
+        folder_paths.set_output_directory(output_dir)
+
+    if args.quick_test_for_ci:
         exit(0)
-    ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN = None
-    if DukiculvUpjhZIVvaGinshRSKLSTgVVl.auto_launch:
-        def IBuVgpnjgzsNWxsaHVFkjxPIHZswrSaP(CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port):
+
+    call_on_start = None
+    if args.auto_launch:
+        def startup_server(address, port):
             import webbrowser
-            if os.name == 'nt' and CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv == '0.0.0.0':
-                CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv = '127.0.0.1'
+            if os.name == 'nt' and address == '0.0.0.0':
+                address = '127.0.0.1'
             webbrowser.open(f"http://{address}:{port}")
-        ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN = IBuVgpnjgzsNWxsaHVFkjxPIHZswrSaP
+        call_on_start = startup_server
+
     try:
-        ZkUlcueFlyNvGBkHzyBcsDJMXTjAiuhK.run_until_complete(BWWtIKBYOUwJuXEKziUqMRbzaRFsBIkz(REDIKAYZymAzMirxFmomyJtEGktwcqlE, CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv=DukiculvUpjhZIVvaGinshRSKLSTgVVl.listen, port=DukiculvUpjhZIVvaGinshRSKLSTgVVl.port, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=not DukiculvUpjhZIVvaGinshRSKLSTgVVl.dont_print_server, ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN=ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN))
+        loop.run_until_complete(run(server, address=args.listen, port=args.port, verbose=not args.dont_print_server, call_on_start=call_on_start))
     except KeyboardInterrupt:
         print("\nStopped server")
-    NkleSZdBjwAMaearQpaODmfIoMUveLqT()
+
+    cleanup_temp()

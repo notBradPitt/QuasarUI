@@ -1,227 +1,270 @@
 import torch
 import copy
 import inspect
+
 import quasar.utils
-class CmIugCFMKLyCSZlTCvUgomMGPXzvLNTG:
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, load_device, SlzENmVKreawuuvgrVSmYHZXOypOtbgl, vqDBJgidQufnKyAltPYRqiKGjmztArDJ=0, current_device=None):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.vqDBJgidQufnKyAltPYRqiKGjmztArDJ = vqDBJgidQufnKyAltPYRqiKGjmztArDJ
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM = VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ = {}
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.backup = {}
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options = {"transformer_options":{}}
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.load_device = load_device
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SlzENmVKreawuuvgrVSmYHZXOypOtbgl = SlzENmVKreawuuvgrVSmYHZXOypOtbgl
+
+class ModelPatcher:
+    def __init__(self, model, load_device, offload_device, size=0, current_device=None):
+        self.size = size
+        self.model = model
+        self.patches = {}
+        self.backup = {}
+        self.model_options = {"transformer_options":{}}
+        self.model_size()
+        self.load_device = load_device
+        self.offload_device = offload_device
         if current_device is None:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.current_device = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SlzENmVKreawuuvgrVSmYHZXOypOtbgl
+            self.current_device = self.offload_device
         else:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.current_device = current_device
-    def ymWRjcVVevoMjPXqCNiaROKjJDVRxVuV(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        if rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.vqDBJgidQufnKyAltPYRqiKGjmztArDJ > 0:
-            return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.vqDBJgidQufnKyAltPYRqiKGjmztArDJ
-        DuCZHcDcohTFINauhREJWKOwRCPqBMNf = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.TQRgUMPjEwYAaDvSuzgvheADStCoUKzT()
-        vqDBJgidQufnKyAltPYRqiKGjmztArDJ = 0
-        for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in DuCZHcDcohTFINauhREJWKOwRCPqBMNf:
-            XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz = DuCZHcDcohTFINauhREJWKOwRCPqBMNf[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm]
-            vqDBJgidQufnKyAltPYRqiKGjmztArDJ += XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.nelement() * XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz.element_size()
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.vqDBJgidQufnKyAltPYRqiKGjmztArDJ = vqDBJgidQufnKyAltPYRqiKGjmztArDJ
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_keys = set(DuCZHcDcohTFINauhREJWKOwRCPqBMNf.keys())
-        return vqDBJgidQufnKyAltPYRqiKGjmztArDJ
-    def tEcQvpBwXwdqvKxRTLEBROBUyPoodldL(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = CmIugCFMKLyCSZlTCvUgomMGPXzvLNTG(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.load_device, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SlzENmVKreawuuvgrVSmYHZXOypOtbgl, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.vqDBJgidQufnKyAltPYRqiKGjmztArDJ, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.current_device)
-        zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ = {}
-        for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm] = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm][:]
-        zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK.model_options = copy.deepcopy(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options)
-        zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK.model_keys = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_keys
-        return zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK
-    def hlsUPEbCDylvHBJIhHotpulFhpPyOFlW(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, other):
-        if hasattr(other, 'model') and rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM is other.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM:
+            self.current_device = current_device
+
+    def model_size(self):
+        if self.size > 0:
+            return self.size
+        model_sd = self.model.state_dict()
+        size = 0
+        for k in model_sd:
+            t = model_sd[k]
+            size += t.nelement() * t.element_size()
+        self.size = size
+        self.model_keys = set(model_sd.keys())
+        return size
+
+    def clone(self):
+        n = ModelPatcher(self.model, self.load_device, self.offload_device, self.size, self.current_device)
+        n.patches = {}
+        for k in self.patches:
+            n.patches[k] = self.patches[k][:]
+
+        n.model_options = copy.deepcopy(self.model_options)
+        n.model_keys = self.model_keys
+        return n
+
+    def is_clone(self, other):
+        if hasattr(other, 'model') and self.model is other.model:
             return True
         return False
-    def qfLPSyeSxlbbWAuRsihXathlrqHkiaIB(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, sampler_cfg_function):
+
+    def set_model_sampler_cfg_function(self, sampler_cfg_function):
         if len(inspect.signature(sampler_cfg_function).parameters) == 3:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["sampler_cfg_function"] = lambda DukiculvUpjhZIVvaGinshRSKLSTgVVl: sampler_cfg_function(DukiculvUpjhZIVvaGinshRSKLSTgVVl["cond"], DukiculvUpjhZIVvaGinshRSKLSTgVVl["uncond"], DukiculvUpjhZIVvaGinshRSKLSTgVVl["cond_scale"]) 
+            self.model_options["sampler_cfg_function"] = lambda args: sampler_cfg_function(args["cond"], args["uncond"], args["cond_scale"]) #Old way
         else:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["sampler_cfg_function"] = sampler_cfg_function
-    def NSWvVpnNXQNVmvIfTYANKVEUuiTEnfwo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, unet_wrapper_function):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["model_function_wrapper"] = unet_wrapper_function
-    def zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, name):
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["transformer_options"]
-        if "patches" not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
-            sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"] = {}
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"][name] = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"].get(name, []) + [YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn]
-    def zFUiKqfWUnwPMzfBXahnOLUJRtWPmxSh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, name, block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD):
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["transformer_options"]
-        if "patches_replace" not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
-            sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"] = {}
-        if name not in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"]:
-            sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"][name] = {}
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"][name][(block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD)] = YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn
-    def hHPgZMdHzzFfDXPQMViqoITNoINrStkW(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn1_patch")
-    def jstBFVPVrDeSKOCaLQsAhwclSzZXFUnY(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn2_patch")
-    def ONUgPoPLwDFRemkvUyDNspfXnfbvIhBo(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zFUiKqfWUnwPMzfBXahnOLUJRtWPmxSh(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn1", block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD)
-    def jwvhDuAitkTmaplPxOLpxgtpMTFbiZdI(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zFUiKqfWUnwPMzfBXahnOLUJRtWPmxSh(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn2", block_name, FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD)
-    def txbawuMALHkhgtOzAokeJqwirFBcbkye(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn1_output_patch")
-    def RzGUAOyzxMQBYaBeWTTfeAWrrvYsXxTA(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.zWHHfZNTuCGrFQaOtVviFqgtDFAJTTcu(YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn, "attn2_output_patch")
-    def RDTOrwmBjfxGxlZjvgtcnLQViOIXZSlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc):
-        sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_options["transformer_options"]
-        if "patches" in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
-            ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches"]
-            for name in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-                NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN = ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[name]
-                for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(len(NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN)):
-                    if hasattr(NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[HCXmerBqIMuTscBONzTGKYapYSxWTYHo], "to"):
-                        NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[HCXmerBqIMuTscBONzTGKYapYSxWTYHo] = NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[HCXmerBqIMuTscBONzTGKYapYSxWTYHo].sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-        if "patches_replace" in sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ:
-            ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ = sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ["patches_replace"]
-            for name in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-                NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN = ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[name]
-                for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN:
-                    if hasattr(NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm], "to"):
-                        NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm] = NhYSPRlcnbfweJUAsezRaHlXQpiOjOyN[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm].sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-    def LnVirSCOJainsBkOCuBFzVkpVqINXQDh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        if hasattr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, "get_dtype"):
-            return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.qCYGtbmEmpKHSGaChkRoXdcCONojeSqh()
-    def YCDdUyUqMtJdmPkuPqHlFfOepJfSNumr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ, strength_patch=1.0, AePTHMNnzpcegVKckEDvKCKXrzsGyVqK=1.0):
-        HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj = set()
-        for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-            if EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.model_keys:
-                HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj.add(EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm)
-                lFLONOcxqUkiOEFVQcEAEXUbrVfhWnRj = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ.get(EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, [])
-                lFLONOcxqUkiOEFVQcEAEXUbrVfhWnRj.append((strength_patch, ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm], AePTHMNnzpcegVKckEDvKCKXrzsGyVqK))
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm] = lFLONOcxqUkiOEFVQcEAEXUbrVfhWnRj
-        return list(HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj)
-    def MiFcVkRoNonoSGEjRftqYlrqzyKSnTxf(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, filter_prefix=None):
-        DuCZHcDcohTFINauhREJWKOwRCPqBMNf = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.wViWufbihckgCqLqPyInDJEhNgDtoTrR()
-        HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj = {}
-        for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in DuCZHcDcohTFINauhREJWKOwRCPqBMNf:
+            self.model_options["sampler_cfg_function"] = sampler_cfg_function
+
+    def set_model_unet_function_wrapper(self, unet_wrapper_function):
+        self.model_options["model_function_wrapper"] = unet_wrapper_function
+
+    def set_model_patch(self, patch, name):
+        to = self.model_options["transformer_options"]
+        if "patches" not in to:
+            to["patches"] = {}
+        to["patches"][name] = to["patches"].get(name, []) + [patch]
+
+    def set_model_patch_replace(self, patch, name, block_name, number):
+        to = self.model_options["transformer_options"]
+        if "patches_replace" not in to:
+            to["patches_replace"] = {}
+        if name not in to["patches_replace"]:
+            to["patches_replace"][name] = {}
+        to["patches_replace"][name][(block_name, number)] = patch
+
+    def set_model_attn1_patch(self, patch):
+        self.set_model_patch(patch, "attn1_patch")
+
+    def set_model_attn2_patch(self, patch):
+        self.set_model_patch(patch, "attn2_patch")
+
+    def set_model_attn1_replace(self, patch, block_name, number):
+        self.set_model_patch_replace(patch, "attn1", block_name, number)
+
+    def set_model_attn2_replace(self, patch, block_name, number):
+        self.set_model_patch_replace(patch, "attn2", block_name, number)
+
+    def set_model_attn1_output_patch(self, patch):
+        self.set_model_patch(patch, "attn1_output_patch")
+
+    def set_model_attn2_output_patch(self, patch):
+        self.set_model_patch(patch, "attn2_output_patch")
+
+    def model_patches_to(self, device):
+        to = self.model_options["transformer_options"]
+        if "patches" in to:
+            patches = to["patches"]
+            for name in patches:
+                patch_list = patches[name]
+                for i in range(len(patch_list)):
+                    if hasattr(patch_list[i], "to"):
+                        patch_list[i] = patch_list[i].to(device)
+        if "patches_replace" in to:
+            patches = to["patches_replace"]
+            for name in patches:
+                patch_list = patches[name]
+                for k in patch_list:
+                    if hasattr(patch_list[k], "to"):
+                        patch_list[k] = patch_list[k].to(device)
+
+    def model_dtype(self):
+        if hasattr(self.model, "get_dtype"):
+            return self.model.get_dtype()
+
+    def add_patches(self, patches, strength_patch=1.0, strength_model=1.0):
+        p = set()
+        for k in patches:
+            if k in self.model_keys:
+                p.add(k)
+                current_patches = self.patches.get(k, [])
+                current_patches.append((strength_patch, patches[k], strength_model))
+                self.patches[k] = current_patches
+
+        return list(p)
+
+    def get_key_patches(self, filter_prefix=None):
+        model_sd = self.model_state_dict()
+        p = {}
+        for k in model_sd:
             if filter_prefix is not None:
-                if not EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm.startswith(filter_prefix):
+                if not k.startswith(filter_prefix):
                     continue
-            if EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-                HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm] = [DuCZHcDcohTFINauhREJWKOwRCPqBMNf[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm]] + rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm]
+            if k in self.patches:
+                p[k] = [model_sd[k]] + self.patches[k]
             else:
-                HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm] = (DuCZHcDcohTFINauhREJWKOwRCPqBMNf[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm],)
-        return HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj
-    def wViWufbihckgCqLqPyInDJEhNgDtoTrR(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, filter_prefix=None):
-        ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.TQRgUMPjEwYAaDvSuzgvheADStCoUKzT()
-        keys = list(ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.keys())
+                p[k] = (model_sd[k],)
+        return p
+
+    def model_state_dict(self, filter_prefix=None):
+        sd = self.model.state_dict()
+        keys = list(sd.keys())
         if filter_prefix is not None:
-            for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in keys:
-                if not EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm.startswith(filter_prefix):
-                    ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa.pop(EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm)
-        return ylGhUFMpxPbtUUTfCZpemVkdanRhWmHa
-    def QbcJNaFyswYsDxKtpcxHQUBPsPaTuJFs(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, device_to=None):
-        DuCZHcDcohTFINauhREJWKOwRCPqBMNf = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.wViWufbihckgCqLqPyInDJEhNgDtoTrR()
-        for nyrzKxQtioheHIZujafABgijbCjrWhBU in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-            if nyrzKxQtioheHIZujafABgijbCjrWhBU not in DuCZHcDcohTFINauhREJWKOwRCPqBMNf:
-                print("could not patch. key doesn'XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz exist in VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM:", key)
+            for k in keys:
+                if not k.startswith(filter_prefix):
+                    sd.pop(k)
+        return sd
+
+    def patch_model(self, device_to=None):
+        model_sd = self.model_state_dict()
+        for key in self.patches:
+            if key not in model_sd:
+                print("could not patch. key doesn't exist in model:", key)
                 continue
-            RXBOtvKSHQkBvdKDbckmnlphvVygYURP = DuCZHcDcohTFINauhREJWKOwRCPqBMNf[nyrzKxQtioheHIZujafABgijbCjrWhBU]
-            if nyrzKxQtioheHIZujafABgijbCjrWhBU not in rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.backup:
-                rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.backup[nyrzKxQtioheHIZujafABgijbCjrWhBU] = RXBOtvKSHQkBvdKDbckmnlphvVygYURP.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.SlzENmVKreawuuvgrVSmYHZXOypOtbgl)
+
+            weight = model_sd[key]
+
+            if key not in self.backup:
+                self.backup[key] = weight.to(self.offload_device)
+
             if device_to is not None:
-                uCdeLjKNUjhGyZTaKpTfnEwFcwcWIBVC = RXBOtvKSHQkBvdKDbckmnlphvVygYURP.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(device_to, copy=True)
+                temp_weight = weight.float().to(device_to, copy=True)
             else:
-                uCdeLjKNUjhGyZTaKpTfnEwFcwcWIBVC = RXBOtvKSHQkBvdKDbckmnlphvVygYURP.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(torch.float32, copy=True)
-            ulzhfxpWeozEPSDCLiQxrhhDOSufxcZJ = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.hohSFVVKzjRRbdFrdNTiRUVVsZGrIdsh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ[nyrzKxQtioheHIZujafABgijbCjrWhBU], uCdeLjKNUjhGyZTaKpTfnEwFcwcWIBVC, nyrzKxQtioheHIZujafABgijbCjrWhBU).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-            quasar.utils.set_attr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, nyrzKxQtioheHIZujafABgijbCjrWhBU, ulzhfxpWeozEPSDCLiQxrhhDOSufxcZJ)
-            del uCdeLjKNUjhGyZTaKpTfnEwFcwcWIBVC
+                temp_weight = weight.to(torch.float32, copy=True)
+            out_weight = self.calculate_weight(self.patches[key], temp_weight, key).to(weight.dtype)
+            quasar.utils.set_attr(self.model, key, out_weight)
+            del temp_weight
+
         if device_to is not None:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(device_to)
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.current_device = device_to
-        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM
-    def hohSFVVKzjRRbdFrdNTiRUVVsZGrIdsh(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ, RXBOtvKSHQkBvdKDbckmnlphvVygYURP, nyrzKxQtioheHIZujafABgijbCjrWhBU):
-        for HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in ekVpHYaEdxHmTAUTGagpPstWpGZqnyTJ:
-            uigKGapaQVcFiOjEiWwRAHjjkAWxsqck = HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj[0]
-            powGafreWfwlSAqPpTpUhFgpFVqCPavl = HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj[1]
-            AePTHMNnzpcegVKckEDvKCKXrzsGyVqK = HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj[2]
-            if AePTHMNnzpcegVKckEDvKCKXrzsGyVqK != 1.0:
-                RXBOtvKSHQkBvdKDbckmnlphvVygYURP *= AePTHMNnzpcegVKckEDvKCKXrzsGyVqK
-            if isinstance(powGafreWfwlSAqPpTpUhFgpFVqCPavl, list):
-                powGafreWfwlSAqPpTpUhFgpFVqCPavl = (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.hohSFVVKzjRRbdFrdNTiRUVVsZGrIdsh(powGafreWfwlSAqPpTpUhFgpFVqCPavl[1:], powGafreWfwlSAqPpTpUhFgpFVqCPavl[0].tEcQvpBwXwdqvKxRTLEBROBUyPoodldL(), nyrzKxQtioheHIZujafABgijbCjrWhBU), )
-            if len(powGafreWfwlSAqPpTpUhFgpFVqCPavl) == 1:
-                rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz = powGafreWfwlSAqPpTpUhFgpFVqCPavl[0]
-                if uigKGapaQVcFiOjEiWwRAHjjkAWxsqck != 0.0:
-                    if rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg != RXBOtvKSHQkBvdKDbckmnlphvVygYURP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg:
-                        print("WARNING SHAPE MISMATCH {} WEIGHT NOT MERGED {} != {}".format(nyrzKxQtioheHIZujafABgijbCjrWhBU, rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg, RXBOtvKSHQkBvdKDbckmnlphvVygYURP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg))
+            self.model.to(device_to)
+            self.current_device = device_to
+
+        return self.model
+
+    def calculate_weight(self, patches, weight, key):
+        for p in patches:
+            alpha = p[0]
+            v = p[1]
+            strength_model = p[2]
+
+            if strength_model != 1.0:
+                weight *= strength_model
+
+            if isinstance(v, list):
+                v = (self.calculate_weight(v[1:], v[0].clone(), key), )
+
+            if len(v) == 1:
+                w1 = v[0]
+                if alpha != 0.0:
+                    if w1.shape != weight.shape:
+                        print("WARNING SHAPE MISMATCH {} WEIGHT NOT MERGED {} != {}".format(key, w1.shape, weight.shape))
                     else:
-                        RXBOtvKSHQkBvdKDbckmnlphvVygYURP += uigKGapaQVcFiOjEiWwRAHjjkAWxsqck * rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz.type(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv).sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-            elif len(powGafreWfwlSAqPpTpUhFgpFVqCPavl) == 4: 
-                VZNqhEnUabofQRdpcqKPiDFOKIQLZyXy = powGafreWfwlSAqPpTpUhFgpFVqCPavl[0].float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-                CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw = powGafreWfwlSAqPpTpUhFgpFVqCPavl[1].float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-                if powGafreWfwlSAqPpTpUhFgpFVqCPavl[2] is not None:
-                    uigKGapaQVcFiOjEiWwRAHjjkAWxsqck *= powGafreWfwlSAqPpTpUhFgpFVqCPavl[2] / CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]
-                if powGafreWfwlSAqPpTpUhFgpFVqCPavl[3] is not None:
-                    bmrCwyWIElmcwaxRZzPJCDOdVadEBWGL = powGafreWfwlSAqPpTpUhFgpFVqCPavl[3].float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-                    IUtWwUXXyRIbjKOykiBZUwewIRKJWqXu = [CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1], CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0], bmrCwyWIElmcwaxRZzPJCDOdVadEBWGL.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[2], bmrCwyWIElmcwaxRZzPJCDOdVadEBWGL.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[3]]
-                    CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw = torch.mm(CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw.transpose(0, 1).flatten(start_dim=1), bmrCwyWIElmcwaxRZzPJCDOdVadEBWGL.transpose(0, 1).flatten(start_dim=1)).reshape(IUtWwUXXyRIbjKOykiBZUwewIRKJWqXu).transpose(0, 1)
+                        weight += alpha * w1.type(weight.dtype).to(weight.device)
+            elif len(v) == 4: #lora/locon
+                mat1 = v[0].float().to(weight.device)
+                mat2 = v[1].float().to(weight.device)
+                if v[2] is not None:
+                    alpha *= v[2] / mat2.shape[0]
+                if v[3] is not None:
+                    #locon mid weights, hopefully the math is fine because I didn't properly test it
+                    mat3 = v[3].float().to(weight.device)
+                    final_shape = [mat2.shape[1], mat2.shape[0], mat3.shape[2], mat3.shape[3]]
+                    mat2 = torch.mm(mat2.transpose(0, 1).flatten(start_dim=1), mat3.transpose(0, 1).flatten(start_dim=1)).reshape(final_shape).transpose(0, 1)
                 try:
-                    RXBOtvKSHQkBvdKDbckmnlphvVygYURP += (uigKGapaQVcFiOjEiWwRAHjjkAWxsqck * torch.mm(VZNqhEnUabofQRdpcqKPiDFOKIQLZyXy.flatten(start_dim=1), CWlXuzuthlRoWJnhRBJPhPFWvnIgTzrw.flatten(start_dim=1))).reshape(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg).type(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-                except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
-                    print("ERROR", nyrzKxQtioheHIZujafABgijbCjrWhBU, dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO)
-            elif len(powGafreWfwlSAqPpTpUhFgpFVqCPavl) == 8: 
-                rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz = powGafreWfwlSAqPpTpUhFgpFVqCPavl[0]
-                XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr = powGafreWfwlSAqPpTpUhFgpFVqCPavl[1]
-                DmZxJLYDLyJTOSqDkZsVLGQouwcjczfv = powGafreWfwlSAqPpTpUhFgpFVqCPavl[3]
-                qixTrwIOUXDoQNzjprsLsabWAvkmhSvW = powGafreWfwlSAqPpTpUhFgpFVqCPavl[4]
-                fXUsCrvHhtRjMANxFJDpUvvxlXhcTyoH = powGafreWfwlSAqPpTpUhFgpFVqCPavl[5]
-                AFDbLtRSuWGiyKjAlbhHDmxikbDhRiQG = powGafreWfwlSAqPpTpUhFgpFVqCPavl[6]
-                SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb = powGafreWfwlSAqPpTpUhFgpFVqCPavl[7]
-                yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk = None
-                if rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz is None:
-                    yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk = qixTrwIOUXDoQNzjprsLsabWAvkmhSvW.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]
-                    rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz = torch.mm(DmZxJLYDLyJTOSqDkZsVLGQouwcjczfv.float(), qixTrwIOUXDoQNzjprsLsabWAvkmhSvW.float())
+                    weight += (alpha * torch.mm(mat1.flatten(start_dim=1), mat2.flatten(start_dim=1))).reshape(weight.shape).type(weight.dtype)
+                except Exception as e:
+                    print("ERROR", key, e)
+            elif len(v) == 8: #lokr
+                w1 = v[0]
+                w2 = v[1]
+                w1_a = v[3]
+                w1_b = v[4]
+                w2_a = v[5]
+                w2_b = v[6]
+                t2 = v[7]
+                dim = None
+
+                if w1 is None:
+                    dim = w1_b.shape[0]
+                    w1 = torch.mm(w1_a.float(), w1_b.float())
                 else:
-                    rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz = rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-                if XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr is None:
-                    yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk = AFDbLtRSuWGiyKjAlbhHDmxikbDhRiQG.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]
-                    if SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb is None:
-                        XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr = torch.mm(fXUsCrvHhtRjMANxFJDpUvvxlXhcTyoH.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), AFDbLtRSuWGiyKjAlbhHDmxikbDhRiQG.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
+                    w1 = w1.float().to(weight.device)
+
+                if w2 is None:
+                    dim = w2_b.shape[0]
+                    if t2 is None:
+                        w2 = torch.mm(w2_a.float().to(weight.device), w2_b.float().to(weight.device))
                     else:
-                        XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr = torch.einsum('i j k l, j r, i p -> p r k l', SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), AFDbLtRSuWGiyKjAlbhHDmxikbDhRiQG.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), fXUsCrvHhtRjMANxFJDpUvvxlXhcTyoH.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
+                        w2 = torch.einsum('i j k l, j r, i p -> p r k l', t2.float().to(weight.device), w2_b.float().to(weight.device), w2_a.float().to(weight.device))
                 else:
-                    XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr = XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
-                if len(XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) == 4:
-                    rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz = rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz.unsqueeze(2).unsqueeze(2)
-                if powGafreWfwlSAqPpTpUhFgpFVqCPavl[2] is not None and yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk is not None:
-                    uigKGapaQVcFiOjEiWwRAHjjkAWxsqck *= powGafreWfwlSAqPpTpUhFgpFVqCPavl[2] / yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk
+                    w2 = w2.float().to(weight.device)
+
+                if len(w2.shape) == 4:
+                    w1 = w1.unsqueeze(2).unsqueeze(2)
+                if v[2] is not None and dim is not None:
+                    alpha *= v[2] / dim
+
                 try:
-                    RXBOtvKSHQkBvdKDbckmnlphvVygYURP += uigKGapaQVcFiOjEiWwRAHjjkAWxsqck * torch.kron(rahbMaYjYoBuHaHlnFppXkTwWEjOXkZz, XFaYZeQHhHcFoFkifpAZpLIdEgwsCGtr).reshape(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg).type(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-                except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
-                    print("ERROR", nyrzKxQtioheHIZujafABgijbCjrWhBU, dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO)
-            else: 
-                YFRYTblUCvmpudPptnfIkZaGrwHwbCXl = powGafreWfwlSAqPpTpUhFgpFVqCPavl[0]
-                TejKyFxxqzSbdZIEQZGiMtkRYUmLdeqH = powGafreWfwlSAqPpTpUhFgpFVqCPavl[1]
-                if powGafreWfwlSAqPpTpUhFgpFVqCPavl[2] is not None:
-                    uigKGapaQVcFiOjEiWwRAHjjkAWxsqck *= powGafreWfwlSAqPpTpUhFgpFVqCPavl[2] / TejKyFxxqzSbdZIEQZGiMtkRYUmLdeqH.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[0]
-                IBQwelvKJYLlbMbMoippWtnKdsAfwOhc = powGafreWfwlSAqPpTpUhFgpFVqCPavl[3]
-                mmdlGNZIUiHQQmokxsyshkPaJyuxcETE = powGafreWfwlSAqPpTpUhFgpFVqCPavl[4]
-                if powGafreWfwlSAqPpTpUhFgpFVqCPavl[5] is not None: 
-                    MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE = powGafreWfwlSAqPpTpUhFgpFVqCPavl[5]
-                    SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb = powGafreWfwlSAqPpTpUhFgpFVqCPavl[6]
-                    YlClzfOVmSmgToWNeJaIGbCpQyZNxEYR = torch.einsum('i j k l, j r, i p -> p r k l', MStccjMYPXYbPLBRJuuGIaVGkOvnhCnE.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), TejKyFxxqzSbdZIEQZGiMtkRYUmLdeqH.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), YFRYTblUCvmpudPptnfIkZaGrwHwbCXl.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
-                    OhjYNIzWDbfjvHZSFiecRobcokMYcLeE = torch.einsum('i j k l, j r, i p -> p r k l', SXMDczZzLdqpUMJBQtNGtweCYzyrWfqb.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), mmdlGNZIUiHQQmokxsyshkPaJyuxcETE.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), IBQwelvKJYLlbMbMoippWtnKdsAfwOhc.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
+                    weight += alpha * torch.kron(w1, w2).reshape(weight.shape).type(weight.dtype)
+                except Exception as e:
+                    print("ERROR", key, e)
+            else: #loha
+                w1a = v[0]
+                w1b = v[1]
+                if v[2] is not None:
+                    alpha *= v[2] / w1b.shape[0]
+                w2a = v[3]
+                w2b = v[4]
+                if v[5] is not None: #cp decomposition
+                    t1 = v[5]
+                    t2 = v[6]
+                    m1 = torch.einsum('i j k l, j r, i p -> p r k l', t1.float().to(weight.device), w1b.float().to(weight.device), w1a.float().to(weight.device))
+                    m2 = torch.einsum('i j k l, j r, i p -> p r k l', t2.float().to(weight.device), w2b.float().to(weight.device), w2a.float().to(weight.device))
                 else:
-                    YlClzfOVmSmgToWNeJaIGbCpQyZNxEYR = torch.mm(YFRYTblUCvmpudPptnfIkZaGrwHwbCXl.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), TejKyFxxqzSbdZIEQZGiMtkRYUmLdeqH.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
-                    OhjYNIzWDbfjvHZSFiecRobcokMYcLeE = torch.mm(IBQwelvKJYLlbMbMoippWtnKdsAfwOhc.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), mmdlGNZIUiHQQmokxsyshkPaJyuxcETE.float().sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc))
+                    m1 = torch.mm(w1a.float().to(weight.device), w1b.float().to(weight.device))
+                    m2 = torch.mm(w2a.float().to(weight.device), w2b.float().to(weight.device))
+
                 try:
-                    RXBOtvKSHQkBvdKDbckmnlphvVygYURP += (uigKGapaQVcFiOjEiWwRAHjjkAWxsqck * YlClzfOVmSmgToWNeJaIGbCpQyZNxEYR * OhjYNIzWDbfjvHZSFiecRobcokMYcLeE).reshape(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg).type(RXBOtvKSHQkBvdKDbckmnlphvVygYURP.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-                except Exception as dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO:
-                    print("ERROR", nyrzKxQtioheHIZujafABgijbCjrWhBU, dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO)
-        return RXBOtvKSHQkBvdKDbckmnlphvVygYURP
-    def IPVijuJuWpDdBNNaJrYLjziBbaCAwYlc(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, device_to=None):
-        keys = list(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.backup.keys())
-        for EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm in keys:
-            quasar.utils.set_attr(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.backup[EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm])
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.backup = {}
+                    weight += (alpha * m1 * m2).reshape(weight.shape).type(weight.dtype)
+                except Exception as e:
+                    print("ERROR", key, e)
+
+        return weight
+
+    def unpatch_model(self, device_to=None):
+        keys = list(self.backup.keys())
+
+        for k in keys:
+            quasar.utils.set_attr(self.model, k, self.backup[k])
+
+        self.backup = {}
+
         if device_to is not None:
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.VrbJByPOrwLhVLYeJgcqPdGZIrgKHzRM.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(device_to)
-            rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.current_device = device_to
+            self.model.to(device_to)
+            self.current_device = device_to
