@@ -3,7 +3,7 @@ import torch.nn as nn
 import numpy as np
 from functools import partial
 from .util import uECnTnBCuBqbDgSNRAiUiBKHNFFLIvnZ, zaisjRTCkjpiDfZeBMSaxmKWIiSAGqnS
-from quasar.ldm.util import zKvTEPbGDoRBsQSYYaddQKLTFDorvdms
+from quasar.ldm.util import default
 class HogFsJlFXeBWFUlcZMSMnqhnaQoEsgPO(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, noise_schedule_config=None):
         super(HogFsJlFXeBWFUlcZMSMnqhnaQoEsgPO, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS).__init__()
@@ -31,7 +31,7 @@ class HogFsJlFXeBWFUlcZMSMnqhnaQoEsgPO(nn.Module):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj('sqrt_recip_alphas_cumprod', KCffkVYSQPmjfNVfROGpIWQLEwTjwGnQ(np.sqrt(1. / IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN)))
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.BpOtVuSttURsCNYELWmrxpBkqOPYBBlj('sqrt_recipm1_alphas_cumprod', KCffkVYSQPmjfNVfROGpIWQLEwTjwGnQ(np.sqrt(1. / IOpmYnAWyhIWgvrJQuznNWQMTUXYwThN - 1)))
     def twrldmxqPsdvMdtmZuRtTLKgxMGCJtCm(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, x_start, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD=None):
-        jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD, lambda: torch.randn_like(x_start))
+        jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD = default(jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD, lambda: torch.randn_like(x_start))
         return (uECnTnBCuBqbDgSNRAiUiBKHNFFLIvnZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.mAVBENrpAEAwdlYPnWCSJlpwiHyDQHAj, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, x_start.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) * x_start +
                 uECnTnBCuBqbDgSNRAiUiBKHNFFLIvnZ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.ayIzJzknKslZlpJwTeDgXUXhvxStZQpi, XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, x_start.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) * jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD)
     def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb):

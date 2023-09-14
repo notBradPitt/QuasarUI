@@ -4,7 +4,7 @@ https://github.com/samb-XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz/unleashing-transformers
 This verison of the arch specifically was gathered from an old AXCokaVjpCbdWwYKPYgzJCgAIrWdXrxQ of GFPGAN. If this is GlZreLQjBCiBptpFgmbsMbhjFlMgPVav problem, please contact me.
     Args:
         feat (Tensor): 4D xPmCFphFKpGMpIsczaSKHmMgRPZzJwla.
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv (float): A small GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the variance sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ avoid
+        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv (float): A small value added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the variance sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ avoid
             divide-by-zero. Default: 1e-5.
     Adjust the reference pCLwRAgBLFqTliMnElfbAlRRHMihRlVI sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ have the similar color and illuminations
     as those in the degradate pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.

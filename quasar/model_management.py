@@ -534,11 +534,11 @@ class FcmhbKAfUbwHtuUFKflJjsPfbobaJqvP(Exception):
     pass
 TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe = threading.RLock()
 NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM = False
-def ggsUtIbLrBjTjYoMQwfUAZvlFgfjRNAK(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=True):
+def ggsUtIbLrBjTjYoMQwfUAZvlFgfjRNAK(value=True):
     global NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM
     global TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe
     with TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe:
-        NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM = GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM = value
 def YWJBrEdoGByBmOQFMXiRByRmSfnooCWg():
     global NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM
     global TcCBqXJWePLEWaLVEhNmoSuPlxBFLrqe

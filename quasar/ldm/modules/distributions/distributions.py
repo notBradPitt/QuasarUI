@@ -6,12 +6,12 @@ class sCeyoPvsHhYexcMSTyaaDWagfopbuXip:
     def bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
         raise NotImplementedError()
 class uBUYPcsxKzrEbRWuCwVKpZbMYvRYyIkM(sCeyoPvsHhYexcMSTyaaDWagfopbuXip):
-    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc):
-        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc = GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+    def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, value):
+        rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.value = value
     def kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.value
     def bPTwwoDdWiuYqhtrDEHoDbHGiYcwcsQC(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS):
-        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        return rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.value
 class AMWOznfcIxmGDIhDMGJCUcUBGkZOTYHR(object):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, parameters, deterministic=False):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.parameters = parameters

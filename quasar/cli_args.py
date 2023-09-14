@@ -8,14 +8,14 @@ class TThmoUAXlrSuGJKbRtTwrhvihcAqADzp(argparse.Action):
             raise ValueError("type must be assigned an Enum when using EnumAction")
         if not issubclass(ljnptQvQTcjCRoKUsgERGUPmIIPsOuKZ, enum.Enum):
             raise TypeError("type must be an Enum when using EnumAction")
-        tmujDLxgYaCDFcisPjJrwuVqCDvwpMHt = tuple(dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO.GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc for dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO in ljnptQvQTcjCRoKUsgERGUPmIIPsOuKZ)
+        tmujDLxgYaCDFcisPjJrwuVqCDvwpMHt = tuple(dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO.value for dgvKdkEDrMSdkCaRxfkDNVbaXWUetgtO in ljnptQvQTcjCRoKUsgERGUPmIIPsOuKZ)
         kwargs.setdefault("choices", tmujDLxgYaCDFcisPjJrwuVqCDvwpMHt)
         kwargs.setdefault("metavar", f"[{','.join(list(choices))}]")
         super(TThmoUAXlrSuGJKbRtTwrhvihcAqADzp, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS).__init__(**kwargs)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS._enum = ljnptQvQTcjCRoKUsgERGUPmIIPsOuKZ
     def __call__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, igCtajZqjJempyRtCXGEtbeTNbPBhKtk, namespace, values, option_string=None):
-        GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS._enum(values)
-        setattr(namespace, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.dest, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
+        value = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS._enum(values)
+        setattr(namespace, rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.dest, value)
 igCtajZqjJempyRtCXGEtbeTNbPBhKtk = argparse.ArgumentParser()
 igCtajZqjJempyRtCXGEtbeTNbPBhKtk.add_argument("--listen", type=str, default="127.0.0.1", metavar="IP", nargs="?", const="0.0.0.0", help="Specify the IP address to listen on (default: 127.0.0.1). If --listen is provided without an argument, it defaults to 0.0.0.0. (listens on all)")
 igCtajZqjJempyRtCXGEtbeTNbPBhKtk.add_argument("--port", type=int, default=8188, help="Set the listen port.")

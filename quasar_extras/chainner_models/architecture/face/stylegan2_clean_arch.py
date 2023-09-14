@@ -2,7 +2,7 @@
         module_list (list[nn.Module] | nn.Module): Modules sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ be initialized.
         xmbXivThLFnawFPAJvIDBztziWsaDyEE (float): Scale initialized wFSdIFoZKBPqDyrRSUXxPVfhYIDtPHnL, especially for RJgGCfauvfBVooxMlJcnrJywZAxzDscI
             blocks. Default: 1.
-        bias_fill (float): The GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ fill PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB. Default: 0
+        bias_fill (float): The value sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ fill PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB. Default: 0
         kwargs (dict): Other arguments for initialization function.
         Args:
             NECAaWUrFGIXcLimrerEYmxYIykQBfXb (Tensor): Style codes with BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg (b, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY).
@@ -16,7 +16,7 @@
         num_style_feat (int): Channel FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of style pCLwRAgBLFqTliMnElfbAlRRHMihRlVI.
         demodulate (bool): Whether sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ demodulate in the VRzIOXLfdDszfSOpzuKgtjeGGtXuyctm rmOubEJgfxmJuwTevhKPPVPDYGHXWRFZ. Default: True.
         sample_mode (str | None): Indicating 'upsample', 'downsample' or None. Default: None.
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv (float): A GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the denominator for numerical stability. Default: 1e-8.
+        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv (float): A value added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the denominator for numerical stability. Default: 1e-8.
         Args:
             NECAaWUrFGIXcLimrerEYmxYIykQBfXb (Tensor): Tensor with BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg (b, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu).
             style (Tensor): Tensor with BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg (b, num_style_feat).

@@ -26,8 +26,8 @@ import folder_paths
 import latent_preview
 def cZCqaSABLYzQIyICXPawBbAkRZgRglpn():
     quasar.model_management.cufzYbsmvfzVPCacJuRroKjPAHWqOusW()
-def NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=True):
-    quasar.model_management.ggsUtIbLrBjTjYoMQwfUAZvlFgfjRNAK(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
+def NIMMAjqKpMwgFfFMJGlJLJdwCPLKOQTM(value=True):
+    quasar.model_management.ggsUtIbLrBjTjYoMQwfUAZvlFgfjRNAK(value)
 tUEqFkJYdZNTmWQilLxLUFxmxzEWYVdq=8192
 class xFugYlszeGKAKGYYiugpgdmBdgLdixjN:
     @classmethod

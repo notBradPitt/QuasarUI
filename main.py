@@ -85,9 +85,9 @@ def YuFVcvfYKKjsoLiAOeZDsRkUvHoaNoGJ(mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, REDIKAYZy
 async def BWWtIKBYOUwJuXEKziUqMRbzaRFsBIkz(REDIKAYZymAzMirxFmomyJtEGktwcqlE, CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv='', port=8188, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS=True, ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN=None):
     await asyncio.gather(REDIKAYZymAzMirxFmomyJtEGktwcqlE.tUuYqnLjDXuftYgMagGpmrobxWgfcbgq(CCIjQGzXZAaHfKOvxktxIwIaaauBrFXv, port, aFZoJwWpCnqyOJdcAMLlqOHxDgjPTNCS, ALTUFmMSNrTTqeFdmxsHzQmauDwcNVXN), REDIKAYZymAzMirxFmomyJtEGktwcqlE.EBskPkRhwxVtGrdnQMhAvswjrxSyPepP())
 def HLlvCRPdqgoEmbXuEpDcAJYkJdkyKVNb(REDIKAYZymAzMirxFmomyJtEGktwcqlE):
-    def UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc, total, YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM):
+    def UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP(value, total, YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM):
         quasar.model_management.cufzYbsmvfzVPCacJuRroKjPAHWqOusW()
-        REDIKAYZymAzMirxFmomyJtEGktwcqlE.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa("progress", {"value": GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc, "max": total}, REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id)
+        REDIKAYZymAzMirxFmomyJtEGktwcqlE.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa("progress", {"value": value, "max": total}, REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id)
         if YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM is not None:
             REDIKAYZymAzMirxFmomyJtEGktwcqlE.qIpzeiOiFfpTobMBTgFPHfiZRTmLDpoa(hFTRCQDJXYjBTBYxdLVBThHQwQEdvZRj.aMTOakoNisHgzZsgUrJBfNFbowQFDzvw, YzTgcqdWQquptJqAzEsqPLAPkbcBSIfM, REDIKAYZymAzMirxFmomyJtEGktwcqlE.client_id)
     quasar.utils.set_progress_bar_global_hook(UtKIXbkRXuTjrsPTxMKsGoZjPxuOeqtP)

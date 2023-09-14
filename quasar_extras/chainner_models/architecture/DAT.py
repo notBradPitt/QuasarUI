@@ -25,7 +25,7 @@
         WbSAuusmaEgbrureofeJezeXtfsVoscC (int): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk. Default: 6
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU (float): Dropout tZrGvOQTQKhZSRQltVuxANtJzJtnyxqW of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn RXBOtvKSHQkBvdKDbckmnlphvVygYURP. Default: 0.0
         hjPwvODBKgggBiPujNmVDnfSDUrbQIXL (float): Dropout tZrGvOQTQKhZSRQltVuxANtJzJtnyxqW of pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP. Default: 0.0
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set
         position_bias (bool): The dynamic relative position PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB. Default: True
         Input: unQNqNyaXZtDbRPdnrUuajLjwVMuGeHZ: (oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, 3*iDkmScOFEQSvigzoQVmokXyFnStBqjCR, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh), gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ, KHpRlHOzblljQyskecSxzUuWZtneWwta: (oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, CkYaWzCjmffLyFAjukkxYTtrfjqQGpts, CkYaWzCjmffLyFAjukkxYTtrfjqQGpts), CkYaWzCjmffLyFAjukkxYTtrfjqQGpts is the window vqDBJgidQufnKyAltPYRqiKGjmztArDJ
         Output: NECAaWUrFGIXcLimrerEYmxYIykQBfXb (oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh)
@@ -34,8 +34,8 @@
         WbSAuusmaEgbrureofeJezeXtfsVoscC (int): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk. Default: 6
         split_size (tuple(int)): Height and Width of spatial window.
         VxEFwqRUZKQIODDttRLPjJQWwjYKIRso (tuple(int)): Shift vqDBJgidQufnKyAltPYRqiKGjmztArDJ for spatial window.
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set.
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set.
         UopxEzgpVJqkfTBuNkdEmNLRqPMUWpUu (float): Dropout rate. Default: 0.0
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU (float): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0.0
         rg_idx (int): The indentix of Residual Group (RG)
@@ -45,8 +45,8 @@
     Args:
         yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk (int): Number of input channels.
         WbSAuusmaEgbrureofeJezeXtfsVoscC (int): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk. Default: 6
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set.
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set.
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU (float): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0.0
         rzBOFNtNGPLXcyQbBkTWNeSrLkUVYuYg (float): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.0
         Input: NECAaWUrFGIXcLimrerEYmxYIykQBfXb: (oKoLNmqMHsUubaMUUnyDFEgClwoExDJu, gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV*vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ, AHoGYMpsqEtOaZpAamJqoHqHvnlwZSRh), gFdyNTfDqQDeXijWZEnTSFKJXHMWaEiV, vFYBIMOEtqWwjvpBeeDFaIqTrgSbzULJ
@@ -59,8 +59,8 @@
         WbSAuusmaEgbrureofeJezeXtfsVoscC (int): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk.
         split_size (tuple(int)): Height and Width of spatial window.
         expansion_factor (float): Ratio of ffn hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk.
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set. Default: None
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set. Default: None
         UopxEzgpVJqkfTBuNkdEmNLRqPMUWpUu (float): Dropout rate. Default: 0
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU(float): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0
         drop_paths (float | None): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate.
@@ -86,8 +86,8 @@
         split_size (tuple(int)): Height and Width of spatial window.
         WbSAuusmaEgbrureofeJezeXtfsVoscC (tuple(int)): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk in different RJgGCfauvfBVooxMlJcnrJywZAxzDscI iyOTuhNfRQdmPDAgoyRfWQlAlbwUjdVd.
         expansion_factor (float): Ratio of ffn hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk. Default: 4
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
-        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override zKvTEPbGDoRBsQSYYaddQKLTFDorvdms qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set. Default: None
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
+        cXlznDgkSQpxQLziPvmTAyhhxVhSDLoV (float | None): Override default qk xmbXivThLFnawFPAJvIDBztziWsaDyEE of RJpLGjEjPRhDVOaBfeDFMOtajBlLriPe ** -0.5 if set. Default: None
         drop_rate (float): Dropout rate. Default: 0
         attn_drop_rate (float): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0
         drop_path_rate (float): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.1

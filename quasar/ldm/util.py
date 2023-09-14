@@ -32,7 +32,7 @@ def gAKoXnrVLIlIxvWCILBMTLkCdBWswcJy(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
     return (len(NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg) == 4) and (NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] == 3 or NECAaWUrFGIXcLimrerEYmxYIykQBfXb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg[1] == 1)
 def exists(NECAaWUrFGIXcLimrerEYmxYIykQBfXb):
     return NECAaWUrFGIXcLimrerEYmxYIykQBfXb is not None
-def zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
+def default(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
     if exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
         return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn
     return TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo() if isfunction(TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo) else TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo

@@ -25,7 +25,7 @@
         NTEWXstfzqNXGESmGkQNFWBaQsGAPlGd (int): Stride of the convolution. Default: 1
         sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP (int): Zero-sdxdTSjnkAOjlGmltQHvLiHRDstMzpAP added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ both sides of the input. Default: 0.
         PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB (bool): If ``True``, adds GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP. Default: ``True``.
-        bias_init_val (float): Bias initialized GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: 0.
+        bias_init_val (float): Bias initialized value. Default: 0.
         activate (bool): Whether use activateion. Default: True.
     Args:
         EbKSIFxpyCpzycRDApduouVsxspHzkTj (int): Channel FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of the input.

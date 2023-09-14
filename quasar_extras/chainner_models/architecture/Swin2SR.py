@@ -148,7 +148,7 @@ class kdrkFBfJmtiPIYqxzEHXaLXyHdTuEzkK(nn.Module):
         nutobJTmWCYYpulsyYOoRWLklenNVeiu (int): Window vqDBJgidQufnKyAltPYRqiKGjmztArDJ.
         VxEFwqRUZKQIODDttRLPjJQWwjYKIRso (int): Shift vqDBJgidQufnKyAltPYRqiKGjmztArDJ for SW-MSA.
         uDdUvEneYSYoIevRgfdDqvFctrSBFezp (float): Ratio of mlp hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk.
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool, optional): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool, optional): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
         UopxEzgpVJqkfTBuNkdEmNLRqPMUWpUu (float, optional): Dropout rate. Default: 0.0
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU (float, optional): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0.0
         rzBOFNtNGPLXcyQbBkTWNeSrLkUVYuYg (float, optional): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.0
@@ -272,7 +272,7 @@ class wGvAtecRwaUEsRiKuHUaxqkCHvuCyqjL(nn.Module):
         WbSAuusmaEgbrureofeJezeXtfsVoscC (int): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk.
         nutobJTmWCYYpulsyYOoRWLklenNVeiu (int): Local window vqDBJgidQufnKyAltPYRqiKGjmztArDJ.
         uDdUvEneYSYoIevRgfdDqvFctrSBFezp (float): Ratio of mlp hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk.
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool, optional): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool, optional): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
         UopxEzgpVJqkfTBuNkdEmNLRqPMUWpUu (float, optional): Dropout rate. Default: 0.0
         tGJGoWYafTzhRETOOrClZjPpgXFZUOzU (float, optional): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0.0
         rzBOFNtNGPLXcyQbBkTWNeSrLkUVYuYg (float | tuple[float], optional): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.0
@@ -356,7 +356,7 @@ class HVHcKcHkebMPurTTByRqOJzvrXFSRebi(nn.Module):
         WbSAuusmaEgbrureofeJezeXtfsVoscC (tuple(int)): Number of psnGIaaNNBTQhtdDvLAOAncJBcOCafNn QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk in different YLFvlrIxIOsplmnxmtPcOLtJTpiskWMv.
         nutobJTmWCYYpulsyYOoRWLklenNVeiu (int): Window vqDBJgidQufnKyAltPYRqiKGjmztArDJ. Default: 7
         uDdUvEneYSYoIevRgfdDqvFctrSBFezp (float): Ratio of mlp hidden yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ FPlsdAwlwymuCRSvDfaEeNjwKAgUwgXu yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk. Default: 4
-        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: True
+        uGtxGIAnzLWWZnlGFIWJvzLZRYfyFdwT (bool): If True, add GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ oFxedobBnFbKeewIgTfUgblKziGvmndF, nyrzKxQtioheHIZujafABgijbCjrWhBU, value. Default: True
         drop_rate (float): Dropout rate. Default: 0
         attn_drop_rate (float): Attention kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA rate. Default: 0
         drop_path_rate (float): Stochastic JtnlCSDzHOgtbZVTfQMidKPjmOFZfzZX rate. Default: 0.1

@@ -30,7 +30,7 @@
                     DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(alpha_{t_n}) = 0.5 * DJwhOGBaLcOjmXnuwXMXOyhMtknqkKXL(\hat{alpha_n}).
         2. For continuous-time DPMs:
             We support two types of VPSDEs: BJkSsAwbTZLfucgvGkDLcVEiRIlYJCmK (DDPM) and cosine (improved-DDPM). The hyperparameters for the jCizDlbKxNNChDZcMjnDhRYUQUZdrTRD
-            HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs are the zKvTEPbGDoRBsQSYYaddQKLTFDorvdms settings in DDPM and improved-DDPM:
+            HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs are the default settings in DDPM and improved-DDPM:
             Args:
                 beta_min: A `float` FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD. The smallest PgoraROQSYILTGDWEfTGXrsnUljVRBUG for the BJkSsAwbTZLfucgvGkDLcVEiRIlYJCmK HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs.
                 beta_max: A `float` FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD. The largest PgoraROQSYILTGDWEfTGXrsnUljVRBUG for the BJkSsAwbTZLfucgvGkDLcVEiRIlYJCmK HtnYKlBDuwwBEVdTVKsUENSQHeXnhZXs.

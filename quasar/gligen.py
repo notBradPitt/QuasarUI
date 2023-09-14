@@ -6,7 +6,7 @@ def exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
     return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn is not None
 def mbvxGTzHRegamxLbMgjoxyrZBBDzHvEV(arr):
     return{qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw: True for qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw in arr}.keys()
-def zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
+def default(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
     if exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
         return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn
     return TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo() if isfunction(TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo) else TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo
@@ -21,7 +21,7 @@ class nVIpLCPoeZxavETSbXIKgqMNJkfGLLVs(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk, tgbtPhzliVInSVGKVTqssTxzfwkNlUPr=None, XVFRnfSDhyHpjboFTGKCmAMvovOXxqYP=4, glu=False, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0.):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = int(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk * XVFRnfSDhyHpjboFTGKCmAMvovOXxqYP)
-        tgbtPhzliVInSVGKVTqssTxzfwkNlUPr = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tgbtPhzliVInSVGKVTqssTxzfwkNlUPr, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk)
+        tgbtPhzliVInSVGKVTqssTxzfwkNlUPr = default(tgbtPhzliVInSVGKVTqssTxzfwkNlUPr, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk)
         sXmfwvmjHIkRpPcXiyglCLqfExhzEyXD = nn.Sequential(
             nn.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR),
             nn.GELU()

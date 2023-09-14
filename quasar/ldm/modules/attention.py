@@ -22,7 +22,7 @@ def exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
     return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn is not None
 def mbvxGTzHRegamxLbMgjoxyrZBBDzHvEV(arr):
     return{qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw: True for qRswSnOBtvyzjhnKgbIzXEJZeYxpAFNw in arr}.keys()
-def zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
+def default(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn, TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo):
     if exists(iQelECAceWgpMwNVKVNfqYXiZvxEyNPn):
         return iQelECAceWgpMwNVKVNfqYXiZvxEyNPn
     return TXGwYXNLgQsYzfHHpRBDJGFCFZEClzIo
@@ -44,7 +44,7 @@ class nVIpLCPoeZxavETSbXIKgqMNJkfGLLVs(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk, tgbtPhzliVInSVGKVTqssTxzfwkNlUPr=None, XVFRnfSDhyHpjboFTGKCmAMvovOXxqYP=4, glu=False, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0., DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = int(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk * XVFRnfSDhyHpjboFTGKCmAMvovOXxqYP)
-        tgbtPhzliVInSVGKVTqssTxzfwkNlUPr = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tgbtPhzliVInSVGKVTqssTxzfwkNlUPr, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk)
+        tgbtPhzliVInSVGKVTqssTxzfwkNlUPr = default(tgbtPhzliVInSVGKVTqssTxzfwkNlUPr, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk)
         sXmfwvmjHIkRpPcXiyglCLqfExhzEyXD = nn.Sequential(
             xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc),
             nn.GELU()
@@ -109,7 +109,7 @@ class DmzUHgaxPAiRWNJrogZnoPnKOIZhuATL(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=None, QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk=8, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv=64, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0., DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv * QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
-        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
+        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = default(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xmbXivThLFnawFPAJvIDBztziWsaDyEE = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv ** -0.5
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk = QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
@@ -119,20 +119,20 @@ class DmzUHgaxPAiRWNJrogZnoPnKOIZhuATL(nn.Module):
             xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc),
             nn.Dropout(kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
         )
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, value=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
         xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         oFxedobBnFbKeewIgTfUgblKziGvmndF = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = default(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         nyrzKxQtioheHIZujafABgijbCjrWhBU = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_k(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
-        if GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc is not None:
-            GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
+        if value is not None:
+            value = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(value)
         else:
-            GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
+            value = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
         del tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb
         oFxedobBnFbKeewIgTfUgblKziGvmndF = oFxedobBnFbKeewIgTfUgblKziGvmndF.unflatten(-1, (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk, -1)).transpose(1,2).flatten(end_dim=1)
         uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb = nyrzKxQtioheHIZujafABgijbCjrWhBU.transpose(1,2).unflatten(1, (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk, -1)).flatten(end_dim=1)
         del nyrzKxQtioheHIZujafABgijbCjrWhBU
-        GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc = GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc.unflatten(-1, (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk, -1)).transpose(1,2).flatten(end_dim=1)
+        value = value.unflatten(-1, (rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk, -1)).transpose(1,2).flatten(end_dim=1)
         DDRQlhrNSGpwTrokWitkZipdfbAqBFxv = oFxedobBnFbKeewIgTfUgblKziGvmndF.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv
         ggPIURSGXIcuVBVgCWAEVPDrcubVXMiD = JGhGmYoXIfioVVfVVRkJUtotlxRVouBT =="fp32" and oFxedobBnFbKeewIgTfUgblKziGvmndF.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv != torch.float32
         if ggPIURSGXIcuVBVgCWAEVPDrcubVXMiD:
@@ -165,7 +165,7 @@ class DmzUHgaxPAiRWNJrogZnoPnKOIZhuATL(nn.Module):
         ezoPMrjrILcpzrodGByaQxxZsRTFvfqA = wWGvJoqsrPWDPWsQTifuSjfltmBzpUdK(
             oFxedobBnFbKeewIgTfUgblKziGvmndF,
             uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb,
-            GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc,
+            value,
             sRpdDMYTVMeNesUzSLRWIgcClptmNebH=sRpdDMYTVMeNesUzSLRWIgcClptmNebH,
             uDTBZQdxCndcOBROTvXuOsdAOWRULsLj=uDTBZQdxCndcOBROTvXuOsdAOWRULsLj,
             XAMYbWMRzvpvukEerBoKgjYJduCqwDOF=XAMYbWMRzvpvukEerBoKgjYJduCqwDOF,
@@ -182,7 +182,7 @@ class NPAwEAqrUFoUkOcUyBXukXyENmexVjRW(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=None, QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk=8, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv=64, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0., DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv * QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
-        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
+        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = default(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xmbXivThLFnawFPAJvIDBztziWsaDyEE = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv ** -0.5
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk = QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
@@ -192,14 +192,14 @@ class NPAwEAqrUFoUkOcUyBXukXyENmexVjRW(nn.Module):
             xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc),
             nn.Dropout(kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
         )
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, value=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
         xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         naEomsBBFfXCFQbEeoPZWKfGANfzcHCt = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = default(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         gHCkQmZHCJBMKEUaqadAmkHhDHcisxdV = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_k(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
-        if GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc is not None:
-            gHOriPzjESSuKHiMnHYjcVRXlkPrtamV = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
-            del GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        if value is not None:
+            gHOriPzjESSuKHiMnHYjcVRXlkPrtamV = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(value)
+            del value
         else:
             gHOriPzjESSuKHiMnHYjcVRXlkPrtamV = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
         del tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb
@@ -257,7 +257,7 @@ class qQrohQXiAITQznFuShydRodggjOWexBZ(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=None, QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk=8, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv=64, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0., DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv * QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
-        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
+        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = default(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.xmbXivThLFnawFPAJvIDBztziWsaDyEE = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv ** -0.5
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk = QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
@@ -267,14 +267,14 @@ class qQrohQXiAITQznFuShydRodggjOWexBZ(nn.Module):
             xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc),
             nn.Dropout(kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA)
         )
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, value=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
         xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = default(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_k(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
-        if GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc is not None:
-            powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
-            del GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        if value is not None:
+            powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(value)
+            del value
         else:
             powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
         mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl = map(lambda XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz: rearrange(XCZVXZddKTVHBdAfwJBwCqQTICqPeyUz, 'b n (h d) -> (b h) n d', xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab=xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab), (mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh, EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm, powGafreWfwlSAqPpTpUhFgpFVqCPavl))
@@ -298,7 +298,7 @@ class jfuIbfkFdWANZYpHZjuHkfnjaHCwdire(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=None, QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk=8, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv=64, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0.0, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv * QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
-        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
+        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = default(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk = QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
@@ -306,13 +306,13 @@ class jfuIbfkFdWANZYpHZjuHkfnjaHCwdire(nn.Module):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_out = nn.Sequential(xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), nn.Dropout(kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA))
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attention_op: Optional[Any] = None
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, value=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
         mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = default(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_k(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
-        if GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc is not None:
-            powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
-            del GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        if value is not None:
+            powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(value)
+            del value
         else:
             powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
         b, _, _ = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
@@ -338,7 +338,7 @@ class vZWIKOyHrbMmYJeCIbyCkrAIYbpZYpRv(nn.Module):
     def __init__(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT=None, QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk=8, QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv=64, kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA=0., DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=None, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=None, xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe=quasar.ops):
         super().__init__()
         mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv * QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
-        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
+        FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT = default(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk = QEnKImSSxUuBDHahcSgvZCYYpzjKVrVk
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv = QiYWcbRqbdDfAfhjULhYwmIlOStjgPlv
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
@@ -346,13 +346,13 @@ class vZWIKOyHrbMmYJeCIbyCkrAIYbpZYpRv(nn.Module):
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v = xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(FEAAZHeTRQEJCsYHCOEPpfOenpVZIhNT, mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB=False, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc)
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_out = nn.Sequential(xwIQGNbJnSVpLrBBfhMLBchFpoolNzOe.DhMcMyEvvzmWIEJojbQeGHlzfZKiPzHO(mnMnCdMaVdGNkPTuQLMKyEjwOMhAgIMR, ZqiCYiNfDUNCIdHmASCiuNWYfvyqQifY, DDRQlhrNSGpwTrokWitkZipdfbAqBFxv=DDRQlhrNSGpwTrokWitkZipdfbAqBFxv, fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc=fncUdpUPRXGoRKeawVhmqjlxVPGbdjmc), nn.Dropout(kcIxGCXrUvsLPSfmGoULGFzAthVmTXcA))
         rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attention_op: Optional[Any] = None
-    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
+    def lqBgIcSWZYylbCPjXksJWDguuSOqoPCJ(rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=None, value=None, KHpRlHOzblljQyskecSxzUuWZtneWwta=None):
         mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_q(NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
-        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = zKvTEPbGDoRBsQSYYaddQKLTFDorvdms(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
+        tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS = default(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS, NECAaWUrFGIXcLimrerEYmxYIykQBfXb)
         EWOrdNFMIwTeWNNYWAYyRJvhctFfHPqm = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_k(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
-        if GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc is not None:
-            powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
-            del GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        if value is not None:
+            powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(value)
+            del value
         else:
             powGafreWfwlSAqPpTpUhFgpFVqCPavl = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.to_v(tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS)
         b, _, _ = mxaMgfLZUDPObiqkdCgHnnARjBNVGQnh.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
@@ -453,7 +453,7 @@ class jNzzEqqHtiqYqWsjrvuVQcwKYdkrmxdM(nn.Module):
             zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = XQegtNARVNEfEuZhwiahsbBlgfBCycFu[jkOLsNhVqaaLGvbiIAKXCnQPncjVKORJ](zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, vJEaSmCEryvIDAzsJkuUImZZtrAtwEwD, fFZXTHFiSWCHkYKiDRrJzdslyblsSCLp, XlZLJsLRPiguOUrwnKgvbOtnsJeZSwPk)
             zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn1.to_out(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
         else:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn1(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=vJEaSmCEryvIDAzsJkuUImZZtrAtwEwD, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=fFZXTHFiSWCHkYKiDRrJzdslyblsSCLp)
+            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn1(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=vJEaSmCEryvIDAzsJkuUImZZtrAtwEwD, value=fFZXTHFiSWCHkYKiDRrJzdslyblsSCLp)
         if "attn1_output_patch" in AAeyWOlXaAKNsAVBbCkNXANcpWvQHrqD:
             YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn = AAeyWOlXaAKNsAVBbCkNXANcpWvQHrqD["attn1_output_patch"]
             for HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn:
@@ -484,7 +484,7 @@ class jNzzEqqHtiqYqWsjrvuVQcwKYdkrmxdM(nn.Module):
             zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = nzkHAhkeYmYisQeIQHruASemmnnDzYdv[ozIdsXCtynQIAqSzYzHZDkJmKjKUPFoy](zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, yZnthARNWsqGlwpVphOXaItSPLCErhDr, ongBEoakxtrWDjxhnijJDwygyJjgXlYn, XlZLJsLRPiguOUrwnKgvbOtnsJeZSwPk)
             zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn2.to_out(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK)
         else:
-            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn2(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=yZnthARNWsqGlwpVphOXaItSPLCErhDr, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=ongBEoakxtrWDjxhnijJDwygyJjgXlYn)
+            zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK = rmBxqCKJkHuPIHNivpdAAgzvrGlNKdVS.attn2(zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK, tRdCjhUPYVVxnSEkGmJIHWRitDXRXSZS=yZnthARNWsqGlwpVphOXaItSPLCErhDr, value=ongBEoakxtrWDjxhnijJDwygyJjgXlYn)
         if "attn2_output_patch" in AAeyWOlXaAKNsAVBbCkNXANcpWvQHrqD:
             YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn = AAeyWOlXaAKNsAVBbCkNXANcpWvQHrqD["attn2_output_patch"]
             for HutkrxeXIuRQKOhCWHkiwqLGAsJjUSKj in YBkyOiHLPkzbgIAzSqhyviJVGfxblkPn:

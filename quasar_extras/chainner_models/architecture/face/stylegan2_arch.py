@@ -28,7 +28,7 @@
         DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho (int): Size of each pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP kzeIpaLNSGyUxNmgVakyIZAkNbjmCUjd.
         PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB (bool): If set sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ ``False``, the rmOubEJgfxmJuwTevhKPPVPDYGHXWRFZ will not learn an additive
             PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB. Default: ``True``.
-        bias_init_val (float): Bias initialized GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: 0.
+        bias_init_val (float): Bias initialized value. Default: 0.
         lr_mul (float): Learning rate EWOzAFPZCwlkwatzyybUCZgINJrsJyHo. Default: 1.
         activation (None | str): The activation after ``linear`` operation.
             Supported: 'fused_lrelu', None. Default: None.
@@ -44,7 +44,7 @@
             Default: None.
         resample_kernel (list[int]): A list indicating the 1D CxKbAsloStsYoiQeeuSCHDKbgFVekqWK kernel
             magnitude. Default: (1, 3, 3, 1).
-        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv (float): A GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the denominator for numerical stability.
+        VVqkfbMIOFDgzhOKKnJVcuOffzzrOGPv (float): A value added sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the denominator for numerical stability.
             Default: 1e-8.
         Args:
             NECAaWUrFGIXcLimrerEYmxYIykQBfXb (Tensor): Tensor with BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg (b, cjHIelcAqVoHWdLcgzuZiBumKNTVADsY, xlkiANyuFAEvVUqnFyKOvZzUpSmHKjab, AeIrbRXDkpZlClJGwzMknCltTQQdmhvu).
@@ -111,7 +111,7 @@
             Default: 0.
         PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB (bool): If ``True``, adds GlZreLQjBCiBptpFgmbsMbhjFlMgPVav learnable PvdyIPYzYuxTGYQjZbTucTrRGHTQkavB sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ the pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP.
             Default: ``True``.
-        bias_init_val (float): Bias initialized GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc. Default: 0.
+        bias_init_val (float): Bias initialized value. Default: 0.
     Args:
         EbKSIFxpyCpzycRDApduouVsxspHzkTj (int): Channel FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of the input.
         DjnmEmFIylXDvTfeYtLbwRKPMHUXFjho (int): Channel FCVsdRzGunasBiYAXHkNdLEMUdcXuHLD of the pwTxzdNTJGMWEFORftJTEtPYMMiKwDuP.

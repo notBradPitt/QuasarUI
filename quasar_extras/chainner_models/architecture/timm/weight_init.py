@@ -15,8 +15,8 @@ def YnFsdjEuoTcOwqDQUTxhBWViTHDosUWU(
         xPmCFphFKpGMpIsczaSKHmMgRPZzJwla: an zXHJFiFFvWqeQIAxyaTGMUgoRaHrYzjK-dimensional `torch.Tensor`
         mean: the mean of the normal distribution
         fOYIxmVRkbmqKCdAjhgqqAEkLdJvKBVd: the standard deviation of the normal distribution
-        GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: the minimum cutoff GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
-        b: the maximum cutoff GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc
+        GlZreLQjBCiBptpFgmbsMbhjFlMgPVav: the minimum cutoff value
+        b: the maximum cutoff value
     Examples:
         >>> AeIrbRXDkpZlClJGwzMknCltTQQdmhvu = torch.empty(3, 5)
         >>> nn.init.trunc_normal_(AeIrbRXDkpZlClJGwzMknCltTQQdmhvu)

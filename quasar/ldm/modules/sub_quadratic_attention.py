@@ -27,19 +27,19 @@ class vXHlvOcVyLrXJsIrRSHVyFHmnilSBZBN(Protocol):
     def __call__(
         oFxedobBnFbKeewIgTfUgblKziGvmndF: Tensor,
         uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb: Tensor,
-        GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc: Tensor,
+        value: Tensor,
     ) -> OCjNCdccJxoGVVQletkjVWeVOAmWiNGI: ...
 class ZZSahaaVoHHzyEljoaFzSSXrQvUNpitI(Protocol):
     @staticmethod
     def __call__(
         oFxedobBnFbKeewIgTfUgblKziGvmndF: Tensor,
         uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb: Tensor,
-        GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc: Tensor,
+        value: Tensor,
     ) -> Tensor: ...
 def CzVRoUlfNavdOPFUeHmfdhVbPgBdHYXd(
     oFxedobBnFbKeewIgTfUgblKziGvmndF: Tensor,
     uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb: Tensor,
-    GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc: Tensor,
+    value: Tensor,
     xmbXivThLFnawFPAJvIDBztziWsaDyEE: float,
     ggPIURSGXIcuVBVgCWAEVPDrcubVXMiD: bool,
 ) -> OCjNCdccJxoGVVQletkjVWeVOAmWiNGI:
@@ -65,19 +65,19 @@ def CzVRoUlfNavdOPFUeHmfdhVbPgBdHYXd(
     hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO, _ = torch.max(TxLodEIQABQAbzQPKvJakcaMASqoXfNL, -1, keepdim=True)
     hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO = hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO.detach()
     torch.exp(TxLodEIQABQAbzQPKvJakcaMASqoXfNL - hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO, iqymPVpxyjOWChGwBkTemSzHJbnJdAIz=TxLodEIQABQAbzQPKvJakcaMASqoXfNL)
-    IWuvGfhYjWlmwsIwTorSovVtKageuslb = TxLodEIQABQAbzQPKvJakcaMASqoXfNL.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
-    llCWWXfyFzdhsFPoiVuMbxabfQiPjBqJ = torch.bmm(IWuvGfhYjWlmwsIwTorSovVtKageuslb, GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
+    IWuvGfhYjWlmwsIwTorSovVtKageuslb = TxLodEIQABQAbzQPKvJakcaMASqoXfNL.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(value.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv)
+    llCWWXfyFzdhsFPoiVuMbxabfQiPjBqJ = torch.bmm(IWuvGfhYjWlmwsIwTorSovVtKageuslb, value)
     hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO = hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO.squeeze(-1)
     return OCjNCdccJxoGVVQletkjVWeVOAmWiNGI(llCWWXfyFzdhsFPoiVuMbxabfQiPjBqJ, IWuvGfhYjWlmwsIwTorSovVtKageuslb.sum(yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=-1), hynkNXIyYWrIEMTVgXLlgOGgSAXJJtdO)
 def HwdJEpGDkZZHvKnQeXxCmtFGEjWnzZba(
     oFxedobBnFbKeewIgTfUgblKziGvmndF: Tensor,
     uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb: Tensor,
-    GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc: Tensor,
+    value: Tensor,
     DfqImPnvPuITkZhtYaMhhbmbkKExcoTd: vXHlvOcVyLrXJsIrRSHVyFHmnilSBZBN,
     uDTBZQdxCndcOBROTvXuOsdAOWRULsLj: int,
 ) -> Tensor:
     OxxKceEwXIPmBcVPFFUdYjDLrGLsvryX, XPgUEzMMzNQKXGADEiNmdyCqBqrXhInh, xdRMOqMyVzbfhYwKMCvFapJiNdJvFZoS = uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
-    _, _, wZJXSDhgBpHWDhHnFjGzGxKtqEmwBxRG = GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
+    _, _, wZJXSDhgBpHWDhHnFjGzGxKtqEmwBxRG = value.BElyDvcGzbvMmmwmYRGBIJogcxsyYZSg
     def mfdaKDVDJLNlmwtTMdZcnZMQCtUgPSeU(chunk_idx: int) -> OCjNCdccJxoGVVQletkjVWeVOAmWiNGI:
         lHMnaZnbRdzDtJChlOILqmjglOnCTImz = TiHcmODrAnLUWoxXbBRMfICrBFykEeQF(
             uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb,
@@ -85,7 +85,7 @@ def HwdJEpGDkZZHvKnQeXxCmtFGEjWnzZba(
             (OxxKceEwXIPmBcVPFFUdYjDLrGLsvryX, XPgUEzMMzNQKXGADEiNmdyCqBqrXhInh, uDTBZQdxCndcOBROTvXuOsdAOWRULsLj)
         )
         zLVchVlVFYsxAyDlXkuZMZcTjYYpTmQZ = TiHcmODrAnLUWoxXbBRMfICrBFykEeQF(
-            GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc,
+            value,
             (0, chunk_idx, 0),
             (OxxKceEwXIPmBcVPFFUdYjDLrGLsvryX, uDTBZQdxCndcOBROTvXuOsdAOWRULsLj, wZJXSDhgBpHWDhHnFjGzGxKtqEmwBxRG)
         )
@@ -105,7 +105,7 @@ def HwdJEpGDkZZHvKnQeXxCmtFGEjWnzZba(
 def haaTGDaPlcJTmeEjXbMGXFcMXgpzvrqG(
     oFxedobBnFbKeewIgTfUgblKziGvmndF: Tensor,
     uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb: Tensor,
-    GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc: Tensor,
+    value: Tensor,
     xmbXivThLFnawFPAJvIDBztziWsaDyEE: float,
     ggPIURSGXIcuVBVgCWAEVPDrcubVXMiD: bool,
 ) -> Tensor:
@@ -138,7 +138,7 @@ def haaTGDaPlcJTmeEjXbMGXFcMXgpzvrqG(
         RLxBEliiAqUpJZocUuRvUtjTmqegSfXE = torch.sum(ZmGhrzmiPSUkYMFtekYbKQbUZGYYMtfK, yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=-1, keepdim=True)
         ZmGhrzmiPSUkYMFtekYbKQbUZGYYMtfK /= RLxBEliiAqUpJZocUuRvUtjTmqegSfXE
         oFsPYpKMfaHxlKmMhBoqaRdUoaAophfm = ZmGhrzmiPSUkYMFtekYbKQbUZGYYMtfK
-    QrMXbOCKlTzOHaYbWtZFQhtyCshZXiuU = torch.bmm(oFsPYpKMfaHxlKmMhBoqaRdUoaAophfm.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv), GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc)
+    QrMXbOCKlTzOHaYbWtZFQhtyCshZXiuU = torch.bmm(oFsPYpKMfaHxlKmMhBoqaRdUoaAophfm.sAkaPAxVAyVwUBdNgBaxCKHpzBJvSayZ(value.DDRQlhrNSGpwTrokWitkZipdfbAqBFxv), value)
     return QrMXbOCKlTzOHaYbWtZFQhtyCshZXiuU
 class vcKmAfdmwJlFfRDjMqmCdwSkqMQcNJof(NamedTuple):
     chunk_idx: int
@@ -146,7 +146,7 @@ class vcKmAfdmwJlFfRDjMqmCdwSkqMQcNJof(NamedTuple):
 def wWGvJoqsrPWDPWsQTifuSjfltmBzpUdK(
     oFxedobBnFbKeewIgTfUgblKziGvmndF: Tensor,
     uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb: Tensor,
-    GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc: Tensor,
+    value: Tensor,
     sRpdDMYTVMeNesUzSLRWIgcClptmNebH=1024,
     uDTBZQdxCndcOBROTvXuOsdAOWRULsLj: Optional[int] = None,
     XAMYbWMRzvpvukEerBoKgjYJduCqwDOF: Optional[int] = None,
@@ -182,13 +182,13 @@ def wWGvJoqsrPWDPWsQTifuSjfltmBzpUdK(
         return compute_query_chunk_attn(
             oFxedobBnFbKeewIgTfUgblKziGvmndF=oFxedobBnFbKeewIgTfUgblKziGvmndF,
             uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb=uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb,
-            GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc,
+            value=value,
         )
     mkGrvZQFRhRjbYdNQFvVwEiuLdtvTywf = torch.cat([
         compute_query_chunk_attn(
             oFxedobBnFbKeewIgTfUgblKziGvmndF=RSiZFukXzGgjaBqMGJBfQKCWhumsGnnc(HCXmerBqIMuTscBONzTGKYapYSxWTYHo * sRpdDMYTVMeNesUzSLRWIgcClptmNebH),
             uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb=uvCuKDkdVEPRdZyyLHLiivxCEmonrfgb,
-            GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc=GXNVXDlnsSLzkmussBPoJXgJwuXIiwsc,
+            value=value,
         ) for HCXmerBqIMuTscBONzTGKYapYSxWTYHo in range(math.ceil(eCRSPzKosCQhJWveukAUVqFsWrMfGOHN / sRpdDMYTVMeNesUzSLRWIgcClptmNebH))
     ], yNArbRJyZEdZIsbNkxRhLcwhRbcXdsNk=1)
     return mkGrvZQFRhRjbYdNQFvVwEiuLdtvTywf
