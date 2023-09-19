@@ -331,3 +331,24 @@ sam_editor_model = sam_vit_b_01ec64.pth
 * [ImageSender/ImageReceiver/LatentSender/LatentReceiver](https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/sender_receiver.md)
 * [ImpactWildcardProcessor](https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/ImpactWildcardProcessor.md)
 
+
+## Credits
+
+QuasarUI/[QuasarUI](https://github.com/quasaranonymous/QuasarUI) - A powerful and modular stable diffusion GUI.
+
+dustysys/[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer for Stable-diffusion-webUI extension.
+
+Bing-su/[dddetailer](https://github.com/Bing-su/dddetailer) - The anime-face-detector used in ddetailer has been updated to be compatible with mmdet 3.0.0, and we have also applied a patch to the pycocotools dependency for Windows environment in ddetailer.
+
+facebook/[segment-anything](https://github.com/facebookresearch/segment-anything) - Segmentation Anything!
+
+hysts/[anime-face-detector](https://github.com/hysts/anime-face-detector) - Creator of `anime-face_yolov3`, which has impressive performance on a variety of art styles.
+
+open-mmlab/[mmdetection](https://github.com/open-mmlab/mmdetection) - Object detection toolset. `dd-person_mask2former` was trained via transfer learning using their [R-50 Mask2Former instance segmentation model](https://github.com/open-mmlab/mmdetection/tree/master/configs/mask2former#instance-segmentation) as a base.
+
+biegert/[QuasarUI-CLIPSeg](https://github.com/biegert/QuasarUI-CLIPSeg) - This is a custom node that enables the use of CLIPSeg technology, which can find segments through prompts, in QuasarUI.
+
+BlenderNeok/[QuasarUI-TiledKSampler](https://github.com/BlenderNeko/QuasarUI_TiledKSampler) - 
+The tile sampler allows high-resolution sampling even in places with low GPU VRAM.
+
+WASasquatch/[was-node-suite-quasarui](https://github.com/WASasquatch/was-node-suite-quasarui) - A powerful custom node extensions of QuasarUI.

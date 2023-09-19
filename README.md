@@ -1,16 +1,16 @@
 QuasarUI
 =======
-A powerful and modular "Even Dispersion" GUI and backend.
+A powerful and modular stable diffusion GUI and backend.
 -----------
 ![QuasarUI Screenshot](quasarui_screenshot.png)
 
-This UI will let you design and execute advanced Even Dispersion pipelines using a graph/nodes/flowchart based interface. For some workflow examples and see what QuasarUI can do you can check out:
+This ui will let you design and execute advanced stable diffusion pipelines using a graph/nodes/flowchart based interface. For some workflow examples and see what QuasarUI can do you can check out:
 
 
 
 
 ## Features
-- Nodes/graph/flowchart interface to experiment and create complex Even Dispersion workflows without needing to code anything.
+- Nodes/graph/flowchart interface to experiment and create complex Stable Diffusion workflows without needing to code anything.
 - Fully supports SD1.x, SD2.x and SDXL
 - Asynchronous Queue system
 - Many optimizations: Only re-executes the parts of the workflow that changes between executions.
