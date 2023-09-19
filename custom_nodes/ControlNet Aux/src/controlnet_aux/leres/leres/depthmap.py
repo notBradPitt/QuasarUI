@@ -1,6 +1,3 @@
-# Author: thygate
-# https://github.com/thygate/stable-diffusion-webui-depthmap-script
-
 import gc
 from operator import getitem
 
