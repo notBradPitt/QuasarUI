@@ -6,7 +6,7 @@ supported_pt_extensions = set(['.ckpt', '.pt', '.bin', '.pth', '.safetensors'])
 folder_names_and_paths = {}
 
 base_path = os.path.dirname(os.path.realpath(__file__))
-models_dir = os.path.join(base_path, "models")
+models_dir = os.path.join(base_path, "sd/models")
 folder_names_and_paths["checkpoints"] = ([os.path.join(models_dir, "checkpoints")], supported_pt_extensions)
 folder_names_and_paths["configs"] = ([os.path.join(models_dir, "configs")], [".yaml"])
 
@@ -29,9 +29,9 @@ folder_names_and_paths["custom_nodes"] = ([os.path.join(base_path, "custom_nodes
 
 folder_names_and_paths["hypernetworks"] = ([os.path.join(models_dir, "hypernetworks")], supported_pt_extensions)
 
-output_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "output")
-temp_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temp")
-input_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input")
+output_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/output")
+temp_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/temp")
+input_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/nput")
 
 filename_list_cache = {}
 
