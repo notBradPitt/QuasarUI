@@ -16,7 +16,6 @@ piexif
 torch
 importlib_metadata
 huggingface_hub
-scipy
 opencv-python>=4.8.0
 filelock
 numpy
@@ -24,7 +23,7 @@ Pillow
 einops
 torchvision
 timm==0.6.13
-scikit-image
+
 python-dateutil
 mediapipe
 svglib
@@ -35,4 +34,19 @@ ftfy
 addict
 fairscale==0.4.4
 pycocoevalcap
+onnxruntime
+
+cmake
+git+https://github.com/WASasquatch/img2texture.git
+gitpython
+imageio
+joblib
+matplotlib
+numba
+opencv-python-headless[ffmpeg]<=4.7.0.72
+pilgram
+git+https://github.com/WASasquatch/ffmpy.git
+rembg
+scikit-learn
+
 
