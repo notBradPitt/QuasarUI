@@ -36,17 +36,7 @@ fairscale==0.4.4
 pycocoevalcap
 onnxruntime
 
-cmake
-git+https://github.com/WASasquatch/img2texture.git
-gitpython
-imageio
-joblib
-matplotlib
-numba
-opencv-python-headless[ffmpeg]<=4.7.0.72
-pilgram
-git+https://github.com/WASasquatch/ffmpy.git
-rembg
-scikit-learn
 
+qrcode
+"qrcode[pil]"
 

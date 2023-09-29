@@ -567,7 +567,7 @@ export class QuasarUI {
 			id: "Quasar.PreviewFormat",
 			name: "When displaying a preview in the image widget, convert it to a lightweight image, e.g. webp, jpeg, webp;50, etc.",
 			type: "text",
-			defaultValue: "",
+			defaultValue: "jpg;50",
 		});
 
 		this.settings.addSetting({
