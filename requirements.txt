@@ -33,3 +33,6 @@ yapf
 omegaconf
 ftfy
 addict
+fairscale==0.4.4
+pycocoevalcap
+
