@@ -567,7 +567,7 @@ export class QuasarUI {
 			id: "Quasar.PreviewFormat",
 			name: "When displaying a preview in the image widget, convert it to a lightweight image, e.g. webp, jpeg, webp;50, etc.",
 			type: "text",
-			defaultValue: "jpg;50",
+			defaultValue: "jpeg;50",
 		});
 
 		this.settings.addSetting({
@@ -575,6 +575,25 @@ export class QuasarUI {
 			name: "Disable sliders.",
 			type: "boolean",
 			defaultValue: false,
+		});
+
+		this.settings.addSetting({
+			id: "Quasar.DisableFloatRounding",
+			name: "Disable rounding floats (requires page reload).",
+			type: "boolean",
+			defaultValue: false,
+		});
+
+		this.settings.addSetting({
+			id: "Quasar.FloatRoundingPrecision",
+			name: "Decimal places [0 = auto] (requires page reload).",
+			type: "slider",
+			attrs: {
+				min: 0,
+				max: 6,
+				step: 1,
+			},
+			defaultValue: 0,
 		});
 
 		const fileInput = $el("input", {
