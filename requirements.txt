@@ -35,7 +35,7 @@ addict
 fairscale==0.4.4
 pycocoevalcap
 onnxruntime
-GitPython
+
 
 qrcode
 
