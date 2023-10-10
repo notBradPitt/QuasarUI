@@ -187,7 +187,8 @@ app.registerExtension({
 	},
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
-		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale") {
+		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale"
+		    || nodeData.name == "RegionalSampler"|| nodeData.name == "RegionalSamplerAdvanced") {
 			impactProgressBadge.addStatusHandler(nodeType);
 		}
 
@@ -284,12 +285,19 @@ app.registerExtension({
             }
         }
 
-        if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
+        if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
+            nodeData.name === 'CombineRegionalPrompts' || nodeData.name === 'ImpactSwitch' ||
+            nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
             var input_name = "input";
 
             switch(nodeData.name) {
             case 'ImpactMakeImageList':
+            case 'ImpactMakeImageBatch':
                 input_name = "image";
+                break;
+
+            case 'CombineRegionalPrompts':
+                input_name = "regional_prompts";
                 break;
 
             case 'LatentSwitch':
@@ -311,8 +319,8 @@ app.registerExtension({
 
                 if(type == 2) {
                     // connect output
-                    if(connected){
-                        if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id].type == 'Reroute') {
+                    if(connected && index == 0){
+                        if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
                             app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
                         }
 
@@ -469,6 +477,7 @@ app.registerExtension({
 		if(node.quasarClass == "ImpactWildcardEncode" || node.quasarClass == "ToDetailerPipe" || node.quasarClass == "ToDetailerPipeSDXL"
 		|| node.quasarClass == "EditDetailerPipe" || node.quasarClass == "BasicPipeToDetailerPipe" || node.quasarClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
+			node._wvalue = "Select the Wildcard to add to the text";
 
             var tbox_id = 0;
             var combo_id = 3;
@@ -482,12 +491,33 @@ app.registerExtension({
                 case "ToDetailerPipe":
 		        case "ToDetailerPipeSDXL":
                 case "EditDetailerPipe":
+                case "EditDetailerPipeSDXL":
                 case "BasicPipeToDetailerPipe":
 		        case "BasicPipeToDetailerPipeSDXL":
                     tbox_id = 0;
                     combo_id = 1;
                     break;
             }
+
+			Object.defineProperty(node.widgets[combo_id+1], "value", {
+				set: (value) => {
+				        const stackTrace = new Error().stack;
+                        if(stackTrace.includes('inner_value_change')) {
+                            if(value != "Select the Wildcard to add to the text") {
+                                if(node.widgets[tbox_id].value != '')
+                                    node.widgets[tbox_id].value += ', '
+
+
+	                            node.widgets[tbox_id].value += value;
+                            }
+                        }
+
+						node._wvalue = value;
+					},
+				get: () => {
+                        return node._wvalue;
+					 }
+			});
 
 			Object.defineProperty(node.widgets[combo_id], "value", {
 				set: (value) => {
@@ -635,16 +665,28 @@ app.registerExtension({
 								forward_type: app.nodeOutputs[id]['aux'][1][0]['type']
 							};
 
-						app.nodeOutputs[id].images = [{
-								...node._images[0],
-								...item
-							}];
+						if(node._images) {
+							app.nodeOutputs[id].images = [{
+									...node._images[0],
+									...item
+								}];
 
-						node.widgets[0].value =
-							{
-								...node._images[0],
-								...item
-							};
+							node.widgets[0].value =
+								{
+									...node._images[0],
+									...item
+								};
+						}
+						else {
+							app.nodeOutputs[id].images = [{
+									...item
+								}];
+
+							node.widgets[0].value =
+								{
+									...item
+								};
+						}
 
 						if(need_invalidate) {
 							Promise.all(

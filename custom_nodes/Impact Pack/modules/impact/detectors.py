@@ -47,7 +47,7 @@ class SAMDetectorSegmented:
                       }
                 }
 
-    RETURN_TYPES = ("MASK", "MASKS")
+    RETURN_TYPES = ("MASK", "MASK")
     RETURN_NAMES = ("combined_mask", "batch_masks")
     FUNCTION = "doit"
 
@@ -69,7 +69,7 @@ class BboxDetectorForEach:
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                       }
                 }
@@ -92,7 +92,7 @@ class SegmDetectorForEach:
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                       }
                 }
@@ -152,13 +152,13 @@ class SimpleDetectorForEach:
                         "image": ("IMAGE", ),
 
                         "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "bbox_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                        "bbox_dilation": ("INT", {"default": 0, "min": -255, "max": 255, "step": 1}),
 
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
 
                         "sub_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "sub_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                        "sub_dilation": ("INT", {"default": 0, "min": -255, "max": 255, "step": 1}),
                         "sub_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
 
                         "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -185,7 +185,7 @@ class SimpleDetectorForEach:
                                       sub_threshold, sub_bbox_expansion, sam_mask_hint_threshold, False)
             segs = core.segs_bitwise_and_mask(segs, mask)
         elif segm_detector_opt is not None:
-            segm_segs = segm_detector_opt.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size)
+            segm_segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size)
             mask = core.segs_to_combined_mask(segm_segs)
             segs = core.segs_bitwise_and_mask(segs, mask)
 
@@ -211,7 +211,7 @@ class SimpleDetectorForEachPipe:
                         "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "bbox_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
 
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
 
                         "sub_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),

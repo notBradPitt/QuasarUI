@@ -8,12 +8,10 @@ import warnings
 from segment_anything import sam_model_registry
 from io import BytesIO
 import piexif
-import math
 import zipfile
 import re
 
 import impact.wildcards
-from server import PromptServer
 
 from impact.utils import *
 import impact.core as core
@@ -46,7 +44,7 @@ class ONNXDetectorProvider:
     def INPUT_TYPES(s):
         return {"required": {"model_name": (folder_paths.get_filename_list("onnx"), )}}
 
-    RETURN_TYPES = ("ONNX_DETECTOR", )
+    RETURN_TYPES = ("BBOX_DETECTOR", )
     FUNCTION = "load_onnx"
 
     CATEGORY = "ImpactPack"
@@ -125,7 +123,7 @@ class ONNXDetectorForEach:
                     "image": ("IMAGE",),
                     "threshold": ("FLOAT", {"default": 0.8, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                    "crop_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 10, "step": 0.1}),
+                    "crop_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 100, "step": 0.1}),
                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                     }
                 }
@@ -140,8 +138,6 @@ class ONNXDetectorForEach:
     def doit(self, onnx_detector, image, threshold, dilation, crop_factor, drop_size):
         segs = onnx_detector.detect(image, threshold, dilation, crop_factor, drop_size)
         return (segs, )
-
-
 
 
 class DetailerForEach:
@@ -188,6 +184,8 @@ class DetailerForEach:
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
+
+        segs = core.segs_scale_match(segs, image.shape)
 
         for seg in segs[1]:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
@@ -311,251 +309,6 @@ class DetailerForEachPipe:
         return (enhanced_img, segs, basic_pipe, cnet_pil_list)
 
 
-class KSamplerProvider:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                                "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                                "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
-                                "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
-                                "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                                "basic_pipe": ("BASIC_PIPE", )
-                             },
-                }
-
-    RETURN_TYPES = ("KSAMPLER",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Sampler"
-
-    def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe):
-        model, _, _, positive, negative = basic_pipe
-        sampler = core.KSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
-        return (sampler, )
-
-
-class KSamplerAdvancedProvider:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                                "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
-                                "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
-                                "basic_pipe": ("BASIC_PIPE", )
-                             },
-                }
-
-    RETURN_TYPES = ("KSAMPLER_ADVANCED",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Sampler"
-
-    def doit(self, cfg, sampler_name, scheduler, basic_pipe):
-        model, _, _, positive, negative = basic_pipe
-        sampler = core.KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative)
-        return (sampler, )
-
-
-class TwoSamplersForMask:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "latent_image": ("LATENT", ),
-                     "base_sampler": ("KSAMPLER", ),
-                     "mask_sampler": ("KSAMPLER", ),
-                     "mask": ("MASK", )
-                     },
-                }
-
-    RETURN_TYPES = ("LATENT", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Sampler"
-
-    def doit(self, latent_image, base_sampler, mask_sampler, mask):
-        inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
-
-        latent_image['noise_mask'] = inv_mask
-        new_latent_image = base_sampler.sample(latent_image)
-
-        new_latent_image['noise_mask'] = mask
-        new_latent_image = mask_sampler.sample(new_latent_image)
-
-        del new_latent_image['noise_mask']
-
-        return (new_latent_image, )
-
-
-class TwoAdvancedSamplersForMask:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "samples": ("LATENT", ),
-                     "base_sampler": ("KSAMPLER_ADVANCED", ),
-                     "mask_sampler": ("KSAMPLER_ADVANCED", ),
-                     "mask": ("MASK", ),
-                     "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000})
-                     },
-                }
-
-    RETURN_TYPES = ("LATENT", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Sampler"
-
-    @staticmethod
-    def mask_erosion(samples, mask, grow_mask_by):
-        mask = mask.clone()
-
-        w = samples['samples'].shape[3]
-        h = samples['samples'].shape[2]
-
-        mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h), mode="bilinear")
-        if grow_mask_by == 0:
-            mask_erosion = mask2
-        else:
-            kernel_tensor = torch.ones((1, 1, grow_mask_by, grow_mask_by))
-            padding = math.ceil((grow_mask_by - 1) / 2)
-
-            mask_erosion = torch.clamp(torch.nn.functional.conv2d(mask2.round(), kernel_tensor, padding=padding), 0, 1)
-
-        return mask_erosion[:, :, :w, :h].round()
-
-    def doit(self, seed, steps, denoise, samples, base_sampler, mask_sampler, mask, overlap_factor):
-
-        inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
-
-        adv_steps = int(steps / denoise)
-        start_at_step = adv_steps - steps
-
-        new_latent_image = samples.copy()
-
-        mask_erosion = TwoAdvancedSamplersForMask.mask_erosion(samples, mask, overlap_factor)
-
-        for i in range(start_at_step, adv_steps):
-            add_noise = "enable" if i == start_at_step else "disable"
-            return_with_leftover_noise = "enable" if i+1 != adv_steps else "disable"
-
-            new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable")
-
-            new_latent_image['noise_mask'] = mask_erosion
-            new_latent_image = mask_sampler.sample_advanced("disable", seed, adv_steps, new_latent_image, i, i + 1, return_with_leftover_noise)
-
-        del new_latent_image['noise_mask']
-
-        return (new_latent_image, )
-
-
-class RegionalPrompt:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "mask": ("MASK", ),
-                     "advanced_sampler": ("KSAMPLER_ADVANCED", ),
-                     },
-                }
-
-    RETURN_TYPES = ("REGIONAL_PROMPTS", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/experimental"
-
-    def doit(self, mask, advanced_sampler):
-        regional_prompt = core.REGIONAL_PROMPT(mask, advanced_sampler)
-        return ([regional_prompt], )
-
-
-class CombineRegionalPrompts:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "regional_prompts1": ("REGIONAL_PROMPTS", ),
-                     "regional_prompts2": ("REGIONAL_PROMPTS", ),
-                     },
-                }
-
-    RETURN_TYPES = ("REGIONAL_PROMPTS", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/experimental"
-
-    def doit(self, regional_prompts1, regional_prompts2):
-        return (regional_prompts1 + regional_prompts2, )
-
-
-class RegionalSampler:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "samples": ("LATENT", ),
-                     "base_sampler": ("KSAMPLER_ADVANCED", ),
-                     "regional_prompts": ("REGIONAL_PROMPTS", ),
-                     "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000})
-                     },
-                }
-
-    RETURN_TYPES = ("LATENT", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/experimental"
-
-    @staticmethod
-    def mask_erosion(samples, mask, grow_mask_by):
-        mask = mask.clone()
-
-        w = samples['samples'].shape[3]
-        h = samples['samples'].shape[2]
-
-        mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h), mode="bilinear")
-        if grow_mask_by == 0:
-            mask_erosion = mask2
-        else:
-            kernel_tensor = torch.ones((1, 1, grow_mask_by, grow_mask_by))
-            padding = math.ceil((grow_mask_by - 1) / 2)
-
-            mask_erosion = torch.clamp(torch.nn.functional.conv2d(mask2.round(), kernel_tensor, padding=padding), 0, 1)
-
-        return mask_erosion[:, :, :w, :h].round()
-
-    def doit(self, seed, steps, denoise, samples, base_sampler, regional_prompts, overlap_factor):
-
-        masks = [regional_prompt.mask.numpy() for regional_prompt in regional_prompts]
-        masks = [np.ceil(mask).astype(np.int32) for mask in masks]
-        combined_mask = torch.from_numpy(np.bitwise_or.reduce(masks))
-
-        inv_mask = torch.where(combined_mask == 0, torch.tensor(1.0), torch.tensor(0.0))
-
-        adv_steps = int(steps / denoise)
-        start_at_step = adv_steps - steps
-
-        new_latent_image = samples.copy()
-
-        for i in range(start_at_step, adv_steps):
-            add_noise = "enable" if i == start_at_step else "disable"
-            return_with_leftover_noise = "enable" if i+1 != adv_steps else "disable"
-
-            new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable")
-
-            for regional_prompt in regional_prompts:
-                new_latent_image['noise_mask'] = regional_prompt.get_mask_erosion(overlap_factor)
-                new_latent_image = regional_prompt.sampler.sample_advanced("disable", seed, adv_steps, new_latent_image,
-                                                                           i, i + 1, return_with_leftover_noise)
-
-        del new_latent_image['noise_mask']
-
-        return (new_latent_image, )
-
-
 class FaceDetailer:
     @classmethod
     def INPUT_TYPES(s):
@@ -631,8 +384,11 @@ class FaceDetailer:
 
         elif segm_detector is not None:
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
-            segm_mask = core.segs_to_combined_mask(segm_segs)
-            segs = core.segs_bitwise_and_mask(segs, segm_mask)
+            if hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm:
+                segs = segm_segs
+            else:
+                segm_mask = core.segs_to_combined_mask(segm_segs)
+                segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
         enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
@@ -828,35 +584,6 @@ class PixelKSampleHookCombine:
     def doit(self, hook1, hook2):
         hook = core.PixelKSampleHookCombine(hook1, hook2)
         return (hook, )
-
-
-class TiledKSamplerProvider:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
-                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "tile_width": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
-                    "tile_height": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
-                    "tiling_strategy": (["random", "padded", 'simple'], ),
-                    "basic_pipe": ("BASIC_PIPE", )
-                    }}
-
-    RETURN_TYPES = ("KSAMPLER",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Sampler"
-
-    def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise,
-             tile_width, tile_height, tiling_strategy, basic_pipe):
-        model, _, _, positive, negative = basic_pipe
-        sampler = core.TiledKSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                                            tile_width, tile_height, tiling_strategy)
-        return (sampler, )
 
 
 class PixelTiledKSampleUpscalerProvider:
@@ -1091,6 +818,10 @@ class TwoSamplersForMaskUpscalerProviderPipe:
     def doit(self, scale_method, full_sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, basic_pipe,
              full_sampler_opt=None, upscale_model_opt=None,
              pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None, tile_size=512):
+
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
         _, _, vae, _, _ = basic_pipe
         upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
                                                    base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
@@ -1213,11 +944,11 @@ class FaceDetailerPipe:
                      "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
 
                      "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
+                     "bbox_dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
                      "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
 
                      "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
-                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                     "sam_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
                      "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
                      "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
                      "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -1363,7 +1094,7 @@ class SegsBitwiseAndMaskForEach:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS",),
-                        "masks": ("MASKS",),
+                        "masks": ("MASK",),
                     }
                 }
 
@@ -1489,7 +1220,7 @@ class MasksToMaskList:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "masks": ("MASKS", ),
+                        "masks": ("MASK", ),
                       }
                 }
 
@@ -1524,14 +1255,58 @@ class MaskListToMaskBatch:
 
     INPUT_IS_LIST = True
 
-    RETURN_TYPES = ("MASKS", )
+    RETURN_TYPES = ("MASK", )
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask):
-        mask_batch = torch.stack(mask, dim=0)
-        return (mask_batch, )
+        if len(mask) == 1:
+            if len(mask[0].shape) == 2:
+                mask = mask[0].unsqueeze(0)
+            return (mask,)
+        elif len(mask) > 1:
+            mask1 = mask[0]
+            if len(mask1.shape) == 2:
+                mask1 = mask1.unsqueeze(0)
+
+            for mask2 in mask[1:]:
+                if len(mask2.shape) == 2:
+                    mask2 = mask2.unsqueeze(0)
+                if mask1.shape[1:] != mask2.shape[1:]:
+                    mask2 = quasar.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "bilinear", "center").movedim(1, -1)
+                mask1 = torch.cat((mask1, mask2), dim=0)
+            return (mask1,)
+        else:
+            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
+            return (empty_mask,)
+
+
+class ImageListToMaskBatch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "images": ("IMAGE", ),
+                      }
+                }
+
+    INPUT_IS_LIST = True
+
+    RETURN_TYPES = ("IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, images):
+        if len(images) <= 1:
+            return (images,)
+        else:
+            image1 = images[0]
+            for image2 in images[1:]:
+                if image1.shape[1:] != image2.shape[1:]:
+                    image2 = quasar.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                image1 = torch.cat((image1, image2), dim=0)
+            return (image1,)
 
 
 class ToBinaryMask:
@@ -2048,33 +1823,6 @@ class LatentSwitch:
             return (kwargs['latent1'],)
 
 
-class SEGSSwitch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 99999, "step": 1}),
-                    "segs1": ("SEGS",),
-                    },
-                }
-
-    RETURN_TYPES = ("SEGS", )
-
-    OUTPUT_NODE = True
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, *args, **kwargs):
-        input_name = f"segs{int(kwargs['select'])}"
-
-        if input_name in kwargs:
-            return (kwargs[input_name],)
-        else:
-            print(f"SEGSSwitch: invalid select index ('segs1' is selected)")
-            return (kwargs['segs1'],)
-
-
 class SaveConditioning:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
@@ -2184,6 +1932,7 @@ class ImpactWildcardEncode:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
+                        "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(), ),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     },
                 }
@@ -2251,72 +2000,6 @@ class ReencodeLatentPipe:
         return ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae)
 
 
-class KSamplerBasicPipe:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required":
-                    {"basic_pipe": ("BASIC_PIPE",),
-                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
-                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
-                    "latent_image": ("LATENT", ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     }
-                }
-
-    RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
-    FUNCTION = "sample"
-
-    CATEGORY = "sampling"
-
-    def sample(self, basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
-        model, clip, vae, positive, negative = basic_pipe
-        latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
-        return (basic_pipe, latent, vae)
-
-
-class KSamplerAdvancedBasicPipe:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required":
-                    {"basic_pipe": ("BASIC_PIPE",),
-                     "add_noise": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
-                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
-                     "latent_image": ("LATENT", ),
-                     "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
-                     "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
-                     "return_with_leftover_noise": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     }
-                }
-
-    RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
-    FUNCTION = "sample"
-
-    CATEGORY = "sampling"
-
-    def sample(self, basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
-        model, clip, vae, positive, negative = basic_pipe
-
-        if add_noise:
-            add_noise = "enabled"
-        else:
-            add_noise = "disabled"
-
-        if return_with_leftover_noise:
-            return_with_leftover_noise = "enabled"
-        else:
-            return_with_leftover_noise = "disabled"
-
-        latent = nodes.KSamplerAdvanced().sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise)[0]
-        return (basic_pipe, latent, vae)
-
-
 class ImageBatchToImageList:
     @classmethod
     def INPUT_TYPES(s):
@@ -2353,33 +2036,29 @@ class MakeImageList:
         return (images, )
 
 
-class ControlNetApplySEGS:
+class MakeImageBatch:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {
-                    "segs": ("SEGS",),
-                    "control_net": ("CONTROL_NET",),
-                    "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
-                    },
-                "optional": {
-                    "segs_preprocessor": ("SEGS_PREPROCESSOR",),
-                    }
-                }
+        return {"required": {"image1": ("IMAGE",), }}
 
-    RETURN_TYPES = ("SEGS",)
+    RETURN_TYPES = ("IMAGE",)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, control_net, strength, segs_preprocessor=None):
-        new_segs = []
+    def doit(self, **kwargs):
+        image1 = kwargs['image1']
+        del kwargs['image1']
+        images = [value for value in kwargs.values()]
 
-        for seg in segs[1]:
-            control_net_wrapper = impact.core.ControlNetWrapper(control_net, strength, segs_preprocessor)
-            new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
-            new_segs.append(new_seg)
-
-        return ((segs[0], new_segs), )
+        if len(images) == 0:
+            return (image1,)
+        else:
+            for image2 in images:
+                if image1.shape[1:] != image2.shape[1:]:
+                    image2 = quasar.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                image1 = torch.cat((image1, image2), dim=0)
+            return (image1,)
 
 
 class StringSelector:
@@ -2392,7 +2071,6 @@ class StringSelector:
         }}
 
     RETURN_TYPES = ("STRING",)
-    OUTPUT_IS_LIST = (True,)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"

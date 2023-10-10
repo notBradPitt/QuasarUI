@@ -7,6 +7,10 @@ import folder_paths
 wildcard_dict = {}
 
 
+def get_wildcard_list():
+    return [f"__{x}__" for x in wildcard_dict.keys()]
+
+
 def read_wildcard_dict(wildcard_path):
     global wildcard_dict
     for root, directories, files in os.walk(wildcard_path, followlinks=True):
@@ -14,11 +18,16 @@ def read_wildcard_dict(wildcard_path):
             if file.endswith('.txt'):
                 file_path = os.path.join(root, file)
                 rel_path = os.path.relpath(file_path, wildcard_path)
-                key = os.path.splitext(rel_path)[0].replace('\\', '/')
+                key = os.path.splitext(rel_path)[0].replace('\\', '/').lower()
 
-                with open(file_path, 'r', encoding="UTF-8") as f:
-                    lines = f.read().splitlines()
-                    wildcard_dict[key] = lines
+                try:
+                    with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                        lines = f.read().splitlines()
+                        wildcard_dict[key] = lines
+                except UnicodeDecodeError:
+                    with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                        lines = f.read().splitlines()
+                        wildcard_dict[key] = lines
 
     return wildcard_dict
 
@@ -64,16 +73,30 @@ def process(text, seed=None):
 
     def replace_wildcard(string):
         global wildcard_dict
-        pattern = r"__([\w.\-/]+)__"
+        pattern = r"__([\w.\-/*]+)__"
         matches = re.findall(pattern, string)
 
         replacements_found = False
 
         for match in matches:
-            if match in wildcard_dict:
-                replacement = random.choice(wildcard_dict[match])
+            keyword = match.lower()
+            if keyword in wildcard_dict:
+                replacement = random.choice(wildcard_dict[keyword])
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
+            elif '*' in keyword:
+                subpattern = keyword.replace('*', '.*')
+                total_patterns = []
+                found = False
+                for k, v in wildcard_dict.items():
+                    if re.match(subpattern, k) is not None:
+                        total_patterns += v
+                        found = True
+
+                if found:
+                    replacement = random.choice(total_patterns)
+                    replacements_found = True
+                    string = string.replace(f"__{match}__", replacement, 1)
 
         return string, replacements_found
 
@@ -95,39 +118,64 @@ def process(text, seed=None):
     return text
 
 
+def is_numeric_string(input_str):
+    return re.match(r'^-?\d+(\.\d+)?$', input_str) is not None
+
+
 def safe_float(x):
-    try:
+    if is_numeric_string(x):
         return float(x)
-    except:
+    else:
         return 1.0
 
 
 def extract_lora_values(string):
     pattern = r'<lora:([^>]+)>'
     matches = re.findall(pattern, string)
-    items = [match.strip(':') for match in matches]
 
-    result = {}
+    def touch_lbw(text):
+        return re.sub(r'LBW=[A-Za-z][A-Za-z0-9_-]*:', r'LBW=', text)
+
+    items = [touch_lbw(match.strip(':')) for match in matches]
+
+    added = set()
+    result = []
     for item in items:
         item = item.split(':')
 
         lora = None
-        a = 1.0
-        b = 1.0
-        if len(item) == 1:
-            lora = item[0]
-        elif len(item) == 2:
-            lora = item[0]
-            a = safe_float(item[1])
-            b = a  # When only one weight is provided, use the same weight for model as well as clip - similar to Automatic1111
-        elif len(item) >= 3:
-            lora = item[0]
-            if item[1] != '':
-                a = safe_float(item[1])
-            b = safe_float(item[2])
+        a = None
+        b = None
+        lbw = None
+        lbw_a = None
+        lbw_b = None
 
-        if lora is not None:
-            result[lora] = a, b
+        if len(item) > 0:
+            lora = item[0]
+
+            for sub_item in item[1:]:
+                if is_numeric_string(sub_item):
+                    if a is None:
+                        a = float(sub_item)
+                    elif b is None:
+                        b = float(sub_item)
+                elif sub_item.startswith("LBW="):
+                    for lbw_item in sub_item[4:].split(';'):
+                        if lbw_item.startswith("A="):
+                            lbw_a = safe_float(lbw_item[2:].strip())
+                        elif lbw_item.startswith("B="):
+                            lbw_b = safe_float(lbw_item[2:].strip())
+                        elif lbw_item.strip() != '':
+                            lbw = lbw_item
+
+        if a is None:
+            a = 1.0
+        if b is None:
+            b = 1.0
+
+        if lora is not None and lora not in added:
+            result.append((lora, a, b, lbw, lbw_a, lbw_b))
+            added.add(lora)
 
     return result
 
@@ -139,20 +187,48 @@ def remove_lora_tags(string):
     return result
 
 
+def resolve_lora_name(lora_name_cache, name):
+    if os.path.exists(name):
+        return name
+    else:
+        if len(lora_name_cache) == 0:
+            lora_name_cache.extend(folder_paths.get_filename_list("loras"))
+
+        for x in lora_name_cache:
+            if x.endswith(name):
+                return x
+
+
 def process_with_loras(wildcard_opt, model, clip):
+    lora_name_cache = []
+
     pass1 = process(wildcard_opt)
     loras = extract_lora_values(pass1)
     pass2 = remove_lora_tags(pass1)
 
-    for lora_name, (model_weight, clip_weight) in loras.items():
+    for lora_name, model_weight, clip_weight, lbw, lbw_a, lbw_b in loras:
         if (lora_name.split('.')[-1]) not in folder_paths.supported_pt_extensions:
             lora_name = lora_name+".safetensors"
+
+        lora_name = resolve_lora_name(lora_name_cache, lora_name)
 
         path = folder_paths.get_full_path("loras", lora_name)
 
         if path is not None:
-            print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}")
-            model, clip = nodes.LoraLoader().load_lora(model, clip, lora_name, model_weight, clip_weight)
+            print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}, LBW={lbw}, A={lbw_a}, B={lbw_b}")
+
+            def default_lora():
+                return nodes.LoraLoader().load_lora(model, clip, lora_name, model_weight, clip_weight)
+
+            if lbw is not None:
+                if 'LoraLoaderBlockWeight //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
+                    print(f"'LBW(Lora Block Weight)' is given, but the 'Inspire Pack' is not installed. The LBW= attribute is being ignored.")
+                    model, clip = default_lora()
+                else:
+                    cls = nodes.NODE_CLASS_MAPPINGS['LoraLoaderBlockWeight //Inspire']
+                    model, clip, _ = cls().doit(model, clip, lora_name, model_weight, clip_weight, False, 0, lbw_a, lbw_b, "", lbw)
+            else:
+                model, clip = default_lora()
         else:
             print(f"LORA NOT FOUND: {lora_name}")
 

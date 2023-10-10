@@ -2,9 +2,9 @@ import configparser
 import os
 
 
-version = "V4.6.3"
+version = "V4.16.7"
 
-dependency_version = 11
+dependency_version = 14
 
 my_path = os.path.dirname(__file__)
 old_config_path = os.path.join(my_path, "impact-pack.ini")

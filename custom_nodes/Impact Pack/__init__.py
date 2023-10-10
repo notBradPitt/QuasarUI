@@ -21,7 +21,7 @@ sys.path.append(modules_path)
 
 
 import impact.config
-import impact.hacky
+import impact.sample_error_enhancer
 print(f"### Loading: QuasarUI-Impact-Pack ({impact.config.version})")
 
 
@@ -88,7 +88,6 @@ def setup_js():
         shutil.copy(js_src_path, js_dest_path)
 
 
-    
 setup_js()
 
 from impact.impact_pack import *
@@ -97,6 +96,7 @@ from impact.pipe import *
 from impact.logics import *
 from impact.util_nodes import *
 from impact.segs_nodes import *
+from impact.special_samplers import *
 
 impact.wildcards.read_wildcard_dict(wildcards_path)
 impact.wildcards.read_wildcard_dict(custom_wildcards_path)
@@ -163,10 +163,11 @@ NODE_CLASS_MAPPINGS = {
     "ToBinaryMask": ToBinaryMask,
     "MasksToMaskList": MasksToMaskList,
     "MaskListToMaskBatch": MaskListToMaskBatch,
+    "ImageListToImageBatch": ImageListToMaskBatch,
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
-    "ONNXDetectorSEGS": ONNXDetectorForEach,
+    "ONNXDetectorSEGS": BboxDetectorForEach,
     "ImpactSimpleDetectorSEGS": SimpleDetectorForEach,
     "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe,
     "ImpactControlNetApplySEGS": ControlNetApplySEGS,
@@ -214,6 +215,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSEGSToMaskList": SEGSToMaskList,
     "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
     "ImpactSEGSConcat": SEGSConcat,
+    "ImpactSEGSPicker": SEGSPicker,
 
     "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
     "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe,
@@ -223,8 +225,10 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactImageBatchToImageList": ImageBatchToImageList,
     "ImpactMakeImageList": MakeImageList,
+    "ImpactMakeImageBatch": MakeImageBatch,
 
     "RegionalSampler": RegionalSampler,
+    "RegionalSamplerAdvanced": RegionalSamplerAdvanced,
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
 
@@ -254,7 +258,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
     "SegmDetectorSEGS": "SEGM Detector (SEGS)",
-    "ONNXDetectorSEGS": "ONNX Detector (SEGS)",
+    "ONNXDetectorSEGS": "ONNX Detector (SEGS/legacy) - use BBOXDetector",
     "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
     "ImpactControlNetApplySEGS": "ControlNetApply (SEGS)",
@@ -306,6 +310,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSConcat": "SEGS Concat",
     "ImpactSEGSToMaskList": "SEGS to Mask List",
     "ImpactSEGSToMaskBatch": "SEGS to Mask Batch",
+    "ImpactSEGSPicker": "Picker (SEGS)",
 
     "ImpactDecomposeSEGS": "Decompose (SEGS)",
     "ImpactAssembleSEGS": "Assemble (SEGS)",
@@ -325,7 +330,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MasksToMaskList": "Masks to Mask List",
     "MaskListToMaskBatch": "Mask List to Masks",
     "ImpactImageBatchToImageList": "Image batch to Image List",
+    "ImageListToImageBatch": "Image List to Image Batch",
     "ImpactMakeImageList": "Make Image List",
+    "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactStringSelector": "String Selector",
 
     "RemoveNoiseMask": "Remove Noise Mask",

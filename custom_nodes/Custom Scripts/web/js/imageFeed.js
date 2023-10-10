@@ -207,7 +207,7 @@ $el("style", {
 app.registerExtension({
 	name: "pysssss.ImageFeed",
 	setup() {
-		let visible = true;
+		let visible = false;
 		const showButton = $el("button.quasar-settings-btn", {
 			textContent: "🖼️",
 			style: {
