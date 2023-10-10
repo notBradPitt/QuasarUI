@@ -35,7 +35,5 @@ addict
 fairscale==0.4.4
 pycocoevalcap
 onnxruntime
-
-
 qrcode
-
+imageio-ffmpeg
