@@ -31,7 +31,7 @@ folder_names_and_paths["hypernetworks"] = ([os.path.join(models_dir, "hypernetwo
 
 output_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/output")
 temp_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/temp")
-input_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/nput")
+input_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "img/input")
 
 filename_list_cache = {}
 
