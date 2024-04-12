@@ -4,46 +4,37 @@ import cv2
 import numpy as np
 import torch
 from einops import rearrange
-from huggingface_hub import hf_hub_download
 from PIL import Image
 
-from ..util import HWC3, common_input_validate, resize_image_with_pad
+from controlnet_aux.util import HWC3, common_input_validate, resize_image_with_pad, custom_hf_download, HF_MODEL_NAME
 from .api import MiDaSInference
 
 
 class MidasDetector:
     def __init__(self, model):
         self.model = model
+        self.device = "cpu"
         
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, model_type="dpt_hybrid", filename=None, cache_dir=None):
-        if pretrained_model_or_path == "lllyasviel/ControlNet":
-            filename = filename or "annotator/ckpts/dpt_hybrid-midas-501f0c75.pt"
-        else:
-            filename = filename or "dpt_hybrid-midas-501f0c75.pt"
-
-        if os.path.isdir(pretrained_model_or_path):
-            model_path = os.path.join(pretrained_model_or_path, filename)
-        else:
-            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
-
+    def from_pretrained(cls, pretrained_model_or_path=HF_MODEL_NAME, model_type="dpt_hybrid", filename="dpt_hybrid-midas-501f0c75.pt"):
+        subfolder = "annotator/ckpts" if pretrained_model_or_path == "lllyasviel/ControlNet" else ''
+        model_path = custom_hf_download(pretrained_model_or_path, filename, subfolder=subfolder)
         model = MiDaSInference(model_type=model_type, model_path=model_path)
-
         return cls(model)
         
 
     def to(self, device):
         self.model.to(device)
+        self.device = device
         return self
     
     def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False, detect_resolution=512, output_type=None, upscale_method="INTER_CUBIC", **kwargs):
-        device = next(iter(self.model.parameters())).device
         input_image, output_type = common_input_validate(input_image, output_type, **kwargs)
         detected_map, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
         image_depth = detected_map
         with torch.no_grad():
             image_depth = torch.from_numpy(image_depth).float()
-            image_depth = image_depth.to(device)
+            image_depth = image_depth.to(self.device)
             image_depth = image_depth / 127.5 - 1.0
             image_depth = rearrange(image_depth, 'h w c -> 1 c h w')
             depth = self.model(image_depth)[0]

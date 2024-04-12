@@ -1,5 +1,6 @@
 import folder_paths
 from impact.core import *
+import os
 
 import mmcv
 from mmdet.apis import (inference_detector, init_detector)
@@ -102,7 +103,7 @@ class BBoxDetector:
     def __init__(self, bbox_model):
         self.bbox_model = bbox_model
 
-    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
         drop_size = max(drop_size, 1)
         mmdet_results = inference_bbox(self.bbox_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
@@ -152,7 +153,7 @@ class SegmDetector(BBoxDetector):
     def __init__(self, segm_model):
         self.segm_model = segm_model
 
-    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
         drop_size = max(drop_size, 1)
         mmdet_results = inference_segm(image, self.segm_model, threshold)
         segmasks = create_segmasks(mmdet_results)
@@ -178,7 +179,12 @@ class SegmDetector(BBoxDetector):
                 item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox, None, None)
                 items.append(item)
 
-        return image.shape, items
+        segs = image.shape, items
+
+        if detailer_hook is not None and hasattr(detailer_hook, "post_detection"):
+            segs = detailer_hook.post_detection(segs)
+
+        return segs
 
     def detect_combined(self, image, threshold, dilation):
         mmdet_results = inference_bbox(self.bbox_model, image, threshold)

@@ -82,6 +82,24 @@ body {
 	margin: 3px 3px 3px 4px;
 }
 
+.quasar-menu-hamburger {
+	position: fixed;
+	top: 10px;
+	z-index: 9999;
+	right: 10px;
+	width: 30px;
+	display: none;
+	gap: 8px;
+	flex-direction: column;
+	cursor: pointer;
+}
+.quasar-menu-hamburger div {
+	height: 3px;
+	width: 100%;
+	border-radius: 20px;
+	background-color: white;
+}
+
 .quasar-menu {
 	font-size: 15px;
 	position: absolute;
@@ -99,6 +117,44 @@ body {
 	padding: 10px;
 	border-radius: 0 8px 8px 8px;
 	box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.quasar-menu-header {
+	display: flex;
+}
+
+.quasar-menu-actions {
+	display: flex;
+	gap: 3px;
+	align-items: center;
+	height: 20px;
+	position: relative;
+	top: -1px;
+	font-size: 22px;
+}
+
+.quasar-menu .quasar-menu-actions button {
+	background-color: rgba(0, 0, 0, 0);
+	padding: 0;
+	border: none;
+	cursor: pointer;
+	font-size: inherit;
+}
+
+.quasar-menu .quasar-menu-actions .quasar-settings-btn {
+	font-size: 0.6em;
+}
+
+button.quasar-close-menu-btn {
+	font-size: 1em;
+	line-height: 12px;
+	color: #ccc;
+	position: relative;
+	top: -1px;
+}
+
+.quasar-menu-queue-size {
+	flex: auto;
 }
 
 .quasar-menu button,
@@ -121,6 +177,7 @@ body {
 	width: 100%;
 }
 
+.quasar-btn,
 .quasar-menu > button,
 .quasar-menu-btns button,
 .quasar-menu .quasar-list button,
@@ -133,16 +190,18 @@ body {
 	margin-top: 2px;
 }
 
+.quasar-btn:hover:not(:disabled),
 .quasar-menu > button:hover,
 .quasar-menu-btns button:hover,
 .quasar-menu .quasar-list button:hover,
 .quasar-modal button:hover,
-.quasar-settings-btn:hover {
+.quasar-menu-actions button:hover {
 	filter: brightness(1.2);
+	will-change: transform;
 	cursor: pointer;
 }
 
-.quasar-menu span.drag-handle {
+span.drag-handle {
 	width: 10px;
 	height: 20px;
 	display: inline-block;
@@ -158,12 +217,9 @@ body {
 	letter-spacing: 2px;
 	color: var(--drag-text);
 	text-shadow: 1px 0 1px black;
-	position: absolute;
-	top: 0;
-	left: 0;
 }
 
-.quasar-menu span.drag-handle::after {
+span.drag-handle::after {
 	content: '.. .. ..';
 }
 
@@ -207,15 +263,6 @@ body {
 
 .quasar-list-actions button {
 	font-size: 12px;
-}
-
-button.quasar-settings-btn {
-	background-color: rgba(0, 0, 0, 0);
-	font-size: 12px;
-	padding: 0;
-	position: absolute;
-	right: 0;
-	border: none;
 }
 
 button.quasar-queue-btn {
@@ -263,7 +310,19 @@ button.quasar-queue-btn {
 	}
 
 	.quasar-menu span.drag-handle {
-		visibility: hidden
+		display: none;
+	}
+	
+	.quasar-menu-queue-size {
+		flex: unset;
+	}
+
+	.quasar-menu-header {
+		justify-content: space-between;
+	}
+	.quasar-menu-actions {
+		gap: 10px;
+		font-size: 28px;
 	}
 }
 
@@ -314,7 +373,7 @@ dialog::backdrop {
 	text-align: right;
 }
 
-#quasar-settings-dialog button {
+#quasar-settings-dialog tbody button, #quasar-settings-dialog table > button {
 	background-color: var(--bg-color);
 	border: 1px var(--border-color) solid;
 	border-radius: 0;
@@ -337,12 +396,33 @@ dialog::backdrop {
 }
 
 .quasar-table caption {
+	position: sticky;
+	top: 0;
 	background-color: var(--bg-color);
 	color: var(--input-text);
 	font-size: 1rem;
 	font-weight: bold;
 	padding: 8px;
 	text-align: center;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.quasar-table caption .quasar-btn {
+	position: absolute;
+	top: -2px;
+	right: 0;
+	bottom: 0;
+	cursor: pointer;
+	border: none;
+	height: 100%;
+	border-radius: 0;
+	aspect-ratio: 1/1;
+	user-select: none;
+	font-size: 20px;
+}
+
+.quasar-table caption .quasar-btn:focus {
+	outline: none;
 }
 
 .quasar-table tr:nth-child(even) {
@@ -383,11 +463,13 @@ dialog::backdrop {
 	z-index: 9999 !important;
 	background-color: var(--quasar-menu-bg) !important;
 	filter: brightness(95%);
+	will-change: transform;
 }
 
 .litegraph.litecontextmenu .litemenu-entry:hover:not(.disabled):not(.separator) {
 	background-color: var(--quasar-menu-bg) !important;
 	filter: brightness(155%);
+	will-change: transform;
 	color: var(--input-text);
 }
 
@@ -409,6 +491,26 @@ dialog::backdrop {
 	width: calc(100% - 10px);
 }
 
+.quasar-img-preview {
+	pointer-events: none;
+	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+ 	align-content: flex-start;
+	justify-content: center;
+}
+
+.quasar-img-preview img {
+	object-fit: contain;
+	width: var(--quasar-img-preview-width);
+	height: var(--quasar-img-preview-height);
+}
+
+.quasar-missing-nodes li button {
+	font-size: 12px;
+	margin-left: 5px;
+}
+
 /* Search box */
 
 .litegraph.litesearchbox {
@@ -428,10 +530,30 @@ dialog::backdrop {
 	color: var(--input-text);
 	background-color: var(--quasar-input-bg);
 	filter: brightness(80%);
+	will-change: transform;
 	padding-left: 0.2em;
 }
 
 .litegraph.lite-search-item.generic_type {
 	color: var(--input-text);
 	filter: brightness(50%);
+	will-change: transform;
+}
+
+@media only screen and (max-width: 450px) {
+	#quasar-settings-dialog .quasar-table tbody {
+		display: grid;
+	}
+	#quasar-settings-dialog .quasar-table tr {
+		display: grid;
+	}
+	#quasar-settings-dialog tr > td:first-child {
+		text-align: center;
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+	#quasar-settings-dialog tr > td:not(:first-child) {
+		text-align: center;
+		border-top: none;
+	}
 }

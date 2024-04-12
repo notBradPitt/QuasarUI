@@ -269,6 +269,9 @@ export class QuasarLogging {
 			id: settingId,
 			name: settingId,
 			defaultValue: true,
+			onChange: (value) => {
+				this.enabled = value;
+			},
 			type: (name, setter, value) => {
 				return $el("tr", [
 					$el("td", [
@@ -283,7 +286,7 @@ export class QuasarLogging {
 							type: "checkbox",
 							checked: value,
 							onchange: (event) => {
-								setter((this.enabled = event.target.checked));
+								setter(event.target.checked);
 							},
 						}),
 						$el("button", {

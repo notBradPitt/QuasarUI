@@ -4,10 +4,9 @@ import warnings
 import cv2
 import numpy as np
 import torch
-from huggingface_hub import hf_hub_download
 from PIL import Image
 
-from ..util import HWC3, common_input_validate, resize_image_with_pad
+from controlnet_aux.util import HWC3, common_input_validate, resize_image_with_pad, custom_hf_download, HF_MODEL_NAME
 from .models.mbv2_mlsd_large import MobileV2_MLSD_Large
 from .utils import pred_lines
 
@@ -17,17 +16,9 @@ class MLSDdetector:
         self.model = model
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
-        if pretrained_model_or_path == "lllyasviel/ControlNet":
-            filename = filename or "annotator/ckpts/mlsd_large_512_fp32.pth"
-        else:
-            filename = filename or "mlsd_large_512_fp32.pth"
-
-        if os.path.isdir(pretrained_model_or_path):
-            model_path = os.path.join(pretrained_model_or_path, filename)
-        else:
-            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
-
+    def from_pretrained(cls, pretrained_model_or_path=HF_MODEL_NAME, filename="mlsd_large_512_fp32.pth"):
+        subfolder = "annotator/ckpts" if pretrained_model_or_path == "lllyasviel/ControlNet" else ''
+        model_path = custom_hf_download(pretrained_model_or_path, filename, subfolder=subfolder)
         model = MobileV2_MLSD_Large()
         model.load_state_dict(torch.load(model_path), strict=True)
         model.eval()

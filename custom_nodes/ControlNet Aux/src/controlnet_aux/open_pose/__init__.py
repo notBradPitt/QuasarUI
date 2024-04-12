@@ -21,7 +21,7 @@ import torch
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
-from ..util import HWC3, common_input_validate, resize_image_with_pad
+from controlnet_aux.util import HWC3, common_input_validate, resize_image_with_pad, custom_hf_download, HF_MODEL_NAME
 from . import util
 from .body import Body, BodyResult, Keypoint
 from .face import Face
@@ -66,8 +66,8 @@ def draw_poses(poses: List[PoseResult], H, W, draw_body=True, draw_hand=True, dr
 
     return canvas
 
-def encode_poses_as_json(poses: List[PoseResult], canvas_height: int, canvas_width: int) -> str:
-    """ Encode the pose as a JSON string following openpose JSON output format:
+def encode_poses_as_dict(poses: List[PoseResult], canvas_height: int, canvas_width: int) -> str:
+    """ Encode the pose as a dict following openpose JSON output format:
     https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/02_output.md
     """
     def compress_keypoints(keypoints: Union[List[Keypoint], None]) -> Union[List[float], None]:
@@ -84,7 +84,7 @@ def encode_poses_as_json(poses: List[PoseResult], canvas_height: int, canvas_wid
             )
         ]
 
-    return json.dumps({
+    return {
         'people': [
             {
                 'pose_keypoints_2d': compress_keypoints(pose.body.keypoints),
@@ -96,7 +96,7 @@ def encode_poses_as_json(poses: List[PoseResult], canvas_height: int, canvas_wid
         ],
         'canvas_height': canvas_height,
         'canvas_width': canvas_width,
-    }, indent=4)
+    }
     
 class OpenposeDetector:
     """
@@ -111,29 +111,18 @@ class OpenposeDetector:
         self.face_estimation = face_estimation
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, hand_filename=None, face_filename=None, cache_dir=None):
-
+    def from_pretrained(cls, pretrained_model_or_path=HF_MODEL_NAME, filename="body_pose_model.pth", hand_filename="hand_pose_model.pth", face_filename="facenet.pth"):
         if pretrained_model_or_path == "lllyasviel/ControlNet":
-            filename = filename or "annotator/ckpts/body_pose_model.pth"
-            hand_filename = hand_filename or "annotator/ckpts/hand_pose_model.pth"
-            face_filename = face_filename or "facenet.pth"
-
+            subfolder = "annotator/ckpts"
             face_pretrained_model_or_path = "lllyasviel/Annotators"
+            
         else:
-            filename = filename or "body_pose_model.pth"
-            hand_filename = hand_filename or "hand_pose_model.pth"
-            face_filename = face_filename or "facenet.pth"
-
+            subfolder = ''
             face_pretrained_model_or_path = pretrained_model_or_path
 
-        if os.path.isdir(pretrained_model_or_path):
-            body_model_path = os.path.join(pretrained_model_or_path, filename)
-            hand_model_path = os.path.join(pretrained_model_or_path, hand_filename)
-            face_model_path = os.path.join(face_pretrained_model_or_path, face_filename)
-        else:
-            body_model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
-            hand_model_path = hf_hub_download(pretrained_model_or_path, hand_filename, cache_dir=cache_dir)
-            face_model_path = hf_hub_download(face_pretrained_model_or_path, face_filename, cache_dir=cache_dir)
+        body_model_path = custom_hf_download(pretrained_model_or_path, filename, subfolder=subfolder)
+        hand_model_path = custom_hf_download(pretrained_model_or_path, hand_filename, subfolder=subfolder)
+        face_model_path = custom_hf_download(face_pretrained_model_or_path, face_filename, subfolder=subfolder)
 
         body_estimation = Body(body_model_path)
         hand_estimation = Hand(hand_model_path)
@@ -234,19 +223,16 @@ class OpenposeDetector:
             include_face = hand_and_face
 
         input_image, output_type = common_input_validate(input_image, output_type, **kwargs)
-
-        detected_map, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
+        input_image, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
         
-        poses = self.detect_poses(detected_map)
-        detected_map = remove_pad(detected_map)
-        canvas = draw_poses(poses, detected_map.shape[0], detected_map.shape[1], draw_body=include_body, draw_hand=include_hand, draw_face=include_face) 
-
-        detected_map = HWC3(canvas)
+        poses = self.detect_poses(input_image, include_hand=include_hand, include_face=include_face)
+        canvas = draw_poses(poses, input_image.shape[0], input_image.shape[1], draw_body=include_body, draw_hand=include_hand, draw_face=include_face) 
+        detected_map = HWC3(remove_pad(canvas))
 
         if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
         
         if image_and_json:
-            return (detected_map, encode_poses_as_json(poses, detected_map.shape[0], detected_map.shape[1]))
+            return (detected_map, encode_poses_as_dict(poses, detected_map.shape[0], detected_map.shape[1]))
         
         return detected_map

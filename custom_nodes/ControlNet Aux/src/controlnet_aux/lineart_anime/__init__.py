@@ -10,7 +10,7 @@ from einops import rearrange
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
-from ..util import HWC3, resize_image_with_pad, common_input_validate
+from controlnet_aux.util import HWC3, resize_image_with_pad, common_input_validate, custom_hf_download, HF_MODEL_NAME
 
 
 class UnetGenerator(nn.Module):
@@ -116,15 +116,11 @@ class UnetSkipConnectionBlock(nn.Module):
 class LineartAnimeDetector:
     def __init__(self, model):
         self.model = model
+        self.device = "cpu"
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
-        filename = filename or "netG.pth"
-
-        if os.path.isdir(pretrained_model_or_path):
-            model_path = os.path.join(pretrained_model_or_path, filename)
-        else:
-            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+    def from_pretrained(cls, pretrained_model_or_path=HF_MODEL_NAME, filename="netG.pth"):
+        model_path = custom_hf_download(pretrained_model_or_path, filename)
 
         norm_layer = functools.partial(nn.InstanceNorm2d, affine=False, track_running_stats=False)
         net = UnetGenerator(3, 1, 8, 64, norm_layer=norm_layer, use_dropout=False)
@@ -140,25 +136,31 @@ class LineartAnimeDetector:
 
     def to(self, device):
         self.model.to(device)
+        self.device = device
         return self
     
     def __call__(self, input_image, detect_resolution=512, output_type="pil", upscale_method="INTER_CUBIC", **kwargs):
         input_image, output_type = common_input_validate(input_image, output_type, **kwargs)
-        detected_map, remove_pad = resize_image_with_pad(input_image, 256 * int(np.ceil(float(detect_resolution) / 256.0)), upscale_method)
+        input_image, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
 
-        device = next(iter(self.model.parameters())).device
+        H, W, C = input_image.shape
+        Hn = 256 * int(np.ceil(float(H) / 256.0))
+        Wn = 256 * int(np.ceil(float(W) / 256.0))
+        input_image = cv2.resize(input_image, (Wn, Hn), interpolation=cv2.INTER_CUBIC)
+
         with torch.no_grad():
-            image_feed = torch.from_numpy(detected_map).float().to(device)
+            image_feed = torch.from_numpy(input_image).float().to(self.device)
             image_feed = image_feed / 127.5 - 1.0
             image_feed = rearrange(image_feed, 'h w c -> 1 c h w')
 
             line = self.model(image_feed)[0, 0] * 127.5 + 127.5
             line = line.cpu().numpy()
             line = line.clip(0, 255).astype(np.uint8)
-
-        detected_map = HWC3(line)
-        detected_map = remove_pad(255 - detected_map)
         
+        #A1111 uses INTER AREA for downscaling so ig that is the best choice
+        detected_map = cv2.resize(HWC3(line), (W, H), interpolation=cv2.INTER_AREA)
+        detected_map = remove_pad(255 - detected_map)
+
         if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
             

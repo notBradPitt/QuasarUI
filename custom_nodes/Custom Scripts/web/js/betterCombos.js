@@ -27,10 +27,11 @@ app.registerExtension({
 					left: 0;
 					top: 0;
 					transform: translate(-100%, 0);
-					width: 256px;
-					height: 256px;
-					background-size: cover;
-					background-position: center;
+					width: 384px;
+					height: 384px;
+					background-size: contain;
+					background-position: top right;
+					background-repeat: no-repeat;
 					filter: brightness(65%);
 				}
 			`,
@@ -70,6 +71,13 @@ app.registerExtension({
 			}
 		});
 
+		function encodeRFC3986URIComponent(str) {
+			return encodeURIComponent(str).replace(
+				/[!'()*]/g,
+				(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+			);
+		}
+
 		// After an element is created for an item, add an image if it has one
 		contextMenuHook["addItem"].push(function (el, menu, [name, value, options]) {
 			if (el && isCustomItem(value) && value?.image && !value.submenu) {
@@ -77,7 +85,7 @@ app.registerExtension({
 				$el("div.pysssss-combo-image", {
 					parent: el,
 					style: {
-						backgroundImage: `url(/pysssss/view/${encodeURIComponent(value.image)})`,
+						backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
 					},
 				});
 			}
@@ -142,14 +150,39 @@ app.registerExtension({
 				// Override the option values to check if we should render a menu structure
 				Object.defineProperty(res.widget.options, "values", {
 					get() {
+						let v = values;
+
 						if (submenuSetting.value) {
 							if (!menu) {
 								// Only build the menu once
 								menu = buildMenu(res.widget, values);
 							}
-							return menu;
+							v = menu;
 						}
-						return values;
+
+						const valuesIncludes = v.includes;
+						v.includes = function (searchElement) {
+							const includesFromMenuItems = function (items) {
+								for (const item of items) {
+									if (includesFromMenuItem(item)) {
+										return true;
+									}
+								}
+								return false;
+							}
+							const includesFromMenuItem = function (item) {
+								if (item.submenu) {
+									return includesFromMenuItems(item.submenu.options)
+								} else {
+									return item.content === searchElement.content;
+								}
+							}
+
+							const includes = valuesIncludes.apply(this, arguments) || includesFromMenuItems(this);
+							return includes;
+						}
+
+						return v;
 					},
 					set(v) {
 						// Options are changing (refresh) so reset the menu so it can be rebuilt if required

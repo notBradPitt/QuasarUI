@@ -1,4 +1,3 @@
-import json
 import os
 
 import quasar.sd
@@ -31,6 +30,7 @@ def load_diffusers(model_path, output_vae=True, output_clip=True, embedding_dire
 
     vae = None
     if output_vae:
-        vae = quasar.sd.VAE(ckpt_path=vae_path)
+        sd = quasar.utils.load_torch_file(vae_path)
+        vae = quasar.sd.VAE(sd=sd)
 
     return (unet, clip, vae)

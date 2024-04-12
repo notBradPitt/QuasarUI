@@ -1,7 +1,6 @@
 import os
 import sys
 
-import folder_paths
 import quasar.samplers
 import quasar.sd
 import warnings
@@ -17,28 +16,31 @@ from impact.utils import *
 import impact.core as core
 from impact.core import SEG
 from impact.config import MAX_RESOLUTION, latent_letter_path
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 import hashlib
 import json
 import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
 import quasar.model_management
+import base64
+import impact.wildcards as wildcards
+from . import hooks
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
 model_path = folder_paths.models_dir
 
 
-# Nodes
 # folder_paths.supported_pt_extensions
-folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["mmdets"] = ([os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["sams"] = ([os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["onnx"] = ([os.path.join(model_path, "onnx")], {'.onnx'})
+add_folder_path_and_extensions("mmdets_bbox", [os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("mmdets_segm", [os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("mmdets", [os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("sams", [os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("onnx", [os.path.join(model_path, "onnx")], {'.onnx'})
 
 
+# Nodes
 class ONNXDetectorProvider:
     @classmethod
     def INPUT_TYPES(s):
@@ -80,9 +82,10 @@ class CLIPSegDetectorProvider:
 class SAMLoader:
     @classmethod
     def INPUT_TYPES(cls):
+        models = [x for x in folder_paths.get_filename_list("sams") if 'hq' not in x]
         return {
             "required": {
-                "model_name": (folder_paths.get_filename_list("sams"), ),
+                "model_name": (models + ['ESAM'], ),
                 "device_mode": (["AUTO", "Prefer GPU", "CPU"],),
             }
         }
@@ -93,6 +96,26 @@ class SAMLoader:
     CATEGORY = "ImpactPack"
 
     def load_model(self, model_name, device_mode="auto"):
+        if model_name == 'ESAM':
+            if 'ESAM_ModelLoader_Zho' not in nodes.NODE_CLASS_MAPPINGS:
+                try_install_custom_node('https://github.com/ZHO-ZHO-ZHO/QuasarUI-YoloWorld-EfficientSAM',
+                                        "To use 'ESAM' model, 'QuasarUI-YoloWorld-EfficientSAM' extension is required.")
+                raise Exception("'QuasarUI-YoloWorld-EfficientSAM' node isn't installed.")
+
+            esam_loader = nodes.NODE_CLASS_MAPPINGS['ESAM_ModelLoader_Zho']()
+
+            if device_mode == 'CPU':
+                esam = esam_loader.load_esam_model('CPU')[0]
+            else:
+                device_mode = 'CUDA'
+                esam = esam_loader.load_esam_model('CUDA')[0]
+
+            sam_obj = core.ESAMWrapper(esam, device_mode)
+            esam.sam_wrapper = sam_obj
+            
+            print(f"Loads EfficientSAM model: (device:{device_mode})")
+            return (esam, )
+
         modelname = folder_paths.get_full_path("sams", model_name)
 
         if 'vit_h' in model_name:
@@ -103,13 +126,19 @@ class SAMLoader:
             model_kind = 'vit_b'
 
         sam = sam_model_registry[model_kind](checkpoint=modelname)
+        size = os.path.getsize(modelname)
+        safe_to = core.SafeToGPU(size)
+
         # Unless user explicitly wants to use CPU, we use GPU
         device = quasar.model_management.get_torch_device() if device_mode == "Prefer GPU" else "CPU"
 
         if device_mode == "Prefer GPU":
-            sam.to(device=device)
+            safe_to.to_device(sam, device)
 
-        sam.is_auto_mode = device_mode == "AUTO"
+        is_auto_mode = device_mode == "AUTO"
+
+        sam_obj = core.SAMWrapper(sam, is_auto_mode=is_auto_mode, safe_to_gpu=safe_to)
+        sam.sam_wrapper = sam_obj
 
         print(f"Loads SAM model: {modelname} (device:{device_mode})")
         return (sam, )
@@ -144,28 +173,34 @@ class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "segs": ("SEGS", ),
-                     "model": ("MODEL",),
-                     "clip": ("CLIP",),
-                     "vae": ("VAE",),
-                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
-                     "positive": ("CONDITIONING",),
-                     "negative": ("CONDITIONING",),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
-                     },
-                "optional": {"detailer_hook": ("DETAILER_HOOK",), }
+                    "image": ("IMAGE", ),
+                    "segs": ("SEGS", ),
+                    "model": ("MODEL",),
+                    "clip": ("CLIP",),
+                    "vae": ("VAE",),
+                    "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                    "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                    "positive": ("CONDITIONING",),
+                    "negative": ("CONDITIONING",),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+
+                    "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                   },
+                "optional": {
+                    "detailer_hook": ("DETAILER_HOOK",),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                   }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -176,22 +211,43 @@ class DetailerForEach:
     @staticmethod
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
-                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
+                  cycle=1, inpaint_model=False, noise_mask_feather=0):
 
-        image_pil = tensor2pil(image).convert('RGBA')
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
+        image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
 
         segs = core.segs_scale_match(segs, image.shape)
+        new_segs = []
 
-        for seg in segs[1]:
-            cropped_image = seg.cropped_image if seg.cropped_image is not None \
-                                              else crop_ndarray4(image.numpy(), seg.crop_region)
+        wildcard_concat_mode = None
+        if wildcard_opt is not None:
+            if wildcard_opt.startswith('[CONCAT]'):
+                wildcard_concat_mode = 'concat'
+                wildcard_opt = wildcard_opt[8:]
+            wmode, wildcard_chooser = wildcards.process_wildcard_for_segs(wildcard_opt)
+        else:
+            wmode, wildcard_chooser = None, None
 
-            mask_pil = feather_mask(seg.cropped_mask, feather)
+        if wmode in ['ASC', 'DSC']:
+            if wmode == 'ASC':
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]))
+            else:
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]), reverse=True)
+        else:
+            ordered_segs = segs[1]
+
+        for i, seg in enumerate(ordered_segs):
+            cropped_image = crop_ndarray4(image.numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            cropped_image = to_tensor(cropped_image)
+            mask = to_tensor(seg.cropped_mask)
+            mask = tensor_gaussian_blur_mask(mask, feather)
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -203,49 +259,89 @@ class DetailerForEach:
             else:
                 cropped_mask = None
 
-            enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
-                                                         seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                         positive, negative, denoise, cropped_mask, force_inpaint, wildcard_opt, detailer_hook,
-                                                         refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                         refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                                         refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper)
+            if wildcard_chooser is not None and wmode != "LAB":
+                seg_seed, wildcard_item = wildcard_chooser.get(seg)
+            elif wildcard_chooser is not None and wmode == "LAB":
+                seg_seed, wildcard_item = None, wildcard_chooser.get(seg)
+            else:
+                seg_seed, wildcard_item = None, None
 
-            if cnet_pil is not None:
-                cnet_pil_list.append(cnet_pil)
+            seg_seed = seed + i if seg_seed is None else seg_seed
 
-            if not (enhanced_pil is None):
+            cropped_positive = [
+                [condition, {
+                    k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                    for k, v in details.items()
+                }]
+                for condition, details in positive
+            ]
+
+            cropped_negative = [
+                [condition, {
+                    k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                    for k, v in details.items()
+                }]
+                for condition, details in negative
+            ]
+
+            enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
+                                                            seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
+                                                            cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
+                                                            wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
+                                                            detailer_hook=detailer_hook,
+                                                            refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                            refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                                            refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
+                                                            cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+
+            if cnet_pils is not None:
+                cnet_pil_list.extend(cnet_pils)
+
+            if not (enhanced_image is None):
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-                enhanced_list.append(pil2tensor(enhanced_pil))
+                image = image.cpu()
+                enhanced_image = enhanced_image.cpu()
+                tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)
+                enhanced_list.append(enhanced_image)
 
-            if not (enhanced_pil is None):
+                if detailer_hook is not None:
+                    detailer_hook.post_paste(image)
+
+            if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode
-                enhanced_pil_alpha = enhanced_pil.copy().convert('RGBA')
+                enhanced_image_alpha = tensor_convert_rgba(enhanced_image)
+                new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
                 # Apply the mask
-                mask_array = seg.cropped_mask.astype(np.uint8) * 255
-                mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
-                enhanced_pil_alpha.putalpha(mask_image)
-                enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
+                mask = tensor_resize(mask, *tensor_get_size(enhanced_image))
+                tensor_putalpha(enhanced_image_alpha, mask)
+                enhanced_alpha_list.append(enhanced_image_alpha)
+            else:
+                new_seg_image = None
 
-            cropped_list.append(torch.from_numpy(cropped_image))
+            cropped_list.append(cropped_image)
 
-        image_tensor = pil2tensor(image_pil.convert('RGB'))
+            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_segs.append(new_seg)
+
+        image_tensor = tensor_convert_rgb(image)
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_alpha_list.sort(key=lambda x: x.shape, reverse=True)
 
-        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list
+        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs)
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
+             detailer_hook=None, inpaint_model=False, noise_mask_feather=0):
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         return (enhanced_img, )
 
@@ -254,27 +350,31 @@ class DetailerForEachPipe:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "segs": ("SEGS", ),
-                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "basic_pipe": ("BASIC_PIPE", ),
-                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
-                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                      "image": ("IMAGE", ),
+                      "segs": ("SEGS", ),
+                      "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                      "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                      "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                      "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
+                      "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                      "basic_pipe": ("BASIC_PIPE", ),
+                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+
+                      "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
-                    "detailer_hook": ("DETAILER_HOOK",),
-                    "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                     "detailer_hook": ("DETAILER_HOOK",),
+                     "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                     }
                 }
 
@@ -286,7 +386,12 @@ class DetailerForEachPipe:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None,
+             cycle=1, inpaint_model=False, noise_mask_feather=0):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -295,18 +400,19 @@ class DetailerForEachPipe:
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return (enhanced_img, segs, basic_pipe, cnet_pil_list)
+        return (enhanced_img, new_segs, basic_pipe, cnet_pil_list)
 
 
 class FaceDetailer:
@@ -317,9 +423,9 @@ class FaceDetailer:
                      "model": ("MODEL",),
                      "clip": ("CLIP",),
                      "vae": ("VAE",),
-                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                     "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                     "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
@@ -347,11 +453,15 @@ class FaceDetailer:
 
                      "bbox_detector": ("BBOX_DETECTOR", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
                     "segm_detector_opt": ("SEGM_DETECTOR", ),
-                    "detailer_hook": ("DETAILER_HOOK",)
+                    "detailer_hook": ("DETAILER_HOOK",),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -368,11 +478,12 @@ class FaceDetailer:
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
-                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
+                     inpaint_model=False, noise_mask_feather=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
+        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
         bbox_detector.setAux(None)
 
         # bbox + sam combination
@@ -384,19 +495,28 @@ class FaceDetailer:
 
         elif segm_detector is not None:
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
-            if hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm:
+
+            if (hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm and
+                    not (detailer_hook is not None and not hasattr(detailer_hook, 'override_bbox_by_segm'))):
                 segs = segm_segs
             else:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
-        enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
-            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
-                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard_opt, detailer_hook,
-                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative)
+        if len(segs[1]) > 0:
+            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
+                DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
+                                          sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
+                                          force_inpaint, wildcard_opt, detailer_hook,
+                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                          refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                          refiner_negative=refiner_negative,
+                                          cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+        else:
+            enhanced_img = image
+            cropped_enhanced = []
+            cropped_enhanced_alpha = []
+            cnet_pil_list = []
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
@@ -416,21 +536,39 @@ class FaceDetailer:
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
+             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
+             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0):
 
-        enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
-            image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-            positive, negative, denoise, feather, noise_mask, force_inpaint,
-            bbox_threshold, bbox_dilation, bbox_crop_factor,
-            sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook)
+        result_img = None
+        result_mask = None
+        result_cropped_enhanced = []
+        result_cropped_enhanced_alpha = []
+        result_cnet_images = []
+
+        if len(image) > 1:
+            print(f"[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
+
+        for i, single_image in enumerate(image):
+            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+                single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
+                positive, negative, denoise, feather, noise_mask, force_inpaint,
+                bbox_threshold, bbox_dilation, bbox_crop_factor,
+                sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
+                cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+
+            result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
+            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
+            result_cropped_enhanced.extend(cropped_enhanced)
+            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
+            result_cnet_images.extend(cnet_pil_list)
 
         pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
-        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, pipe, cnet_pil_list
+        return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, pipe, result_cnet_images
 
 
 class LatentPixelScale:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -446,28 +584,30 @@ class LatentPixelScale:
                     }
                 }
 
-    RETURN_TYPES = ("LATENT",)
+    RETURN_TYPES = ("LATENT", "IMAGE")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, samples, scale_method, scale_factor, vae, use_tiled_vae, upscale_model_opt=None):
         if upscale_model_opt is None:
-            latent = core.latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
+            latimg = core.latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
         else:
-            latent = core.latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
-        return (latent,)
+            latimg = core.latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
+        return latimg
 
 
 class NoiseInjectionDetailerHookProvider:
-    schedules = ["simple"]
+    schedules = ["skip_start", "from_start"]
 
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
+                     "schedule_for_cycle": (s.schedules,),
                      "source": (["CPU", "GPU"],),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "start_strength": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "end_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
                     },
                 }
 
@@ -476,15 +616,89 @@ class NoiseInjectionDetailerHookProvider:
 
     CATEGORY = "ImpactPack/Detailer"
 
-    def doit(self, source, seed, strength):
+    def doit(self, schedule_for_cycle, source, seed, start_strength, end_strength):
         try:
-            hook = core.InjectNoiseHook(source, seed, strength, strength)
-            hook.set_steps((1, 1))
+            hook = hooks.InjectNoiseHookForDetailer(source, seed, start_strength, end_strength,
+                                                    from_start=('from_start' in schedule_for_cycle))
             return (hook, )
         except Exception as e:
             print("[ERROR] NoiseInjectionDetailerHookProvider: 'QuasarUI Noise' custom node isn't installed. You must install 'BlenderNeko/QuasarUI Noise' extension to use this node.")
             print(f"\t{e}")
             pass
+
+
+class UnsamplerDetailerHookProvider:
+    schedules = ["skip_start", "from_start"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"model": ("MODEL",),
+                     "steps": ("INT", {"default": 25, "min": 1, "max": 10000}),
+                     "start_end_at_step": ("INT", {"default": 21, "min": 0, "max": 10000}),
+                     "end_end_at_step": ("INT", {"default": 24, "min": 0, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
+                     "normalize": (["disable", "enable"], ),
+                     "positive": ("CONDITIONING", ),
+                     "negative": ("CONDITIONING", ),
+                     "schedule_for_cycle": (s.schedules,),
+                     }}
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+             scheduler, normalize, positive, negative, schedule_for_cycle):
+        try:
+            hook = hooks.UnsamplerDetailerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                               scheduler, normalize, positive, negative,
+                                               from_start=('from_start' in schedule_for_cycle))
+
+            return (hook, )
+        except Exception as e:
+            print("[ERROR] UnsamplerDetailerHookProvider: 'QuasarUI Noise' custom node isn't installed. You must install 'BlenderNeko/QuasarUI Noise' extension to use this node.")
+            print(f"\t{e}")
+            pass
+
+
+class DenoiseSchedulerDetailerHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_cycle": (s.schedules,),
+                     "target_denoise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    },
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, schedule_for_cycle, target_denoise):
+        hook = hooks.SimpleDetailerDenoiseSchedulerHook(target_denoise)
+        return (hook, )
+
+
+class CoreMLDetailerHookProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"mode": (["512x512", "768x768", "512x768", "768x512"], )}, }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, mode):
+        hook = hooks.CoreMLHook(mode)
+        return (hook, )
 
 
 class CfgScheduleHookProvider:
@@ -506,9 +720,48 @@ class CfgScheduleHookProvider:
     def doit(self, schedule_for_iteration, target_cfg):
         hook = None
         if schedule_for_iteration == "simple":
-            hook = core.SimpleCfgScheduleHook(target_cfg)
+            hook = hooks.SimpleCfgScheduleHook(target_cfg)
 
         return (hook, )
+
+
+class UnsamplerHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"model": ("MODEL",),
+                     "steps": ("INT", {"default": 25, "min": 1, "max": 10000}),
+                     "start_end_at_step": ("INT", {"default": 21, "min": 0, "max": 10000}),
+                     "end_end_at_step": ("INT", {"default": 24, "min": 0, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS, ),
+                     "normalize": (["disable", "enable"], ),
+                     "positive": ("CONDITIONING", ),
+                     "negative": ("CONDITIONING", ),
+                     "schedule_for_iteration": (s.schedules,),
+                     }}
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+             scheduler, normalize, positive, negative, schedule_for_iteration):
+        try:
+            hook = None
+            if schedule_for_iteration == "simple":
+                hook = hooks.UnsamplerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                           scheduler, normalize, positive, negative)
+
+            return (hook, )
+        except Exception as e:
+            print("[ERROR] UnsamplerHookProvider: 'QuasarUI Noise' custom node isn't installed. You must install 'BlenderNeko/QuasarUI Noise' extension to use this node.")
+            print(f"\t{e}")
+            pass
 
 
 class NoiseInjectionHookProvider:
@@ -534,7 +787,7 @@ class NoiseInjectionHookProvider:
         try:
             hook = None
             if schedule_for_iteration == "simple":
-                hook = core.InjectNoiseHook(source, seed, start_strength, end_strength)
+                hook = hooks.InjectNoiseHook(source, seed, start_strength, end_strength)
 
             return (hook, )
         except Exception as e:
@@ -550,7 +803,7 @@ class DenoiseScheduleHookProvider:
     def INPUT_TYPES(s):
         return {"required": {
                      "schedule_for_iteration": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 100.0}),
+                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0, "step": 0.01}),
                     },
                 }
 
@@ -562,8 +815,51 @@ class DenoiseScheduleHookProvider:
     def doit(self, schedule_for_iteration, target_denoise):
         hook = None
         if schedule_for_iteration == "simple":
-            hook = core.SimpleDenoiseScheduleHook(target_denoise)
+            hook = hooks.SimpleDenoiseScheduleHook(target_denoise)
 
+        return (hook, )
+
+
+class StepsScheduleHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_iteration": (s.schedules,),
+                     "target_steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    },
+                }
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, schedule_for_iteration, target_steps):
+        hook = None
+        if schedule_for_iteration == "simple":
+            hook = hooks.SimpleStepsScheduleHook(target_steps)
+
+        return (hook, )
+
+
+class DetailerHookCombine:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "hook1": ("DETAILER_HOOK",),
+                     "hook2": ("DETAILER_HOOK",),
+                    },
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, hook1, hook2):
+        hook = hooks.DetailerHookCombine(hook1, hook2)
         return (hook, )
 
 
@@ -582,12 +878,12 @@ class PixelKSampleHookCombine:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, hook1, hook2):
-        hook = core.PixelKSampleHookCombine(hook1, hook2)
+        hook = hooks.PixelKSampleHookCombine(hook1, hook2)
         return (hook, )
 
 
 class PixelTiledKSampleUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -627,7 +923,7 @@ class PixelTiledKSampleUpscalerProvider:
 
 
 class PixelTiledKSampleUpscalerProviderPipe:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -665,7 +961,7 @@ class PixelTiledKSampleUpscalerProviderPipe:
 
 
 class PixelKSampleUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -704,7 +1000,7 @@ class PixelKSampleUpscalerProvider:
 
 
 class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -741,7 +1037,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
 
 
 class TwoSamplersForMaskUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -783,7 +1079,7 @@ class TwoSamplersForMaskUpscalerProvider:
 
 
 class TwoSamplersForMaskUpscalerProviderPipe:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -819,8 +1115,7 @@ class TwoSamplersForMaskUpscalerProviderPipe:
              full_sampler_opt=None, upscale_model_opt=None,
              pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None, tile_size=512):
 
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         _, _, vae, _, _ = basic_pipe
         upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
@@ -837,30 +1132,39 @@ class IterativeLatentUpscale:
                      "upscale_factor": ("FLOAT", {"default": 1.5, "min": 1, "max": 10000, "step": 0.1}),
                      "steps": ("INT", {"default": 3, "min": 1, "max": 10000, "step": 1}),
                      "temp_prefix": ("STRING", {"default": ""}),
-                     "upscaler": ("UPSCALER",)
-                },
+                     "upscaler": ("UPSCALER",),
+                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                    },
                 "hidden": {"unique_id": "UNIQUE_ID"},
-        }
+                }
 
-    RETURN_TYPES = ("LATENT",)
-    RETURN_NAMES = ("latent",)
+    RETURN_TYPES = ("LATENT", "VAE")
+    RETURN_NAMES = ("latent", "vae")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, unique_id):
+    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", unique_id=None):
         w = samples['samples'].shape[3]*8  # image width
         h = samples['samples'].shape[2]*8  # image height
 
         if temp_prefix == "":
             temp_prefix = None
 
-        upscale_factor_unit = max(0, (upscale_factor-1.0)/steps)
+        if step_mode == "geometric":
+            upscale_factor_unit = pow(upscale_factor, 1.0/steps)
+        else:  # simple
+            upscale_factor_unit = max(0, (upscale_factor - 1.0) / steps)
+
         current_latent = samples
         scale = 1
 
         for i in range(steps-1):
-            scale += upscale_factor_unit
+            if step_mode == "geometric":
+                scale *= upscale_factor_unit
+            else:  # simple
+                scale += upscale_factor_unit
+
             new_w = w*scale
             new_h = h*scale
             core.update_node_status(unique_id, f"{i+1}/{steps} steps | x{scale:.2f}", (i+1)/steps)
@@ -873,12 +1177,12 @@ class IterativeLatentUpscale:
             new_h = h*upscale_factor
             core.update_node_status(unique_id, f"Final step | x{upscale_factor:.2f}", 1.0)
             print(f"IterativeLatentUpscale[Final]: {new_w:.1f}x{new_h:.1f} (scale:{upscale_factor:.2f}) ")
-            step_info = steps, steps
+            step_info = steps-1, steps
             current_latent = upscaler.upscale_shape(step_info, current_latent, new_w, new_h, temp_prefix)
 
         core.update_node_status(unique_id, "", None)
 
-        return (current_latent, )
+        return (current_latent, upscaler.vae)
 
 
 class IterativeImageUpscale:
@@ -891,9 +1195,10 @@ class IterativeImageUpscale:
                      "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
                      "vae": ("VAE",),
-                },
+                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                    },
                 "hidden": {"unique_id": "UNIQUE_ID"}
-        }
+                }
 
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
@@ -901,7 +1206,7 @@ class IterativeImageUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, unique_id):
+    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, step_mode="simple", unique_id=None):
         if temp_prefix == "":
             temp_prefix = None
 
@@ -911,7 +1216,7 @@ class IterativeImageUpscale:
         else:
             latent = nodes.VAEEncode().encode(vae, pixels)[0]
 
-        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, unique_id)
+        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, step_mode, unique_id)
 
         core.update_node_status(unique_id, "VAEDecode (final)", 1.0)
         if upscaler.is_tiled:
@@ -928,35 +1233,41 @@ class FaceDetailerPipe:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "detailer_pipe": ("DETAILER_PIPE",),
-                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "image": ("IMAGE", ),
+                    "detailer_pipe": ("DETAILER_PIPE",),
+                    "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                    "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
 
-                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "bbox_dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                    "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "bbox_dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
+                    "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
 
-                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
-                     "sam_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
-                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
-                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
+                    "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
+                    "sam_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
+                    "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                    "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
 
-                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
-                     },
+                    "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                    "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+
+                    "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                   },
+                "optional": {
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                   }
                 }
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -969,30 +1280,147 @@ class FaceDetailerPipe:
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
-             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None):
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
+             cycle=1, inpaint_model=False, noise_mask_feather=0):
+
+        result_img = None
+        result_mask = None
+        result_cropped_enhanced = []
+        result_cropped_enhanced_alpha = []
+        result_cnet_images = []
+
+        if len(image) > 1:
+            print(f"[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
 
         model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector, sam_model_opt, detailer_hook, \
             refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
-        enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
-            image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-            positive, negative, denoise, feather, noise_mask, force_inpaint,
-            bbox_threshold, bbox_dilation, bbox_crop_factor,
-            sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
-            refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-            refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+        for i, single_image in enumerate(image):
+            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+                single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
+                positive, negative, denoise, feather, noise_mask, force_inpaint,
+                bbox_threshold, bbox_dilation, bbox_crop_factor,
+                sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
+                refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
-        if len(cropped_enhanced) == 0:
-            cropped_enhanced = [empty_pil_tensor()]
+            result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
+            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
+            result_cropped_enhanced.extend(cropped_enhanced)
+            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
+            result_cnet_images.extend(cnet_pil_list)
 
-        if len(cropped_enhanced_alpha) == 0:
-            cropped_enhanced_alpha = [empty_pil_tensor()]
+        if len(result_cropped_enhanced) == 0:
+            result_cropped_enhanced = [empty_pil_tensor()]
 
-        if len(cnet_pil_list) == 0:
-            cnet_pil_list = [empty_pil_tensor()]
+        if len(result_cropped_enhanced_alpha) == 0:
+            result_cropped_enhanced_alpha = [empty_pil_tensor()]
 
-        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, detailer_pipe, cnet_pil_list
+        if len(result_cnet_images) == 0:
+            result_cnet_images = [empty_pil_tensor()]
+
+        return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, detailer_pipe, result_cnet_images
+
+
+class MaskDetailerPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "image": ("IMAGE", ),
+                    "mask": ("MASK", ),
+                    "basic_pipe": ("BASIC_PIPE",),
+
+                    "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "mask bbox", "label_off": "crop region"}),
+                    "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "mask_mode": ("BOOLEAN", {"default": True, "label_on": "masked only", "label_off": "whole"}),
+
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                    "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                    "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                    "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
+
+                    "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                   },
+                "optional": {
+                    "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
+                    "detailer_hook": ("DETAILER_HOOK",),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                   }
+                }
+
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "BASIC_PIPE", "BASIC_PIPE")
+    RETURN_NAMES = ("image", "cropped_refined", "cropped_enhanced_alpha", "basic_pipe", "refiner_basic_pipe_opt")
+    OUTPUT_IS_LIST = (False, True, True, False, False)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
+             seed, steps, cfg, sampler_name, scheduler, denoise,
+             feather, crop_factor, drop_size, refiner_ratio, batch_size, cycle=1,
+             refiner_basic_pipe_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: MaskDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
+        model, clip, vae, positive, negative = basic_pipe
+
+        if refiner_basic_pipe_opt is None:
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = None, None, None, None
+        else:
+            refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
+
+        # create segs
+        if mask is not None:
+            mask = make_2d_mask(mask)
+            segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+        else:
+            segs = ((image.shape[1], image.shape[2]), [])
+
+        enhanced_img_batch = None
+        cropped_enhanced_list = []
+        cropped_enhanced_alpha_list = []
+
+        for i in range(batch_size):
+            if mask is not None:
+                enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _, _ = \
+                    DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
+                                              cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
+                                              force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
+                                              refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
+                                              refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                              cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+            else:
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha = image, [], []
+
+            if enhanced_img_batch is None:
+                enhanced_img_batch = enhanced_img
+            else:
+                enhanced_img_batch = torch.cat((enhanced_img_batch, enhanced_img), dim=0)
+
+            cropped_enhanced_list += cropped_enhanced
+            cropped_enhanced_alpha_list += cropped_enhanced_alpha
+
+        # set fallback image
+        if len(cropped_enhanced_list) == 0:
+            cropped_enhanced_list = [empty_pil_tensor()]
+
+        if len(cropped_enhanced_alpha_list) == 0:
+            cropped_enhanced_alpha_list = [empty_pil_tensor()]
+
+        return enhanced_img_batch, cropped_enhanced_list, cropped_enhanced_alpha_list, basic_pipe, refiner_basic_pipe_opt
 
 
 class DetailerForEachTest(DetailerForEach):
@@ -1005,12 +1433,17 @@ class DetailerForEachTest(DetailerForEach):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
+             cycle=1, inpaint_model=False, noise_mask_feather=0):
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1038,7 +1471,11 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -1047,13 +1484,14 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative)
+                                      refiner_negative=refiner_negative,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1068,7 +1506,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return enhanced_img, segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list
+        return enhanced_img, new_segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list
 
 
 class SegsBitwiseAndMask:
@@ -1087,7 +1525,7 @@ class SegsBitwiseAndMask:
 
     def doit(self, segs, mask):
         return (core.segs_bitwise_and_mask(segs, mask), )
-    
+
 
 class SegsBitwiseAndMaskForEach:
     @classmethod
@@ -1211,102 +1649,9 @@ class SubtractMaskForEach:
                     item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label, None)
                     result.append(item)
                 else:
-                    result.append(base_segs)
+                    result.append(bseg)
 
         return ((base_segs[0], result),)
-
-
-class MasksToMaskList:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "masks": ("MASK", ),
-                      }
-                }
-
-    RETURN_TYPES = ("MASK", )
-    OUTPUT_IS_LIST = (True, )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, masks):
-        if masks is None:
-            empty_mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
-            return ([empty_mask], )
-
-        res = []
-
-        for mask in masks:
-            res.append(mask)
-
-        print(f"mask len: {len(res)}")
-
-        return (res, )
-
-
-class MaskListToMaskBatch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "mask": ("MASK", ),
-                      }
-                }
-
-    INPUT_IS_LIST = True
-
-    RETURN_TYPES = ("MASK", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, mask):
-        if len(mask) == 1:
-            if len(mask[0].shape) == 2:
-                mask = mask[0].unsqueeze(0)
-            return (mask,)
-        elif len(mask) > 1:
-            mask1 = mask[0]
-            if len(mask1.shape) == 2:
-                mask1 = mask1.unsqueeze(0)
-
-            for mask2 in mask[1:]:
-                if len(mask2.shape) == 2:
-                    mask2 = mask2.unsqueeze(0)
-                if mask1.shape[1:] != mask2.shape[1:]:
-                    mask2 = quasar.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "bilinear", "center").movedim(1, -1)
-                mask1 = torch.cat((mask1, mask2), dim=0)
-            return (mask1,)
-        else:
-            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
-            return (empty_mask,)
-
-
-class ImageListToMaskBatch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "images": ("IMAGE", ),
-                      }
-                }
-
-    INPUT_IS_LIST = True
-
-    RETURN_TYPES = ("IMAGE", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, images):
-        if len(images) <= 1:
-            return (images,)
-        else:
-            image1 = images[0]
-            for image2 in images[1:]:
-                if image1.shape[1:] != image2.shape[1:]:
-                    image2 = quasar.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
-                image1 = torch.cat((image1, image2), dim=0)
-            return (image1,)
 
 
 class ToBinaryMask:
@@ -1355,7 +1700,7 @@ class SubtractMask:
                         "mask2": ("MASK", ),
                       }
                 }
-    
+
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
 
@@ -1405,106 +1750,87 @@ def get_image_hash(arr):
     return hash((sum1, sum2, sum3, sum4))
 
 
-class PreviewBridge(nodes.PreviewImage):
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"images": ("IMAGE",), },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"},
-                "optional": {"image": (["#placeholder"], )},
-                }
+def get_file_item(base_type, path):
+    path_type = base_type
 
-    RETURN_TYPES = ("IMAGE", "MASK", )
+    if path == "[output]":
+        path_type = "output"
+        path = path[:-9]
+    elif path == "[input]":
+        path_type = "input"
+        path = path[:-8]
+    elif path == "[temp]":
+        path_type = "temp"
+        path = path[:-7]
 
-    FUNCTION = "doit"
+    subfolder = os.path.dirname(path)
+    filename = os.path.basename(path)
 
-    CATEGORY = "ImpactPack/Util"
-
-    def __init__(self):
-        super().__init__()
-        self.prev_hash = None
-
-    def doit(self, images, image, filename_prefix="QuasarUI", prompt=None, extra_pnginfo=None, unique_id=None):
-        if image != "#placeholder" and isinstance(image, str):
-            image_path = folder_paths.get_annotated_filepath(image)
-            img = Image.open(image_path).convert("RGB")
-            data = np.array(img)
-            image_hash = get_image_hash(data)
-        else:
-            data = (255. * images[0].cpu().numpy()).astype(int)
-            image_hash = get_image_hash(data)
-
-        is_changed = False
-        if self.prev_hash is None or self.prev_hash != image_hash:
-            self.prev_hash = image_hash
-            is_changed = True
-
-        if is_changed or image == "#placeholder":
-            # new input image
-            res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
-
-            item = res['ui']['images'][0]
-
-            if not item['filename'].endswith(']'):
-                filepath = f"{item['filename']} [{item['type']}]"
-            else:
-                filepath = item['filename']
-
-            image, mask = nodes.LoadImage().load_image(filepath)
-
-            res['ui']['aux'] = [image_hash, res['ui']['images']]
-            res['result'] = (image, mask, )
-
-            return res
-
-        else:
-            # new mask
-            if '0' in image:  # fallback
-                image = image['0']
-
-            forward = {'filename': image['forward_filename'],
-                       'subfolder': image['forward_subfolder'],
-                       'type': image['forward_type'], }
-
-            res = {'ui': {'images': [forward]}}
-
-            imgpath = ""
-            if 'subfolder' in image and image['subfolder'] != "":
-                imgpath = image['subfolder'] + "/"
-
-            imgpath += f"{image['filename']}"
-
-            if 'type' in image and image['type'] != "":
-                imgpath += f" [{image['type']}]"
-
-            res['ui']['aux'] = [image_hash, [forward]]
-            res['result'] = nodes.LoadImage().load_image(imgpath)
-
-            return res
+    return {
+            "filename": filename,
+            "subfolder": subfolder,
+            "type": path_type
+           }
 
 
-class ImageReceiver(nodes.LoadImage):
+class ImageReceiver:
     @classmethod
     def INPUT_TYPES(s):
         input_dir = folder_paths.get_input_directory()
         files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
         return {"required": {
                     "image": (sorted(files), ),
-                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}), },
+                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                    "save_to_workflow": ("BOOLEAN", {"default": False}),
+                    "image_data": ("STRING", {"multiline": False}),
+                    "trigger_always": ("BOOLEAN", {"default": False, "label_on": "enable", "label_off": "disable"}),
+                    },
                 }
 
     FUNCTION = "doit"
 
+    RETURN_TYPES = ("IMAGE", "MASK")
+
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, image, link_id):
-        return nodes.LoadImage().load_image(image)
+    def doit(self, image, link_id, save_to_workflow, image_data, trigger_always):
+        if save_to_workflow:
+            try:
+                image_data = base64.b64decode(image_data.split(",")[1])
+                i = Image.open(BytesIO(image_data))
+                i = ImageOps.exif_transpose(i)
+                image = i.convert("RGB")
+                image = np.array(image).astype(np.float32) / 255.0
+                image = torch.from_numpy(image)[None,]
+                if 'A' in i.getbands():
+                    mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                    mask = 1. - torch.from_numpy(mask)
+                else:
+                    mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+                return (image, mask.unsqueeze(0))
+            except Exception as e:
+                print(f"[WARN] QuasarUI-Impact-Pack: ImageReceiver - invalid 'image_data'")
+                mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+                return (empty_pil_tensor(64, 64), mask, )
+        else:
+            return nodes.LoadImage().load_image(image)
 
     @classmethod
-    def VALIDATE_INPUTS(s, image, link_id):
-        if not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or ".." in image:
+    def VALIDATE_INPUTS(s, image, link_id, save_to_workflow, image_data, trigger_always):
+        if image != '#DATA' and not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or ".." in image:
             return "Invalid image file: {}".format(image)
 
         return True
+
+    @classmethod
+    def IS_CHANGED(s, image, link_id, save_to_workflow, image_data, trigger_always):
+        if trigger_always:
+            return float("NaN")
+        else:
+            if save_to_workflow:
+                return hash(image_data)
+            else:
+                return hash(image)
 
 
 from server import PromptServer
@@ -1546,6 +1872,7 @@ class LatentReceiver:
         return {"required": {
                     "latent": (sorted(files), ),
                     "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                    "trigger_always": ("BOOLEAN", {"default": False, "label_on": "enable", "label_off": "disable"}),
                     },
                 }
 
@@ -1614,15 +1941,18 @@ class LatentReceiver:
                 }
 
     @classmethod
-    def IS_CHANGED(s, latent, link_id):
-        image_path = folder_paths.get_annotated_filepath(latent)
-        m = hashlib.sha256()
-        with open(image_path, 'rb') as f:
-            m.update(f.read())
-        return m.digest().hex()
+    def IS_CHANGED(s, latent, link_id, trigger_always):
+        if trigger_always:
+            return float("NaN")
+        else:
+            image_path = folder_paths.get_annotated_filepath(latent)
+            m = hashlib.sha256()
+            with open(image_path, 'rb') as f:
+                m.update(f.read())
+            return m.digest().hex()
 
     @classmethod
-    def VALIDATE_INPUTS(s, latent, link_id):
+    def VALIDATE_INPUTS(s, latent, link_id, trigger_always):
         if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or ".." in latent:
             return "Invalid latent file: {}".format(latent)
         return True
@@ -1630,6 +1960,7 @@ class LatentReceiver:
 
 class LatentSender(nodes.SaveLatent):
     def __init__(self):
+        super().__init__()
         self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
 
@@ -1758,150 +2089,6 @@ class LatentSender(nodes.SaveLatent):
         return {'ui': {'images': [latent_path]}}
 
 
-class ImageMaskSwitch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
-                    "images1": ("IMAGE", ),
-                    },
-            
-                "optional": {
-                    "mask1_opt": ("MASK",),
-                    "images2_opt": ("IMAGE",),
-                    "mask2_opt": ("MASK",),
-                    "images3_opt": ("IMAGE",),
-                    "mask3_opt": ("MASK",),
-                    "images4_opt": ("IMAGE",),
-                    "mask4_opt": ("MASK",),
-                    },
-                }
-
-    RETURN_TYPES = ("IMAGE", "MASK", )
-
-    OUTPUT_NODE = True
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, select, images1, mask1_opt=None, images2_opt=None, mask2_opt=None, images3_opt=None, mask3_opt=None, images4_opt=None, mask4_opt=None):
-        if select == 1:
-            return images1, mask1_opt,
-        elif select == 2:
-            return images2_opt, mask2_opt,
-        elif select == 3:
-            return images3_opt, mask3_opt,
-        else:
-            return images4_opt, mask4_opt,
-
-
-class LatentSwitch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 99999, "step": 1}),
-                    "latent1": ("LATENT",),
-                    },
-                }
-
-    RETURN_TYPES = ("LATENT", )
-
-    OUTPUT_NODE = True
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, *args, **kwargs):
-        input_name = f"latent{int(kwargs['select'])}"
-
-        if input_name in kwargs:
-            return (kwargs[input_name],)
-        else:
-            print(f"LatentSwitch: invalid select index ('latent1' is selected)")
-            return (kwargs['latent1'],)
-
-
-class SaveConditioning:
-    def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"conditioning": ("CONDITIONING", ),
-                             "filename_prefix": ("STRING", {"default": "conditioning/QuasarUI"}),
-                             },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
-                }
-
-    RETURN_TYPES = ()
-    FUNCTION = "doit"
-
-    OUTPUT_NODE = True
-
-    CATEGORY = "_for_testing"
-
-    def doit(self, conditioning, filename_prefix, prompt=None, extra_pnginfo=None):
-        # support save metadata for latent sharing
-        prompt_info = ""
-        if prompt is not None:
-            prompt_info = json.dumps(prompt)
-
-        for tensor_data, meta_data in conditioning:
-            full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
-
-            metadata = {"prompt": prompt_info}
-            if extra_pnginfo is not None:
-                for x in extra_pnginfo:
-                    metadata[x] = json.dumps(extra_pnginfo[x])
-
-            file = f"{filename}_{counter:05}_.conditioning"
-            file = os.path.join(full_output_folder, file)
-
-            print(f"meta_data:{meta_data}")
-            print(f"tensor_data:{tensor_data}")
-
-            output = {"conditioning": tensor_data}
-            metadata['conditioning_aux'] = json.dumps(meta_data)
-
-            safetensors.torch.save_file(output, file, metadata=metadata)
-
-        return {}
-
-
-class LoadConditioning:
-    @classmethod
-    def INPUT_TYPES(s):
-        input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f)) and f.endswith(".conditioning")]
-        return {"required": {"conditioning": [sorted(files), ]}, }
-
-    CATEGORY = "_for_testing"
-
-    RETURN_TYPES = ("CONDITIONING", )
-    FUNCTION = "load"
-
-    def load(self, conditioning):
-        conditioning_path = folder_paths.get_annotated_filepath(conditioning)
-        data = safetensors.torch.load_file(conditioning_path, device="cpu")
-        return ([[data['conditioning'], {}]], )
-
-    @classmethod
-    def IS_CHANGED(s, conditioning):
-        image_path = folder_paths.get_annotated_filepath(conditioning)
-        m = hashlib.sha256()
-        with open(image_path, 'rb') as f:
-            m.update(f.read())
-        return m.digest().hex()
-
-    @classmethod
-    def VALIDATE_INPUTS(s, conditioning):
-        if not folder_paths.exists_annotated_filepath(conditioning):
-            return "Invalid conditioning file: {}".format(conditioning)
-        return True
-
-
 class ImpactWildcardProcessor:
     @classmethod
     def INPUT_TYPES(s):
@@ -1910,6 +2097,7 @@ class ImpactWildcardProcessor:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                        "Select to add Wildcard": (["Select the Wildcard to add to the text"],),
                     },
                 }
 
@@ -1918,7 +2106,12 @@ class ImpactWildcardProcessor:
     RETURN_TYPES = ("STRING", )
     FUNCTION = "doit"
 
-    def doit(self, wildcard_text, populated_text, mode, seed):
+    @staticmethod
+    def process(**kwargs):
+        return impact.wildcards.process(**kwargs)
+
+    def doit(self, *args, **kwargs):
+        populated_text = kwargs['populated_text']
         return (populated_text, )
 
 
@@ -1932,7 +2125,7 @@ class ImpactWildcardEncode:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
-                        "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(), ),
+                        "Select to add Wildcard": (["Select the Wildcard to add to the text"], ),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     },
                 }
@@ -1943,166 +2136,19 @@ class ImpactWildcardEncode:
     RETURN_NAMES = ("model", "clip", "conditioning", "populated_text")
     FUNCTION = "doit"
 
+    @staticmethod
+    def process_with_loras(**kwargs):
+        return impact.wildcards.process_with_loras(**kwargs)
+
+    @staticmethod
+    def get_wildcard_list():
+        return impact.wildcards.get_wildcard_list()
+
     def doit(self, *args, **kwargs):
         populated = kwargs['populated_text']
         model, clip, conditioning = impact.wildcards.process_with_loras(populated, kwargs['model'], kwargs['clip'])
         return (model, clip, conditioning, populated)
 
 
-class ReencodeLatent:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "samples": ("LATENT", ),
-                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
-                        "input_vae": ("VAE", ),
-                        "output_vae": ("VAE", ),
-                        "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
-                    },
-                }
-
-    CATEGORY = "ImpactPack/Util"
-
-    RETURN_TYPES = ("LATENT", )
-    FUNCTION = "doit"
-
-    def doit(self, samples, tile_mode, input_vae, output_vae, tile_size=512):
-        if tile_mode in ["Both", "Decode(input) only"]:
-            pixels = nodes.VAEDecodeTiled().decode(input_vae, samples, tile_size)[0]
-        else:
-            pixels = nodes.VAEDecode().decode(input_vae, samples)[0]
-
-        if tile_mode in ["Both", "Encode(output) only"]:
-            return nodes.VAEEncodeTiled().encode(output_vae, pixels, tile_size)
-        else:
-            return nodes.VAEEncode().encode(output_vae, pixels)
 
 
-class ReencodeLatentPipe:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "samples": ("LATENT", ),
-                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
-                        "input_basic_pipe": ("BASIC_PIPE", ),
-                        "output_basic_pipe": ("BASIC_PIPE", ),
-                    },
-                }
-
-    CATEGORY = "ImpactPack/Util"
-
-    RETURN_TYPES = ("LATENT", )
-    FUNCTION = "doit"
-
-    def doit(self, samples, tile_mode, input_basic_pipe, output_basic_pipe):
-        _, _, input_vae, _, _ = input_basic_pipe
-        _, _, output_vae, _, _ = output_basic_pipe
-        return ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae)
-
-
-class ImageBatchToImageList:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"image": ("IMAGE",), }}
-
-    RETURN_TYPES = ("IMAGE",)
-    OUTPUT_IS_LIST = (True,)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, image):
-        images = [image[i:i + 1, ...] for i in range(image.shape[0])]
-        return (images, )
-
-
-class MakeImageList:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"image1": ("IMAGE",), }}
-
-    RETURN_TYPES = ("IMAGE",)
-    OUTPUT_IS_LIST = (True,)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, **kwargs):
-        images = []
-
-        for k, v in kwargs.items():
-            images.append(v)
-
-        return (images, )
-
-
-class MakeImageBatch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"image1": ("IMAGE",), }}
-
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, **kwargs):
-        image1 = kwargs['image1']
-        del kwargs['image1']
-        images = [value for value in kwargs.values()]
-
-        if len(images) == 0:
-            return (image1,)
-        else:
-            for image2 in images:
-                if image1.shape[1:] != image2.shape[1:]:
-                    image2 = quasar.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
-                image1 = torch.cat((image1, image2), dim=0)
-            return (image1,)
-
-
-class StringSelector:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "strings": ("STRING", {"multiline": True}),
-            "multiline": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-            "select": ("INT", {"min": 0, "max": sys.maxsize, "step": 1, "default": 0}),
-        }}
-
-    RETURN_TYPES = ("STRING",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, strings, multiline, select):
-        lines = strings.split('\n')
-
-        if multiline:
-            result = []
-            current_string = ""
-
-            for line in lines:
-                if line.startswith("#"):
-                    if current_string:
-                        result.append(current_string.strip())
-                        current_string = ""
-                current_string += line + "\n"
-
-            if current_string:
-                result.append(current_string.strip())
-
-            if len(result) == 0:
-                selected = strings
-            else:
-                selected = result[select % len(result)]
-
-            if selected.startswith('#'):
-                selected = selected[1:]
-        else:
-            if len(lines) == 0:
-                selected = strings
-            else:
-                selected = lines[select % len(lines)]
-
-        return (selected, )

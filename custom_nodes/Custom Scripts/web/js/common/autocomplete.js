@@ -175,8 +175,9 @@ const CHAR_CODE_ZERO = "0".charCodeAt(0);
 const CHAR_CODE_NINE = "9".charCodeAt(0);
 
 class TextAreaCaretHelper {
-	constructor(el) {
+	constructor(el, getScale) {
 		this.el = el;
+		this.getScale = getScale;
 	}
 
 	#calculateElementOffset() {
@@ -237,6 +238,7 @@ class TextAreaCaretHelper {
 			fontSize: computedStyle.fontSize,
 			fontFamily: computedStyle.fontFamily,
 			padding: "0",
+			position: "absolute",
 		});
 		body.appendChild(tempNode);
 
@@ -253,11 +255,12 @@ class TextAreaCaretHelper {
 	}
 
 	getCursorOffset() {
+		const scale = this.getScale();
 		const elOffset = this.#calculateElementOffset();
 		const elScroll = this.#getElScroll();
 		const cursorPosition = this.#getCursorPosition();
 		const lineHeight = this.#getLineHeightPx();
-		const top = elOffset.top - elScroll.top + cursorPosition.top + lineHeight;
+		const top = elOffset.top - (elScroll.top * scale) + (cursorPosition.top + lineHeight) * scale;
 		const left = elOffset.left - elScroll.left + cursorPosition.left;
 		const clientTop = this.el.getBoundingClientRect().top;
 		if (this.el.dir !== "rtl") {
@@ -284,41 +287,109 @@ class TextAreaCaretHelper {
 		return this.el.value.substring(this.el.selectionEnd);
 	}
 
-	insertAtCursor(value, offset) {
+	insertAtCursor(value, offset, finalOffset) {
 		if (this.el.selectionStart != null) {
 			const startPos = this.el.selectionStart;
 			const endPos = this.el.selectionEnd;
 
-			this.el.value =
-				this.el.value.substring(0, startPos + offset) + value + this.el.value.substring(endPos, this.el.value.length);
-			this.el.selectionEnd = this.el.selectionStart = startPos + value.length + offset;
+			// Move selection to beginning of offset
+			this.el.selectionStart = this.el.selectionStart + offset;
+
+			// Using execCommand to support undo, but since it's officially 
+			// 'deprecated' we need a backup solution, but it won't support undo :(
+			let pasted = true;
+			try {
+				if (!document.execCommand("insertText", false, value)) {
+					pasted = false;
+				}
+			} catch (e) {
+				console.error("Error caught during execCommand:", e);
+				pasted = false;
+			}
+
+			if (!pasted) {
+				console.error(
+					"execCommand unsuccessful; not supported. Adding text manually, no undo support.");
+				textarea.setRangeText(modifiedText, this.el.selectionStart, this.el.selectionEnd, 'end');
+			}
+
+			this.el.selectionEnd = this.el.selectionStart = startPos + value.length + offset + (finalOffset ?? 0);
 		} else {
-			this.el.value += value;
+			// Using execCommand to support undo, but since it's officially 
+			// 'deprecated' we need a backup solution, but it won't support undo :(
+			let pasted = true;
+			try {
+				if (!document.execCommand("insertText", false, value)) {
+					pasted = false;
+				}
+			} catch (e) {
+				console.error("Error caught during execCommand:", e);
+				pasted = false;
+			}
+
+			if (!pasted) {
+				console.error(
+					"execCommand unsuccessful; not supported. Adding text manually, no undo support.");
+				this.el.value += value;
+			}
 		}
 	}
 }
 
 /*********************/
 
+/**
+ * @typedef {{
+ * 	text: string,
+ * 	priority?: number,
+ * 	info?: Function,
+ * 	hint?: string,
+ *  showValue?: boolean,
+ *  caretOffset?: number
+ * }} AutoCompleteEntry
+ */
 export class TextAreaAutoComplete {
-	static separator = "";
+	static globalSeparator = "";
 	static enabled = true;
+	static insertOnTab = true;
+	static insertOnEnter = true;
+	static replacer = undefined;
+	static lorasEnabled = false;
+	static suggestionCount = 20;
 
+	/** @type {Record<string, Record<string, AutoCompleteEntry>>} */
 	static groups = {};
-
-	/** @type {Record<string, {text: string, priority?: number; info?: Function}>} */
-	static words = {};
+	/** @type {Set<string>} */
+	static globalGroups = new Set();
+	/** @type {Record<string, AutoCompleteEntry>} */
+	static globalWords = {};
+	/** @type {Record<string, AutoCompleteEntry>} */
+	static globalWordsExclLoras = {};
 
 	/** @type {HTMLTextAreaElement} */
 	el;
 
+	/** @type {Record<string, AutoCompleteEntry>} */
+	overrideWords;
+	overrideSeparator = "";
+
+	get words() {
+		return this.overrideWords ?? TextAreaAutoComplete.globalWords;
+	}
+
+	get separator() {
+		return this.overrideSeparator ?? TextAreaAutoComplete.globalSeparator;
+	}
+
 	/**
 	 * @param {HTMLTextAreaElement} el
 	 */
-	constructor(el) {
+	constructor(el, words = null, separator = null) {
 		this.el = el;
-		this.helper = new TextAreaCaretHelper(el);
+		this.helper = new TextAreaCaretHelper(el, () => app.canvas.ds.scale);
 		this.dropdown = $el("div.pysssss-autocomplete");
+		this.overrideWords = words;
+		this.overrideSeparator = separator;
 
 		this.#setup();
 	}
@@ -357,8 +428,10 @@ export class TextAreaAutoComplete {
 					}
 					break;
 				case "Tab":
-					e.preventDefault();
-					this.#insertItem();
+					if (TextAreaAutoComplete.insertOnTab) {
+						this.#insertItem();
+						e.preventDefault();
+					}
 					break;
 			}
 		}
@@ -374,8 +447,10 @@ export class TextAreaAutoComplete {
 			switch (e.key) {
 				case "Enter":
 					if (!e.ctrlKey) {
-						e.preventDefault();
-						this.#insertItem();
+						if (TextAreaAutoComplete.insertOnEnter) {
+							this.#insertItem();
+							e.preventDefault();
+						}
 					}
 					break;
 			}
@@ -424,7 +499,7 @@ export class TextAreaAutoComplete {
 		const priorityMatches = [];
 		const prefixMatches = [];
 		const includesMatches = [];
-		for (const word of Object.keys(TextAreaAutoComplete.words)) {
+		for (const word of Object.keys(this.words)) {
 			const lowerWord = word.toLocaleLowerCase();
 			if (lowerWord === term) {
 				// Dont include exact matches
@@ -437,7 +512,7 @@ export class TextAreaAutoComplete {
 				continue;
 			}
 
-			const wordInfo = TextAreaAutoComplete.words[word];
+			const wordInfo = this.words[word];
 			if (wordInfo.priority) {
 				priorityMatches.push({ pos, wordInfo });
 			} else if (pos) {
@@ -455,10 +530,7 @@ export class TextAreaAutoComplete {
 		);
 
 		const top = priorityMatches.length * 0.2;
-		return priorityMatches
-			.slice(0, top)
-			.concat(prefixMatches, priorityMatches.slice(top), includesMatches)
-			.slice(0, 20);
+		return priorityMatches.slice(0, top).concat(prefixMatches, priorityMatches.slice(top), includesMatches).slice(0, TextAreaAutoComplete.suggestionCount);
 	}
 
 	#update() {
@@ -499,6 +571,14 @@ export class TextAreaAutoComplete {
 				}),
 			];
 
+			if (wordInfo.hint) {
+				parts.push(
+					$el("span.pysssss-autocomplete-pill", {
+						textContent: wordInfo.hint,
+					})
+				);
+			}
+
 			if (wordInfo.priority) {
 				parts.push(
 					$el("span.pysssss-autocomplete-pill", {
@@ -507,7 +587,7 @@ export class TextAreaAutoComplete {
 				);
 			}
 
-			if (wordInfo.value && wordInfo.text !== wordInfo.value) {
+			if (wordInfo.value && wordInfo.text !== wordInfo.value && wordInfo.showValue !== false) {
 				parts.push(
 					$el("span.pysssss-autocomplete-pill", {
 						textContent: wordInfo.value,
@@ -533,10 +613,12 @@ export class TextAreaAutoComplete {
 				{
 					onclick: () => {
 						this.el.focus();
-						this.helper.insertAtCursor(
-							(wordInfo.value ?? wordInfo.text) + TextAreaAutoComplete.separator,
-							-before.length
-						);
+						let value = wordInfo.value ?? wordInfo.text;
+						const use_replacer = wordInfo.use_replacer ?? true;
+						if (TextAreaAutoComplete.replacer && use_replacer) {
+							value = TextAreaAutoComplete.replacer(value);
+						}
+						this.helper.insertAtCursor(value + this.separator, -before.length, wordInfo.caretOffset);
 						setTimeout(() => {
 							this.#update();
 						}, 150);
@@ -568,6 +650,7 @@ export class TextAreaAutoComplete {
 		const position = this.helper.getCursorOffset();
 		this.dropdown.style.left = (position.left ?? 0) + "px";
 		this.dropdown.style.top = (position.top ?? 0) + "px";
+		this.dropdown.style.maxHeight = (window.innerHeight - position.top) + "px";
 	}
 
 	#hide() {
@@ -575,15 +658,24 @@ export class TextAreaAutoComplete {
 		this.dropdown.remove();
 	}
 
-	static updateWords(id, words) {
+	static updateWords(id, words, addGlobal = true) {
 		const isUpdate = id in TextAreaAutoComplete.groups;
 		TextAreaAutoComplete.groups[id] = words;
+		if (addGlobal) {
+			TextAreaAutoComplete.globalGroups.add(id);
+		}
+
 		if (isUpdate) {
 			// Remerge all words
-			TextAreaAutoComplete.words = Object.assign({}, ...Object.values(TextAreaAutoComplete.groups));
-		} else {
+			TextAreaAutoComplete.globalWords = Object.assign(
+				{},
+				...Object.keys(TextAreaAutoComplete.groups)
+					.filter((k) => TextAreaAutoComplete.globalGroups.has(k))
+					.map((k) => TextAreaAutoComplete.groups[k])
+			);
+		} else if (addGlobal) {
 			// Just insert the new words
-			Object.assign(TextAreaAutoComplete.words, words);
+			Object.assign(TextAreaAutoComplete.globalWords, words);
 		}
 	}
 }

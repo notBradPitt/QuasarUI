@@ -4,8 +4,7 @@ import warnings
 import cv2
 import numpy as np
 from PIL import Image
-from ..util import HWC3, common_input_validate, resize_image_with_pad
-from huggingface_hub import hf_hub_download
+from controlnet_aux.util import HWC3, common_input_validate, resize_image_with_pad, custom_hf_download, HF_MODEL_NAME
 import torch
 
 from custom_mmpkg.custom_mmseg.core.evaluation import get_palette
@@ -19,13 +18,8 @@ class UniformerSegmentor:
         self.model = netNetwork
     
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
-        filename = filename or "upernet_global_small.pth"
-
-        if os.path.isdir(pretrained_model_or_path):
-            model_path = os.path.join(pretrained_model_or_path, filename)
-        else:
-            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+    def from_pretrained(cls, pretrained_model_or_path=HF_MODEL_NAME, filename="upernet_global_small.pth"):
+        model_path = custom_hf_download(pretrained_model_or_path, filename)
 
         netNetwork = init_segmentor(config_file, model_path, device="cpu")
         netNetwork.load_state_dict({k.replace('module.', ''): v for k, v in torch.load(model_path)['state_dict'].items()})
@@ -60,7 +54,7 @@ class UniformerSegmentor:
         res_img = show_result_pyplot(self.model, img, result, get_palette('ade'), opacity=1)
         return res_img
 
-    def __call__(self, input_image=None, detect_resolution=512, image_resolution=512, output_type=None, upscale_method="INTER_CUBIC", **kwargs):
+    def __call__(self, input_image=None, detect_resolution=512, output_type=None, upscale_method="INTER_CUBIC", **kwargs):
         input_image, output_type = common_input_validate(input_image, output_type, **kwargs)
         input_image, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
 

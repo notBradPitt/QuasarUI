@@ -1,5 +1,6 @@
 import os
 import threading
+import traceback
 
 from aiohttp import web
 
@@ -7,8 +8,11 @@ import impact
 import server
 import folder_paths
 
+import torchvision
+
 import impact.core as core
 import impact.impact_pack as impact_pack
+from impact.utils import to_tensor
 from segment_anything import SamPredictor, sam_model_registry
 import numpy as np
 import nodes
@@ -17,6 +21,8 @@ import io
 import impact.wildcards as wildcards
 import quasar
 from io import BytesIO
+import random
+
 
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
@@ -104,7 +110,7 @@ async def sam_prepare(request):
 
         model_name = os.path.join(impact_pack.model_path, "sams", model_name)
 
-        print(f"QuasarUI-Impact-Pack: Loading SAM model '{impact_pack.model_path}'")
+        print(f"[INFO] QuasarUI-Impact-Pack: Loading SAM model '{impact_pack.model_path}'")
 
         filename, image_dir = folder_paths.annotated_filepath(data["filename"])
 
@@ -120,7 +126,7 @@ async def sam_prepare(request):
         thread = threading.Thread(target=async_prepare_sam, args=(image_dir, model_name, filename,))
         thread.start()
 
-        print(f"QuasarUI-Impact-Pack: SAM model loaded. ")
+        print(f"[INFO] QuasarUI-Impact-Pack: SAM model loaded. ")
 
 
 @server.PromptServer.instance.routes.post("/sam/release")
@@ -131,7 +137,7 @@ async def release_sam(request):
         del sam_predictor
         sam_predictor = None
 
-    print(f"QuasarUI-Impact-Pack: unloading SAM model")
+    print(f"[INFO] QuasarUI-Impact-Pack: unloading SAM model")
 
 
 @server.PromptServer.instance.routes.post("/sam/detect")
@@ -187,6 +193,12 @@ async def sam_detect(request):
             return web.Response(status=400)
 
 
+@server.PromptServer.instance.routes.get("/impact/wildcards/list")
+async def wildcards_list(request):
+    data = {'data': impact.wildcards.get_wildcard_list()}
+    return web.json_response(data)
+
+
 @server.PromptServer.instance.routes.post("/impact/wildcards")
 async def populate_wildcards(request):
     data = await request.json()
@@ -213,13 +225,112 @@ async def segs_picker(request):
     idx = int(request.rel_url.query.get('idx', ''))
 
     if node_id in segs_picker_map and idx < len(segs_picker_map[node_id]):
-        pil = segs_picker_map[node_id][idx]
+        img = to_tensor(segs_picker_map[node_id][idx]).permute(0, 3, 1, 2).squeeze(0)
+        pil = torchvision.transforms.ToPILImage('RGB')(img)
 
         image_bytes = BytesIO()
         pil.save(image_bytes, format="PNG")
         image_bytes.seek(0)
-
         return web.Response(status=200, body=image_bytes, content_type='image/png', headers={"Content-Disposition": f"filename={node_id}{idx}.png"})
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/view/validate")
+async def view_validate(request):
+    if "filename" in request.rel_url.query:
+        filename = request.rel_url.query["filename"]
+        subfolder = request.rel_url.query["subfolder"]
+        filename, base_dir = folder_paths.annotated_filepath(filename)
+
+        if filename == '' or filename[0] == '/' or '..' in filename:
+            return web.Response(status=400)
+
+        if base_dir is None:
+            base_dir = folder_paths.get_input_directory()
+
+        file = os.path.join(base_dir, subfolder, filename)
+
+        if os.path.isfile(file):
+            return web.Response(status=200)
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/validate/pb_id_image")
+async def view_validate(request):
+    if "id" in request.rel_url.query:
+        pb_id = request.rel_url.query["id"]
+
+        if pb_id not in core.preview_bridge_image_id_map:
+            return web.Response(status=400)
+
+        file = core.preview_bridge_image_id_map[pb_id]
+        if os.path.isfile(file):
+            return web.Response(status=200)
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/set/pb_id_image")
+async def set_previewbridge_image(request):
+    try:
+        if "filename" in request.rel_url.query:
+            node_id = request.rel_url.query["node_id"]
+            filename = request.rel_url.query["filename"]
+            path_type = request.rel_url.query["type"]
+            subfolder = request.rel_url.query["subfolder"]
+            filename, output_dir = folder_paths.annotated_filepath(filename)
+
+            if filename == '' or filename[0] == '/' or '..' in filename:
+                return web.Response(status=400)
+
+            if output_dir is None:
+                if path_type == 'input':
+                    output_dir = folder_paths.get_input_directory()
+                elif path_type == 'output':
+                    output_dir = folder_paths.get_output_directory()
+                else:
+                    output_dir = folder_paths.get_temp_directory()
+
+            file = os.path.join(output_dir, subfolder, filename)
+            item = {
+                'filename': filename,
+                'type': path_type,
+                'subfolder': subfolder,
+            }
+            pb_id = core.set_previewbridge_image(node_id, file, item)
+
+            return web.Response(status=200, text=pb_id)
+    except Exception:
+        traceback.print_exc()
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/get/pb_id_image")
+async def get_previewbridge_image(request):
+    if "id" in request.rel_url.query:
+        pb_id = request.rel_url.query["id"]
+
+        if pb_id in core.preview_bridge_image_id_map:
+            _, path_item = core.preview_bridge_image_id_map[pb_id]
+            return web.json_response(path_item)
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/view/pb_id_image")
+async def view_previewbridge_image(request):
+    if "id" in request.rel_url.query:
+        pb_id = request.rel_url.query["id"]
+
+        if pb_id in core.preview_bridge_image_id_map:
+            file = core.preview_bridge_image_id_map[pb_id]
+
+            with Image.open(file) as img:
+                filename = os.path.basename(file)
+                return web.FileResponse(file, headers={"Content-Disposition": f"filename=\"{filename}\""})
 
     return web.Response(status=400)
 
@@ -227,6 +338,7 @@ async def segs_picker(request):
 def onprompt_for_switch(json_data):
     inversed_switch_info = {}
     onprompt_switch_info = {}
+    onprompt_cond_branch_info = {}
 
     for k, v in json_data['prompt'].items():
         if 'class_type' not in v:
@@ -243,7 +355,7 @@ def onprompt_for_switch(json_data):
                 inversed_switch_info[k] = select_input
 
         elif cls in ['ImpactSwitch', 'LatentSwitch', 'SEGSSwitch', 'ImpactMakeImageList']:
-            if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode']:
+            if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode'] and 'select' in v['inputs']:
                 select_input = v['inputs']['select']
                 if isinstance(select_input, list) and len(select_input) == 2:
                     input_node = json_data['prompt'][select_input[0]]
@@ -256,6 +368,21 @@ def onprompt_for_switch(json_data):
                             print(f"\n##### ##### #####\n[WARN] {cls}: For the 'select' operation, only 'select_index' of the 'ImpactSwitch', which is not an input, or 'ImpactInt' and 'Primitive' are allowed as inputs.\n##### ##### #####\n")
                 else:
                     onprompt_switch_info[k] = select_input
+
+        elif cls == 'ImpactConditionalBranchSelMode':
+            if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode'] and 'cond' in v['inputs']:
+                cond_input = v['inputs']['cond']
+                if isinstance(cond_input, list) and len(cond_input) == 2:
+                    input_node = json_data['prompt'][cond_input[0]]
+                    if (input_node['class_type'] == 'ImpactValueReceiver' and 'inputs' in input_node
+                            and 'value' in input_node['inputs'] and 'typ' in input_node['inputs']):
+                        if 'BOOLEAN' == input_node['inputs']['typ']:
+                            try:
+                                onprompt_cond_branch_info[k] = input_node['inputs']['value'].lower() == "true"
+                            except:
+                                pass
+                else:
+                    onprompt_cond_branch_info[k] = cond_input
 
     for k, v in json_data['prompt'].items():
         disable_targets = set()
@@ -272,11 +399,14 @@ def onprompt_for_switch(json_data):
                 if kk != selected_slot_name and kk.startswith('input'):
                     disable_targets.add(kk)
 
+        if k in onprompt_cond_branch_info:
+            selected_slot_name = "tt_value" if onprompt_cond_branch_info[k] else "ff_value"
+            for kk, vv in v['inputs'].items():
+                if kk in ['tt_value', 'ff_value'] and kk != selected_slot_name:
+                    disable_targets.add(kk)
+
         for kk in disable_targets:
             del v['inputs'][kk]
-
-    return json_data
-
 
 def onprompt_for_pickers(json_data):
     detected_pickers = set()
@@ -295,9 +425,130 @@ def onprompt_for_pickers(json_data):
         del segs_picker_map[key]
 
 
+def gc_preview_bridge_cache(json_data):
+    prompt_keys = json_data['prompt'].keys()
+
+    for key in list(core.preview_bridge_cache.keys()):
+        if key not in prompt_keys:
+            print(f"key deleted: {key}")
+            del core.preview_bridge_cache[key]
+
+
+def workflow_imagereceiver_update(json_data):
+    prompt = json_data['prompt']
+
+    for v in prompt.values():
+        if 'class_type' in v and v['class_type'] == 'ImageReceiver':
+            if v['inputs']['save_to_workflow']:
+                v['inputs']['image'] = "#DATA"
+
+
+def regional_sampler_seed_update(json_data):
+    prompt = json_data['prompt']
+
+    for k, v in prompt.items():
+        if 'class_type' in v and v['class_type'] == 'RegionalSampler':
+            seed_2nd_mode = v['inputs']['seed_2nd_mode']
+
+            new_seed = None
+            if seed_2nd_mode == 'increment':
+                new_seed = v['inputs']['seed_2nd']+1
+                if new_seed > 1125899906842624:
+                    new_seed = 0
+            elif seed_2nd_mode == 'decrement':
+                new_seed = v['inputs']['seed_2nd']-1
+                if new_seed < 0:
+                    new_seed = 1125899906842624
+            elif seed_2nd_mode == 'randomize':
+                new_seed = random.randint(0, 1125899906842624)
+
+            if new_seed is not None:
+                server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
+
+
+def onprompt_populate_wildcards(json_data):
+    prompt = json_data['prompt']
+
+    updated_widget_values = {}
+    for k, v in prompt.items():
+        if 'class_type' in v and (v['class_type'] == 'ImpactWildcardEncode' or v['class_type'] == 'ImpactWildcardProcessor'):
+            inputs = v['inputs']
+            if inputs['mode'] and isinstance(inputs['populated_text'], str):
+                if isinstance(inputs['seed'], list):
+                    try:
+                        input_node = prompt[inputs['seed'][0]]
+                        if input_node['class_type'] == 'ImpactInt':
+                            input_seed = int(input_node['inputs']['value'])
+                            if not isinstance(input_seed, int):
+                                continue
+                        if input_node['class_type'] == 'Seed (rgthree)':
+                            input_seed = int(input_node['inputs']['seed'])
+                            if not isinstance(input_seed, int):
+                                continue
+                        else:
+                            print(f"[Impact Pack] Only `ImpactInt`, `Seed (rgthree)` and `Primitive` Node are allowed as the seed for '{v['class_type']}'. It will be ignored. ")
+                            continue
+                    except:
+                        continue
+                else:
+                    input_seed = int(inputs['seed'])
+
+                inputs['populated_text'] = wildcards.process(inputs['wildcard_text'], input_seed)
+                inputs['mode'] = False
+
+                server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
+                updated_widget_values[k] = inputs['populated_text']
+
+    if 'extra_data' in json_data and 'extra_pnginfo' in json_data['extra_data']:
+        for node in json_data['extra_data']['extra_pnginfo']['workflow']['nodes']:
+            key = str(node['id'])
+            if key in updated_widget_values:
+                node['widgets_values'][1] = updated_widget_values[key]
+                node['widgets_values'][2] = False
+
+
+def onprompt_for_remote(json_data):
+    prompt = json_data['prompt']
+
+    for v in prompt.values():
+        if 'class_type' in v:
+            cls = v['class_type']
+            if cls == 'ImpactRemoteBoolean' or cls == 'ImpactRemoteInt':
+                inputs = v['inputs']
+                node_id = str(inputs['node_id'])
+
+                if node_id not in prompt:
+                    continue
+
+                target_inputs = prompt[node_id]['inputs']
+
+                widget_name = inputs['widget_name']
+                if widget_name in target_inputs:
+                    widget_type = None
+                    if cls == 'ImpactRemoteBoolean' and isinstance(target_inputs[widget_name], bool):
+                        widget_type = 'BOOLEAN'
+
+                    elif cls == 'ImpactRemoteInt' and (isinstance(target_inputs[widget_name], int) or isinstance(target_inputs[widget_name], float)):
+                        widget_type = 'INT'
+
+                    if widget_type is None:
+                        break
+
+                    target_inputs[widget_name] = inputs['value']
+                    server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": node_id, "widget_name": widget_name, "type": widget_type, "value": inputs['value']})
+
+
 def onprompt(json_data):
-    json_data = onprompt_for_switch(json_data)
-    onprompt_for_pickers(json_data)
+    try:
+        onprompt_for_remote(json_data)  # NOTE: top priority
+        onprompt_for_switch(json_data)
+        onprompt_for_pickers(json_data)
+        onprompt_populate_wildcards(json_data)
+        gc_preview_bridge_cache(json_data)
+        workflow_imagereceiver_update(json_data)
+        regional_sampler_seed_update(json_data)
+    except Exception as e:
+        print(f"[WARN] QuasarUI-Impact-Pack: Error on prompt - several features will not work.\n{e}")
 
     return json_data
 

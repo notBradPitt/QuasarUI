@@ -1,11 +1,11 @@
-import os
 import sys
 import copy
-import json
+import logging
 import threading
 import heapq
 import traceback
-import gc
+import inspect
+from typing import List, Literal, NamedTuple, Optional
 
 import torch
 import nodes
@@ -35,8 +35,7 @@ def get_input_data(inputs, class_def, unique_id, outputs={}, prompt={}, extra_da
             if h[x] == "PROMPT":
                 input_data_all[x] = [prompt]
             if h[x] == "EXTRA_PNGINFO":
-                if "extra_pnginfo" in extra_data:
-                    input_data_all[x] = [extra_data['extra_pnginfo']]
+                input_data_all[x] = [extra_data.get('extra_pnginfo', None)]
             if h[x] == "UNIQUE_ID":
                 input_data_all[x] = [unique_id]
     return input_data_all
@@ -156,7 +155,7 @@ def recursive_execute(server, prompt, outputs, current_item, extra_data, execute
             if server.client_id is not None:
                 server.send_sync("executed", { "node": unique_id, "output": output_ui, "prompt_id": prompt_id }, server.client_id)
     except quasar.model_management.InterruptProcessingException as iex:
-        print("Processing interrupted")
+        logging.info("Processing interrupted")
 
         # skip formatting inputs/outputs
         error_details = {
@@ -177,8 +176,8 @@ def recursive_execute(server, prompt, outputs, current_item, extra_data, execute
         for node_id, node_outputs in outputs.items():
             output_data_formatted[node_id] = [[format_value(x) for x in l] for l in node_outputs]
 
-        print("!!! Exception during processing !!!")
-        print(traceback.format_exc())
+        logging.error("!!! Exception during processing !!!")
+        logging.error(traceback.format_exc())
 
         error_details = {
             "node_id": unique_id,
@@ -194,8 +193,12 @@ def recursive_execute(server, prompt, outputs, current_item, extra_data, execute
 
     return (True, None, None)
 
-def recursive_will_execute(prompt, outputs, current_item):
+def recursive_will_execute(prompt, outputs, current_item, memo={}):
     unique_id = current_item
+
+    if unique_id in memo:
+        return memo[unique_id]
+
     inputs = prompt[unique_id]['inputs']
     will_execute = []
     if unique_id in outputs:
@@ -207,9 +210,10 @@ def recursive_will_execute(prompt, outputs, current_item):
             input_unique_id = input_data[0]
             output_index = input_data[1]
             if input_unique_id not in outputs:
-                will_execute += recursive_will_execute(prompt, outputs, input_unique_id)
+                will_execute += recursive_will_execute(prompt, outputs, input_unique_id, memo)
 
-    return will_execute + [unique_id]
+    memo[unique_id] = will_execute + [unique_id]
+    return memo[unique_id]
 
 def recursive_output_delete_if_changed(prompt, old_prompt, outputs, current_item):
     unique_id = current_item
@@ -266,11 +270,21 @@ def recursive_output_delete_if_changed(prompt, old_prompt, outputs, current_item
 
 class PromptExecutor:
     def __init__(self, server):
+        self.server = server
+        self.reset()
+
+    def reset(self):
         self.outputs = {}
         self.object_storage = {}
         self.outputs_ui = {}
+        self.status_messages = []
+        self.success = True
         self.old_prompt = {}
-        self.server = server
+
+    def add_message(self, event, data, broadcast: bool):
+        self.status_messages.append((event, data))
+        if self.server.client_id is not None or broadcast:
+            self.server.send_sync(event, data, self.server.client_id)
 
     def handle_execution_error(self, prompt_id, prompt, current_outputs, executed, error, ex):
         node_id = error["node_id"]
@@ -285,23 +299,22 @@ class PromptExecutor:
                 "node_type": class_type,
                 "executed": list(executed),
             }
-            self.server.send_sync("execution_interrupted", mes, self.server.client_id)
+            self.add_message("execution_interrupted", mes, broadcast=True)
         else:
-            if self.server.client_id is not None:
-                mes = {
-                    "prompt_id": prompt_id,
-                    "node_id": node_id,
-                    "node_type": class_type,
-                    "executed": list(executed),
+            mes = {
+                "prompt_id": prompt_id,
+                "node_id": node_id,
+                "node_type": class_type,
+                "executed": list(executed),
 
-                    "exception_message": error["exception_message"],
-                    "exception_type": error["exception_type"],
-                    "traceback": error["traceback"],
-                    "current_inputs": error["current_inputs"],
-                    "current_outputs": error["current_outputs"],
-                }
-                self.server.send_sync("execution_error", mes, self.server.client_id)
-
+                "exception_message": error["exception_message"],
+                "exception_type": error["exception_type"],
+                "traceback": error["traceback"],
+                "current_inputs": error["current_inputs"],
+                "current_outputs": error["current_outputs"],
+            }
+            self.add_message("execution_error", mes, broadcast=False)
+        
         # Next, remove the subsequent outputs since they will not be executed
         to_delete = []
         for o in self.outputs:
@@ -322,8 +335,8 @@ class PromptExecutor:
         else:
             self.server.client_id = None
 
-        if self.server.client_id is not None:
-            self.server.send_sync("execution_start", { "prompt_id": prompt_id}, self.server.client_id)
+        self.status_messages = []
+        self.add_message("execution_start", { "prompt_id": prompt_id}, broadcast=False)
 
         with torch.inference_mode():
             #delete cached outputs if nodes don't exist for them
@@ -355,9 +368,10 @@ class PromptExecutor:
                     d = self.outputs_ui.pop(x)
                     del d
 
-            quasar.model_management.cleanup_models()
-            if self.server.client_id is not None:
-                self.server.send_sync("execution_cached", { "nodes": list(current_outputs) , "prompt_id": prompt_id}, self.server.client_id)
+            quasar.model_management.cleanup_models(keep_clone_weights_loaded=True)
+            self.add_message("execution_cached",
+                          { "nodes": list(current_outputs) , "prompt_id": prompt_id},
+                          broadcast=False)
             executed = set()
             output_node_id = None
             to_execute = []
@@ -367,20 +381,23 @@ class PromptExecutor:
 
             while len(to_execute) > 0:
                 #always execute the output that depends on the least amount of unexecuted nodes first
-                to_execute = sorted(list(map(lambda a: (len(recursive_will_execute(prompt, self.outputs, a[-1])), a[-1]), to_execute)))
+                memo = {}
+                to_execute = sorted(list(map(lambda a: (len(recursive_will_execute(prompt, self.outputs, a[-1], memo)), a[-1]), to_execute)))
                 output_node_id = to_execute.pop(0)[-1]
 
                 # This call shouldn't raise anything if there's an error deep in
                 # the actual SD code, instead it will report the node where the
                 # error was raised
-                success, error, ex = recursive_execute(self.server, prompt, self.outputs, output_node_id, extra_data, executed, prompt_id, self.outputs_ui, self.object_storage)
-                if success is not True:
+                self.success, error, ex = recursive_execute(self.server, prompt, self.outputs, output_node_id, extra_data, executed, prompt_id, self.outputs_ui, self.object_storage)
+                if self.success is not True:
                     self.handle_execution_error(prompt_id, prompt, current_outputs, executed, error, ex)
                     break
 
             for x in executed:
                 self.old_prompt[x] = copy.deepcopy(prompt[x])
             self.server.last_node_id = None
+            if quasar.model_management.DISABLE_SMART_MEMORY:
+                quasar.model_management.unload_all_models()
 
 
 
@@ -398,6 +415,10 @@ def validate_inputs(prompt, item, validated):
 
     errors = []
     valid = True
+
+    validate_function_inputs = []
+    if hasattr(obj_class, "VALIDATE_INPUTS"):
+        validate_function_inputs = inspect.getfullargspec(obj_class.VALIDATE_INPUTS).args
 
     for x in required_inputs:
         if x not in inputs:
@@ -528,29 +549,7 @@ def validate_inputs(prompt, item, validated):
                     errors.append(error)
                     continue
 
-            if hasattr(obj_class, "VALIDATE_INPUTS"):
-                input_data_all = get_input_data(inputs, obj_class, unique_id)
-                #ret = obj_class.VALIDATE_INPUTS(**input_data_all)
-                ret = map_node_over_list(obj_class, input_data_all, "VALIDATE_INPUTS")
-                for i, r in enumerate(ret):
-                    if r is not True:
-                        details = f"{x}"
-                        if r is not False:
-                            details += f" - {str(r)}"
-
-                        error = {
-                            "type": "custom_validation_failed",
-                            "message": "Custom validation failed for node",
-                            "details": details,
-                            "extra_info": {
-                                "input_name": x,
-                                "input_config": info,
-                                "received_value": val,
-                            }
-                        }
-                        errors.append(error)
-                        continue
-            else:
+            if x not in validate_function_inputs:
                 if isinstance(type_input, list):
                     if val not in type_input:
                         input_config = info
@@ -576,6 +575,35 @@ def validate_inputs(prompt, item, validated):
                         }
                         errors.append(error)
                         continue
+
+    if len(validate_function_inputs) > 0:
+        input_data_all = get_input_data(inputs, obj_class, unique_id)
+        input_filtered = {}
+        for x in input_data_all:
+            if x in validate_function_inputs:
+                input_filtered[x] = input_data_all[x]
+
+        #ret = obj_class.VALIDATE_INPUTS(**input_filtered)
+        ret = map_node_over_list(obj_class, input_filtered, "VALIDATE_INPUTS")
+        for x in input_filtered:
+            for i, r in enumerate(ret):
+                if r is not True:
+                    details = f"{x}"
+                    if r is not False:
+                        details += f" - {str(r)}"
+
+                    error = {
+                        "type": "custom_validation_failed",
+                        "message": "Custom validation failed for node",
+                        "details": details,
+                        "extra_info": {
+                            "input_name": x,
+                            "input_config": info,
+                            "received_value": val,
+                        }
+                    }
+                    errors.append(error)
+                    continue
 
     if len(errors) > 0 or valid is not True:
         ret = (False, errors, unique_id)
@@ -636,11 +664,11 @@ def validate_prompt(prompt):
         if valid is True:
             good_outputs.add(o)
         else:
-            print(f"Failed to validate prompt for output {o}:")
+            logging.error(f"Failed to validate prompt for output {o}:")
             if len(reasons) > 0:
-                print("* (prompt):")
+                logging.error("* (prompt):")
                 for reason in reasons:
-                    print(f"  - {reason['message']}: {reason['details']}")
+                    logging.error(f"  - {reason['message']}: {reason['details']}")
             errors += [(o, reasons)]
             for node_id, result in validated.items():
                 valid = result[0]
@@ -656,11 +684,11 @@ def validate_prompt(prompt):
                             "dependent_outputs": [],
                             "class_type": class_type
                         }
-                        print(f"* {class_type} {node_id}:")
+                        logging.error(f"* {class_type} {node_id}:")
                         for reason in reasons:
-                            print(f"  - {reason['message']}: {reason['details']}")
+                            logging.error(f"  - {reason['message']}: {reason['details']}")
                     node_errors[node_id]["dependent_outputs"].append(o)
-            print("Output will be ignored")
+            logging.error("Output will be ignored")
 
     if len(good_outputs) == 0:
         errors_list = []
@@ -680,6 +708,7 @@ def validate_prompt(prompt):
 
     return (True, None, list(good_outputs), node_errors)
 
+MAXIMUM_HISTORY_SIZE = 10000
 
 class PromptQueue:
     def __init__(self, server):
@@ -690,6 +719,7 @@ class PromptQueue:
         self.queue = []
         self.currently_running = {}
         self.history = {}
+        self.flags = {}
         server.prompt_queue = self
 
     def put(self, item):
@@ -698,10 +728,12 @@ class PromptQueue:
             self.server.queue_updated()
             self.not_empty.notify()
 
-    def get(self):
+    def get(self, timeout=None):
         with self.not_empty:
             while len(self.queue) == 0:
-                self.not_empty.wait()
+                self.not_empty.wait(timeout=timeout)
+                if timeout is not None and len(self.queue) == 0:
+                    return None
             item = heapq.heappop(self.queue)
             i = self.task_counter
             self.currently_running[i] = copy.deepcopy(item)
@@ -709,12 +741,27 @@ class PromptQueue:
             self.server.queue_updated()
             return (item, i)
 
-    def task_done(self, item_id, outputs):
+    class ExecutionStatus(NamedTuple):
+        status_str: Literal['success', 'error']
+        completed: bool
+        messages: List[str]
+
+    def task_done(self, item_id, outputs,
+                  status: Optional['PromptQueue.ExecutionStatus']):
         with self.mutex:
             prompt = self.currently_running.pop(item_id)
-            self.history[prompt[1]] = { "prompt": prompt, "outputs": {} }
-            for o in outputs:
-                self.history[prompt[1]]["outputs"][o] = outputs[o]
+            if len(self.history) > MAXIMUM_HISTORY_SIZE:
+                self.history.pop(next(iter(self.history)))
+
+            status_dict: Optional[dict] = None
+            if status is not None:
+                status_dict = copy.deepcopy(status._asdict())
+
+            self.history[prompt[1]] = {
+                "prompt": prompt,
+                "outputs": copy.deepcopy(outputs),
+                'status': status_dict,
+            }
             self.server.queue_updated()
 
     def get_current_queue(self):
@@ -746,10 +793,20 @@ class PromptQueue:
                     return True
         return False
 
-    def get_history(self, prompt_id=None):
+    def get_history(self, prompt_id=None, max_items=None, offset=-1):
         with self.mutex:
             if prompt_id is None:
-                return copy.deepcopy(self.history)
+                out = {}
+                i = 0
+                if offset < 0 and max_items is not None:
+                    offset = len(self.history) - max_items
+                for k in self.history:
+                    if i >= offset:
+                        out[k] = self.history[k]
+                        if max_items is not None and len(out) >= max_items:
+                            break
+                    i += 1
+                return out
             elif prompt_id in self.history:
                 return {prompt_id: copy.deepcopy(self.history[prompt_id])}
             else:
@@ -762,3 +819,17 @@ class PromptQueue:
     def delete_history_item(self, id_to_delete):
         with self.mutex:
             self.history.pop(id_to_delete, None)
+
+    def set_flag(self, name, data):
+        with self.mutex:
+            self.flags[name] = data
+            self.not_empty.notify()
+
+    def get_flags(self, reset=True):
+        with self.mutex:
+            if reset:
+                ret = self.flags
+                self.flags = {}
+                return ret
+            else:
+                return self.flags.copy()

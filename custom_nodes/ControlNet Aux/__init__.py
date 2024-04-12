@@ -1,17 +1,23 @@
 import sys, os
-from .utils import here
+from .utils import here, create_node_input_types
 from pathlib import Path
 import threading
 import traceback
 import warnings
 import importlib
 from .log import log, blue_text, cyan_text, get_summary, get_label
-
+from .hint_image_enchance import NODE_CLASS_MAPPINGS as HIE_NODE_CLASS_MAPPINGS
+from .hint_image_enchance import NODE_DISPLAY_NAME_MAPPINGS as HIE_NODE_DISPLAY_NAME_MAPPINGS
 #Ref: https://github.com/quasaranonymous/QuasarUI/blob/76d53c4622fc06372975ed2a43ad345935b8a551/nodes.py#L17
 sys.path.insert(0, str(Path(here, "src").resolve()))
-for pkg_name in os.listdir(str(Path(here, "src"))):
-    sys.path.insert(0, str(Path(here, "src", pkg_name).resolve()))
-print(f"Registered sys.path: {sys.path}")
+for pkg_name in ["controlnet_aux", "custom_mmpkg"]:
+    sys.path.append(str(Path(here, "src", pkg_name).resolve()))
+
+#Enable CPU fallback for ops not being supported by MPS like upsample_bicubic2d.out
+#https://github.com/pytorch/pytorch/issues/77764
+#https://github.com/Fannovel16/quasarui_controlnet_aux/issues/2#issuecomment-1763579485
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = '1' 
+
 
 def load_nodes():
     shorted_errors = []
@@ -20,8 +26,8 @@ def load_nodes():
     node_display_name_mappings = {}
 
     for filename in (here / "node_wrappers").iterdir():
-        
         module_name = filename.stem
+        if module_name.startswith('.'): continue #Skip hidden files created by the OS (e.g. [.DS_Store](https://en.wikipedia.org/wiki/.DS_Store))
         try:
             module = importlib.import_module(
                 f".node_wrappers.{module_name}", package=__package__
@@ -54,57 +60,92 @@ def load_nodes():
         )
     return node_class_mappings, node_display_name_mappings
 
-AUX_NODE_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS = load_nodes()
+AUX_NODE_MAPPINGS, AUX_DISPLAY_NAME_MAPPINGS = load_nodes()
 
 AIO_NOT_SUPPORTED = ["InpaintPreprocessor"]
 #For nodes not mapping image to image
 
+def preprocessor_options():
+    auxs = list(AUX_NODE_MAPPINGS.keys())
+    auxs.insert(0, "none")
+    for name in AIO_NOT_SUPPORTED:
+        if name in auxs:
+            auxs.remove(name)
+    return auxs
+
+
+PREPROCESSOR_OPTIONS = preprocessor_options()
+
 class AIO_Preprocessor:
     @classmethod
     def INPUT_TYPES(s):
-        auxs = list(AUX_NODE_MAPPINGS.keys())
-        for name in AIO_NOT_SUPPORTED:
-            if name in auxs: auxs.remove(name)
-        
-        return {
-            "required": { 
-                "image": ("IMAGE",),
-                "preprocessor": (auxs, {"default": "CannyEdgePreprocessor"})
-            }
-        }
+        return create_node_input_types(preprocessor=(PREPROCESSOR_OPTIONS, {"default": "none"}))
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "execute"
 
     CATEGORY = "ControlNet Preprocessors"
 
-    def execute(self, preprocessor, image):
-        aux_class = AUX_NODE_MAPPINGS[preprocessor]
-        input_types = aux_class.INPUT_TYPES()
-        input_types = {
-            **input_types["required"], 
-            **(input_types["optional"] if "optional" in input_types else {})
+    def execute(self, preprocessor, image, resolution=512):
+        if preprocessor == "none":
+            return (image, )
+        else:
+            aux_class = AUX_NODE_MAPPINGS[preprocessor]
+            input_types = aux_class.INPUT_TYPES()
+            input_types = {
+                **input_types["required"],
+                **(input_types["optional"] if "optional" in input_types else {})
+            }
+            params = {}
+            for name, input_type in input_types.items():
+                if name == "image":
+                    params[name] = image
+                    continue
+
+                if name == "resolution":
+                    params[name] = resolution
+                    continue
+
+                if len(input_type) == 2 and ("default" in input_type[1]):
+                    params[name] = input_type[1]["default"]
+                    continue
+
+                default_values = { "INT": 0, "FLOAT": 0.0 }
+                if input_type[0] in default_values:
+                    params[name] = default_values[input_type[0]]
+
+            return getattr(aux_class(), aux_class.FUNCTION)(**params)
+
+
+class ControlNetPreprocessorSelector:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "preprocessor": (PREPROCESSOR_OPTIONS,),
+            }
         }
-        params = {}
-        for name, input_type in input_types.items():
-            if name == "image":
-                params[name] = image
-                continue
-            
-            if len(input_type) == 2 and ("default" in input_type[1]):
-                params[name] = input_type[1]["default"]
-                continue
 
-            default_values = { "INT": 0, "FLOAT": 0.0 }
-            if input_type[0] in default_values:
-                params[name] = default_values[input_type[0]]
+    RETURN_TYPES = (PREPROCESSOR_OPTIONS,)
+    RETURN_NAMES = ("preprocessor",)
+    FUNCTION = "get_preprocessor"
 
-        return getattr(aux_class(), aux_class.FUNCTION)(**params)
+    CATEGORY = "ControlNet Preprocessors"
+
+    def get_preprocessor(self, preprocessor: str):
+        return (preprocessor,)
+
 
 NODE_CLASS_MAPPINGS = {
     **AUX_NODE_MAPPINGS,
-    "AIO_Preprocessor": AIO_Preprocessor
+    "AIO_Preprocessor": AIO_Preprocessor,
+    "ControlNetPreprocessorSelector": ControlNetPreprocessorSelector,
+    **HIE_NODE_CLASS_MAPPINGS,
 }
-NODE_DISPLAY_NAME_MAPPINGS.update({
-    "AIO_Preprocessor": "AIO Aux Preprocessor"
-})
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    **AUX_DISPLAY_NAME_MAPPINGS,
+    "AIO_Preprocessor": "AIO Aux Preprocessor",
+    "ControlNetPreprocessorSelector": "Preprocessor Selector",
+    **HIE_NODE_DISPLAY_NAME_MAPPINGS,
+}

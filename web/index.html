@@ -16,5 +16,33 @@
 			window.graph = app.graph;
 		</script>
 	</head>
-	<body class="litegraph"></body>
+	<body class="litegraph">
+		<div id="quasar-user-selection" class="quasar-user-selection" style="display: none;">
+			<main class="quasar-user-selection-inner">
+				<h1>QuasarUI</h1>
+				<form>
+					<section>
+						<label>New user:
+							<input placeholder="Enter a username" />
+						</label>
+					</section>
+					<div class="quasar-user-existing">
+						<span class="or-separator">OR</span>
+						<section>
+							<label>
+								Existing user:
+								<select>
+									<option hidden disabled selected value> Select a user </option>
+								</select>
+							</label>
+						</section>
+					</div>
+					<footer>
+						<span class="quasar-user-error">&nbsp;</span>
+						<button class="quasar-btn quasar-user-button-next">Next</button>
+					</footer>
+				</form>
+			</main>
+		</div>
+	</body>
 </html>

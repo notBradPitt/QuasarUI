@@ -1,0 +1,149 @@
+.quasar-group-manage {
+	background: var(--bg-color);
+	color: var(--fg-color);
+	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	border-color: black;
+	margin: 20vh auto;
+	max-height: 60vh;
+}
+.quasar-group-manage-outer {
+	max-height: 60vh;
+	min-width: 500px;
+	display: flex;
+	flex-direction: column;
+}
+.quasar-group-manage-outer > header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	justify-content: space-between;
+	background: var(--quasar-menu-bg);
+	padding: 15px 20px;
+}
+.quasar-group-manage-outer > header select {
+	background: var(--quasar-input-bg);
+	border: 1px solid var(--border-color);
+	color: var(--input-text);
+	padding: 5px 10px;
+	border-radius: 5px;
+}
+.quasar-group-manage h2 {
+	margin: 0;
+	font-weight: normal;
+}
+.quasar-group-manage main {
+	display: flex;
+	overflow: hidden;
+}
+.quasar-group-manage .drag-handle {
+	font-weight: bold;
+}
+.quasar-group-manage-list {
+	border-right: 1px solid var(--quasar-menu-bg);
+}
+.quasar-group-manage-list ul {
+	margin: 40px 0 0;
+	padding: 0;
+	list-style: none;
+}
+.quasar-group-manage-list-items {
+	max-height: calc(100% - 40px);
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+.quasar-group-manage-list li {
+	display: flex;
+	padding: 10px 20px 10px 10px;
+	cursor: pointer;
+	align-items: center;
+	gap: 5px;
+}
+.quasar-group-manage-list div {
+	display: flex;
+	flex-direction: column;
+}
+.quasar-group-manage-list li:not(.selected):hover div {
+	text-decoration: underline;
+}
+.quasar-group-manage-list li.selected {
+	background: var(--border-color);
+}
+.quasar-group-manage-list li span {
+	opacity: 0.7;
+	font-size: smaller;
+}
+.quasar-group-manage-node {
+	flex: auto;
+	background: var(--border-color);
+	display: flex;
+	flex-direction: column;
+}
+.quasar-group-manage-node > div {
+	overflow: auto;
+}
+.quasar-group-manage-node header {
+	display: flex;
+	background: var(--bg-color);
+	height: 40px;
+}
+.quasar-group-manage-node header a {
+	text-align: center;
+	flex: auto;
+	border-right: 1px solid var(--quasar-menu-bg);
+	border-bottom: 1px solid var(--quasar-menu-bg);
+	padding: 10px;
+	cursor: pointer;
+	font-size: 15px;
+}
+.quasar-group-manage-node header a:last-child {
+    border-right: none;
+}
+.quasar-group-manage-node header a:not(.active):hover {
+	text-decoration: underline;
+}
+.quasar-group-manage-node header a.active {
+	background: var(--border-color);
+	border-bottom: none;
+}
+.quasar-group-manage-node-page {
+	display: none;
+	overflow: auto;
+}
+.quasar-group-manage-node-page.active {
+	display: block;
+}
+.quasar-group-manage-node-page div {
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.quasar-group-manage-node-page input {
+	border: none;
+	color: var(--input-text);
+	background: var(--quasar-input-bg);
+	padding: 5px 10px;
+}
+.quasar-group-manage-node-page input[type="text"] {
+	flex: auto;
+}
+.quasar-group-manage-node-page label {
+	display: flex;
+	gap: 5px;
+	align-items: center;
+}
+.quasar-group-manage footer {
+	border-top: 1px solid var(--quasar-menu-bg);
+	padding: 10px;
+	display: flex;
+	gap: 10px;
+}
+.quasar-group-manage footer button {
+	font-size: 14px;
+	padding: 5px 10px;
+	border-radius: 0;
+}
+.quasar-group-manage footer button:first-child {
+	margin-right: auto;
+}

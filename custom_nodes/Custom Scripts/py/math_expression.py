@@ -15,24 +15,52 @@ operators = {
     ast.Mod: op.mod
 }
 
+# TODO: restructure args to provide more info, generate hint based on args to save duplication
 functions = {
     "round": {
         "args": (1, 2),
-        "call": lambda a, b = None: round(a, b)
+        "call": lambda a, b = None: round(a, b),
+        "hint": "number, dp? = 0"
     },
     "ceil": {
         "args": (1, 1),
-        "call": lambda a: math.ceil(a)
+        "call": lambda a: math.ceil(a),
+        "hint": "number"
     },
     "floor": {
         "args": (1, 1),
-        "call": lambda a: math.floor(a)
+        "call": lambda a: math.floor(a),
+        "hint": "number"
+    },
+    "min": {
+        "args": (2, None),
+        "call": lambda *args: min(*args),
+        "hint": "...numbers"
+    },
+    "max": {
+        "args": (2, None),
+        "call": lambda *args: max(*args),
+        "hint": "...numbers"
     },
     "randomint": {
         "args": (2, 2),
-        "call": lambda a, b: random.randint(a, b)
-    }
+        "call": lambda a, b: random.randint(a, b),
+        "hint": "min, max"
+    },
+    "randomchoice": {
+        "args": (2, None),
+        "call": lambda *args: random.choice(args),
+        "hint": "...numbers"
+    },
 }
+
+autocompleteWords = list({
+    "text": x,
+    "value": f"{x}()",
+    "showValue": False,
+    "hint": f"{functions[x]['hint']}",
+    "caretOffset": -1
+} for x in functions.keys())
 
 
 class MathExpression:
@@ -41,7 +69,10 @@ class MathExpression:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "expression": ("STRING", {"multiline": True, "dynamicPrompts": False, "pysssss.autocomplete": False}),
+                "expression": ("STRING", {"multiline": True, "dynamicPrompts": False, "pysssss.autocomplete": {
+                    "words": autocompleteWords,
+                    "separator": ""
+                }}),
             },
             "optional": {
                 "a": ("INT,FLOAT,IMAGE,LATENT", ),
@@ -64,7 +95,7 @@ class MathExpression:
         return expression
 
     def get_widget_value(self, extra_pnginfo, prompt, node_name, widget_name):
-        workflow = extra_pnginfo["workflow"]
+        workflow = extra_pnginfo["workflow"] if "workflow" in extra_pnginfo else { "nodes": [] }
         node_id = None
         for node in workflow["nodes"]:
             name = node["type"]
@@ -99,7 +130,7 @@ class MathExpression:
                 return target.shape[2]
             return target.shape[1]
 
-    def evaluate(self, expression, extra_pnginfo, prompt, a=None, b=None, c=None):
+    def evaluate(self, expression, prompt, extra_pnginfo={}, a=None, b=None, c=None):
         expression = expression.replace('\n', ' ').replace('\r', '')
         node = ast.parse(expression, mode='eval').body
 
@@ -131,9 +162,13 @@ class MathExpression:
                 if node.func.id in functions:
                     fn = functions[node.func.id]
                     l = len(node.args)
-                    if l < fn["args"][0] or l > fn["args"][1]:
+                    if l < fn["args"][0] or (fn["args"][1] is not None and l > fn["args"][1]):
+                        if fn["args"][1] is None:
+                            toErr = " or more"
+                        else:
+                            toErr = f" to {fn['args'][1]}"
                         raise SyntaxError(
-                            f"Invalid function call: {node.func.id} requires {fn['args'][0]} to {fn['args'][1]} arguments")
+                            f"Invalid function call: {node.func.id} requires {fn['args'][0]}{toErr} arguments")
                     args = []
                     for arg in node.args:
                         args.append(eval_expr(arg))

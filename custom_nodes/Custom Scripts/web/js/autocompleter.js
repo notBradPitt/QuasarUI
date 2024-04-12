@@ -1,9 +1,10 @@
 import { app } from "../../../scripts/app.js";
 import { QuasarWidgets } from "../../../scripts/widgets.js";
-import { api } from "../../../../scripts/api.js";
-import { $el, QuasarDialog } from "../../../../scripts/ui.js";
+import { api } from "../../../scripts/api.js";
+import { $el, QuasarDialog } from "../../../scripts/ui.js";
 import { TextAreaAutoComplete } from "./common/autocomplete.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
+import { LoraInfoDialog } from "./modelInfo.js";
 
 function parseCSV(csvText) {
 	const rows = [];
@@ -23,6 +24,12 @@ function parseCSV(csvText) {
 	for (let i = 0; i < csvText.length; i++) {
 		const char = csvText[i];
 		const nextChar = csvText[i + 1];
+
+		// Special handling for backslash escaped quotes
+		if (char === "\\" && nextChar === quote) {
+			currentField += quote;
+			i++;
+		}
 
 		if (!inQuotedField) {
 			if (char === quote) {
@@ -44,6 +51,14 @@ function parseCSV(csvText) {
 				i++; // Skip the next quote
 			} else if (char === quote) {
 				inQuotedField = false;
+			} else if (char === "\r" || char === "\n" || i === csvText.length - 1) {
+				// Dont allow new lines in quoted text, assume its wrong
+				const parsed = parseCSV(currentField);
+				rows.pop();
+				rows.push(...parsed);
+				inQuotedField = false;
+				currentField = "";
+				rows.push([]);
 			} else {
 				currentField += char;
 			}
@@ -93,7 +108,7 @@ async function addCustomWords(text) {
 						// Word,[priority|alias]
 						num = +n[1];
 						if (isNaN(num)) {
-							text = n[1];
+							text = n[0] + "🔄️" + n[1];
 							value = n[0];
 						} else {
 							text = n[0];
@@ -104,14 +119,15 @@ async function addCustomWords(text) {
 						// a1111 csv format?
 						value = n[0];
 						priority = +n[2];
-						const aliases = n[3];
-						if (aliases) {
+						const aliases = n[3]?.trim();
+						if (aliases && aliases !== "null") { // Weird null in an example csv, maybe they are JSON.parsing the last column?
 							const split = aliases.split(",");
 							for (const text of split) {
 								p[text] = { text, priority, value };
 							}
 						}
 						text = value;
+						break;
 					default:
 						// Word,alias,priority
 						text = n[1];
@@ -124,6 +140,13 @@ async function addCustomWords(text) {
 			}, {})
 		);
 	}
+}
+
+function toggleLoras() {
+	[TextAreaAutoComplete.globalWords, TextAreaAutoComplete.globalWordsExclLoras] = [
+		TextAreaAutoComplete.globalWordsExclLoras,
+		TextAreaAutoComplete.globalWords,
+	];
 }
 
 class EmbeddingInfoDialog extends ModelInfoDialog {
@@ -252,41 +275,49 @@ const id = "pysssss.AutoCompleter";
 app.registerExtension({
 	name: id,
 	init() {
-		async function addEmbeddings() {
-			const embeddings = await api.getEmbeddings();
-			const words = {};
-			words["embedding:"] = { text: "embedding:" };
-
-			for (const emb of embeddings) {
-				const v = `embedding:${emb}`;
-				words[v] = {
-					text: v,
-					info: () => new EmbeddingInfoDialog(emb).show("embeddings", emb),
-				};
-			}
-
-			TextAreaAutoComplete.updateWords("pysssss.embeddings", words);
-		}
-
-		Promise.all([addEmbeddings(), addCustomWords()]);
-
 		const STRING = QuasarWidgets.STRING;
 		const SKIP_WIDGETS = new Set(["ttN xyPlot.x_values", "ttN xyPlot.y_values"]);
 		QuasarWidgets.STRING = function (node, inputName, inputData) {
 			const r = STRING.apply(this, arguments);
 
-			if (inputData[1]?.multiline && inputData[1]?.["pysssss.autocomplete"] !== false) {
+			if (inputData[1]?.multiline) {
+				// Disabled on this input
+				const config = inputData[1]?.["pysssss.autocomplete"];
+				if (config === false) return r;
+
+				// In list of widgets to skip
 				const id = `${node.quasarClass}.${inputName}`;
-				if (!SKIP_WIDGETS.has(id)) {
-					new TextAreaAutoComplete(r.widget.inputEl);
+				if (SKIP_WIDGETS.has(id)) return r;
+
+				let words;
+				let separator;
+				if (typeof config === "object") {
+					separator = config.separator;
+					words = {};
+					if (config.words) {
+						// Custom wordlist, this will have been registered on setup
+						Object.assign(words, TextAreaAutoComplete.groups[node.quasarClass + "." + inputName] ?? {});
+					}
+
+					for (const item of config.groups ?? []) {
+						if (item === "*") {
+							// This widget wants all global words included
+							Object.assign(words, TextAreaAutoComplete.globalWords);
+						} else {
+							// This widget wants a specific group included
+							Object.assign(words, TextAreaAutoComplete.groups[item] ?? {});
+						}
+					}
 				}
+
+				new TextAreaAutoComplete(r.widget.inputEl, words, separator);
 			}
 
 			return r;
 		};
 
-		TextAreaAutoComplete.separator = localStorage.getItem(id + ".AutoSeparate") ?? ", ";
-		app.ui.settings.addSetting({
+		TextAreaAutoComplete.globalSeparator = localStorage.getItem(id + ".AutoSeparate") ?? ", ";
+		const enabledSetting = app.ui.settings.addSetting({
 			id,
 			name: "🐍 Text Autocomplete",
 			defaultValue: true,
@@ -321,6 +352,28 @@ app.registerExtension({
 							]
 						),
 						$el(
+							"label.quasar-tooltip-indicator",
+							{
+								title: "This requires other QuasarUI nodes/extensions that support using LoRAs in the prompt.",
+								textContent: "Loras enabled ",
+								style: {
+									display: "block",
+								},
+							},
+							[
+								$el("input", {
+									type: "checkbox",
+									checked: !!TextAreaAutoComplete.lorasEnabled,
+									onchange: (event) => {
+										const checked = !!event.target.checked;
+										TextAreaAutoComplete.lorasEnabled = checked;
+										toggleLoras();
+										localStorage.setItem(id + ".ShowLoras", TextAreaAutoComplete.lorasEnabled);
+									},
+								}),
+							]
+						),
+						$el(
 							"label",
 							{
 								textContent: "Auto-insert comma ",
@@ -330,13 +383,108 @@ app.registerExtension({
 							},
 							[
 								$el("input", {
-									id: id.replaceAll(".", "-"),
 									type: "checkbox",
-									checked: !!TextAreaAutoComplete.separator,
+									checked: !!TextAreaAutoComplete.globalSeparator,
 									onchange: (event) => {
 										const checked = !!event.target.checked;
-										TextAreaAutoComplete.separator = checked ? ", " : "";
-										localStorage.setItem(id + ".AutoSeparate", TextAreaAutoComplete.separator);
+										TextAreaAutoComplete.globalSeparator = checked ? ", " : "";
+										localStorage.setItem(id + ".AutoSeparate", TextAreaAutoComplete.globalSeparator);
+									},
+								}),
+							]
+						),
+						$el(
+							"label",
+							{
+								textContent: "Replace _ with space ",
+								style: {
+									display: "block",
+								},
+							},
+							[
+								$el("input", {
+									type: "checkbox",
+									checked: !!TextAreaAutoComplete.replacer,
+									onchange: (event) => {
+										const checked = !!event.target.checked;
+										TextAreaAutoComplete.replacer = checked ? (v) => v.replaceAll("_", " ") : undefined;
+										localStorage.setItem(id + ".ReplaceUnderscore", checked);
+									},
+								}),
+							]
+						),
+						$el(
+							"label",
+							{
+								textContent: "Insert suggestion on: ",
+								style: {
+									display: "block",
+								},
+							},
+							[
+								$el(
+									"label",
+									{
+										textContent: "Tab",
+										style: {
+											display: "block",
+											marginLeft: "20px",
+										},
+									},
+									[
+										$el("input", {
+											type: "checkbox",
+											checked: !!TextAreaAutoComplete.insertOnTab,
+											onchange: (event) => {
+												const checked = !!event.target.checked;
+												TextAreaAutoComplete.insertOnTab = checked;
+												localStorage.setItem(id + ".InsertOnTab", checked);
+											},
+										}),
+									]
+								),
+								$el(
+									"label",
+									{
+										textContent: "Enter",
+										style: {
+											display: "block",
+											marginLeft: "20px",
+										},
+									},
+									[
+										$el("input", {
+											type: "checkbox",
+											checked: !!TextAreaAutoComplete.insertOnEnter,
+											onchange: (event) => {
+												const checked = !!event.target.checked;
+												TextAreaAutoComplete.insertOnEnter = checked;
+												localStorage.setItem(id + ".InsertOnEnter", checked);
+											},
+										}),
+									]
+								),
+							]
+						),
+						$el(
+							"label",
+							{
+								textContent: "Max suggestions: ",
+								style: {
+									display: "block",
+								},
+							},
+							[
+								$el("input", {
+									type: "number",
+									value: +TextAreaAutoComplete.suggestionCount,
+									style: {
+										width: "80px"
+									},
+									onchange: (event) => {
+										const value = +event.target.value;
+										TextAreaAutoComplete.suggestionCount = value;;
+										localStorage.setItem(id + ".SuggestionCount", TextAreaAutoComplete.suggestionCount);
 									},
 								}),
 							]
@@ -357,5 +505,84 @@ app.registerExtension({
 				]);
 			},
 		});
+
+		TextAreaAutoComplete.enabled = enabledSetting.value;
+		TextAreaAutoComplete.replacer = localStorage.getItem(id + ".ReplaceUnderscore") === "true" ? (v) => v.replaceAll("_", " ") : undefined;
+		TextAreaAutoComplete.insertOnTab = localStorage.getItem(id + ".InsertOnTab") !== "false";
+		TextAreaAutoComplete.insertOnEnter = localStorage.getItem(id + ".InsertOnEnter") !== "false";
+		TextAreaAutoComplete.lorasEnabled = localStorage.getItem(id + ".ShowLoras") === "true";
+		TextAreaAutoComplete.suggestionCount = +localStorage.getItem(id + ".SuggestionCount") || 20;
+	},
+	setup() {
+		async function addEmbeddings() {
+			const embeddings = await api.getEmbeddings();
+			const words = {};
+			words["embedding:"] = { text: "embedding:" };
+
+			for (const emb of embeddings) {
+				const v = `embedding:${emb}`;
+				words[v] = {
+					text: v,
+					info: () => new EmbeddingInfoDialog(emb).show("embeddings", emb),
+					use_replacer: false,
+				};
+			}
+
+			TextAreaAutoComplete.updateWords("pysssss.embeddings", words);
+		}
+
+		async function addLoras() {
+			let loras;
+			try {
+				loras = LiteGraph.registered_node_types["LoraLoader"]?.nodeData.input.required.lora_name[0];
+			} catch (error) {}
+
+			if (!loras?.length) {
+				loras = await api.fetchApi("/pysssss/loras", { cache: "no-store" }).then((res) => res.json());
+			}
+
+			const words = {};
+			words["lora:"] = { text: "lora:" };
+
+			for (const lora of loras) {
+				const v = `<lora:${lora}:1.0>`;
+				words[v] = {
+					text: v,
+					info: () => new LoraInfoDialog(lora).show("loras", lora),
+					use_replacer: false,
+				};
+			}
+
+			TextAreaAutoComplete.updateWords("pysssss.loras", words);
+		}
+
+		// store global words with/without loras
+		Promise.all([addEmbeddings(), addCustomWords()])
+			.then(() => {
+				TextAreaAutoComplete.globalWordsExclLoras = Object.assign({}, TextAreaAutoComplete.globalWords);
+			})
+			.then(addLoras)
+			.then(() => {
+				if (!TextAreaAutoComplete.lorasEnabled) {
+					toggleLoras(); // off by default
+				}
+			});
+	},
+	beforeRegisterNodeDef(_, def) {
+		// Process each input to see if there is a custom word list for
+		// { input: { required: { something: ["STRING", { "pysssss.autocomplete": ["groupid", ["custom", "words"] ] }] } } }
+		const inputs = { ...def.input?.required, ...def.input?.optional };
+		for (const input in inputs) {
+			const config = inputs[input][1]?.["pysssss.autocomplete"];
+			if (!config) continue;
+			if (typeof config === "object" && config.words) {
+				const words = {};
+				for (const text of config.words || []) {
+					const obj = typeof text === "string" ? { text } : text;
+					words[obj.text] = obj;
+				}
+				TextAreaAutoComplete.updateWords(def.name + "." + input, words, false);
+			}
+		}
 	},
 });

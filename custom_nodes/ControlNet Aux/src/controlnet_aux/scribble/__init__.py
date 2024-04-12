@@ -2,11 +2,11 @@ import warnings
 import cv2
 import numpy as np
 from PIL import Image
-from ..util import HWC3, resize_image_with_pad, common_input_validate, HWC3
+from controlnet_aux.util import HWC3, resize_image_with_pad, common_input_validate, HWC3
 
 #Not to be confused with "scribble" from HED. That is "fake scribble" which is more accurate and less picky than this.
 class ScribbleDetector:
-    def __call__(self, input_image=None, detect_resolution=512, image_resolution=512, output_type=None, upscale_method="INTER_AREA", **kwargs):
+    def __call__(self, input_image=None, detect_resolution=512, output_type=None, upscale_method="INTER_AREA", **kwargs):
         input_image, output_type = common_input_validate(input_image, output_type, **kwargs)
         input_image, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
 
@@ -22,7 +22,7 @@ class ScribbleDetector:
         return detected_map
 
 class ScribbleXDog_Detector:
-    def __call__(self, input_image=None, detect_resolution=512, image_resolution=512, thr_a=32, output_type=None, upscale_method="INTER_CUBIC", **kwargs):
+    def __call__(self, input_image=None, detect_resolution=512, thr_a=32, output_type=None, upscale_method="INTER_CUBIC", **kwargs):
         input_image, output_type = common_input_validate(input_image, output_type, **kwargs)
         input_image, remove_pad = resize_image_with_pad(input_image, detect_resolution, upscale_method)
 

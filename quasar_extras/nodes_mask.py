@@ -6,6 +6,7 @@ import quasar.utils
 from nodes import MAX_RESOLUTION
 
 def composite(destination, source, x, y, mask = None, multiplier = 8, resize_source = False):
+    source = source.to(destination.device)
     if resize_source:
         source = torch.nn.functional.interpolate(source, size=(destination.shape[2], destination.shape[3]), mode="bilinear")
 
@@ -20,7 +21,7 @@ def composite(destination, source, x, y, mask = None, multiplier = 8, resize_sou
     if mask is None:
         mask = torch.ones_like(source)
     else:
-        mask = mask.clone()
+        mask = mask.to(destination.device, copy=True)
         mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(source.shape[2], source.shape[3]), mode="bilinear")
         mask = quasar.utils.repeat_to_batch_size(mask, source.shape[0])
 
@@ -114,7 +115,7 @@ class ImageToMask:
         return {
                 "required": {
                     "image": ("IMAGE",),
-                    "channel": (["red", "green", "blue"],),
+                    "channel": (["red", "green", "blue", "alpha"],),
                 }
         }
 
@@ -124,7 +125,7 @@ class ImageToMask:
     FUNCTION = "image_to_mask"
 
     def image_to_mask(self, image, channel):
-        channels = ["red", "green", "blue"]
+        channels = ["red", "green", "blue", "alpha"]
         mask = image[:, :, :, channels.index(channel)]
         return (mask,)
 
@@ -240,8 +241,8 @@ class MaskComposite:
         right, bottom = (min(left + source.shape[-1], destination.shape[-1]), min(top + source.shape[-2], destination.shape[-2]))
         visible_width, visible_height = (right - left, bottom - top,)
 
-        source_portion = source[:visible_height, :visible_width]
-        destination_portion = destination[top:bottom, left:right]
+        source_portion = source[:, :visible_height, :visible_width]
+        destination_portion = destination[:, top:bottom, left:right]
 
         if operation == "multiply":
             output[:, top:bottom, left:right] = destination_portion * source_portion
@@ -282,10 +283,10 @@ class FeatherMask:
     def feather(self, mask, left, top, right, bottom):
         output = mask.reshape((-1, mask.shape[-2], mask.shape[-1])).clone()
 
-        left = min(left, output.shape[1])
-        right = min(right, output.shape[1])
-        top = min(top, output.shape[0])
-        bottom = min(bottom, output.shape[0])
+        left = min(left, output.shape[-1])
+        right = min(right, output.shape[-1])
+        top = min(top, output.shape[-2])
+        bottom = min(bottom, output.shape[-2])
 
         for x in range(left):
             feather_rate = (x + 1.0) / left
@@ -340,6 +341,24 @@ class GrowMask:
             out.append(output)
         return (torch.stack(out, dim=0),)
 
+class ThresholdMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+                "required": {
+                    "mask": ("MASK",),
+                    "value": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                }
+        }
+
+    CATEGORY = "mask"
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "image_to_mask"
+
+    def image_to_mask(self, mask, value):
+        mask = (mask > value).float()
+        return (mask,)
 
 
 NODE_CLASS_MAPPINGS = {
@@ -354,6 +373,7 @@ NODE_CLASS_MAPPINGS = {
     "MaskComposite": MaskComposite,
     "FeatherMask": FeatherMask,
     "GrowMask": GrowMask,
+    "ThresholdMask": ThresholdMask,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
