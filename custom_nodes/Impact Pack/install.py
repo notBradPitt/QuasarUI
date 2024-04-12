@@ -15,7 +15,7 @@ if sys.argv[0] == 'install.py':
 impact_path = os.path.join(os.path.dirname(__file__), "modules")
 old_subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
 subpack_path = os.path.join(os.path.dirname(__file__), "impact_subpack")
-subpack_repo = "https://github.com/ltdrdata/QuasarUI-Impact-Subpack"
+subpack_repo = "https://github.com/notBradPitt/QuasarUI-Impact-Subpack"
 quasar_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
