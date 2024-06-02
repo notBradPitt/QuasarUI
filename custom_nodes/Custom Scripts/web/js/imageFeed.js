@@ -545,5 +545,6 @@ Recommended: "enabled (max performance)" uness images are erroneously deduplicat
 				}
 			}
 		});
+		hideButton.onclick();
 	},
 });
