@@ -72,3 +72,7 @@ opencv-python-headless[ffmpeg]<=4.7.0.72
 pilgram
 git+https://github.com/WASasquatch/ffmpy.git
 timm>=0.4.12
+
+deepdiff
+pynvml
+py-cpuinfo

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+cd ../quasarUI/QuasarUI
+rm ./custom_nodes/QuasarUI-Crystools/web/*.js -f
+
+LOCAL_COMMAND="npm --prefix ./custom_nodes/QuasarUI-Crystools run validate"
+OUTPUT=$($LOCAL_COMMAND 2>&1)
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
+    echo "Validate ok"
+    cd ../../QuasarUI-Crystools
+else
+    echo "Validate KO!"
+    echo $OUTPUT
+    exit 1
+fi
+
+LOCAL_COMMAND="python .others/version.py"
+
+OUTPUT=$($LOCAL_COMMAND 2>&1)
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
+    echo "Version changed"
+else
+    echo "Can't change the version! check the .other/version.py"
+    echo $OUTPUT
+    exit 1
+fi
+
+git add __init__.py core/version.py  web/*.js
