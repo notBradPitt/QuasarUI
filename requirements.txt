@@ -76,3 +76,8 @@ timm>=0.4.12
 deepdiff
 pynvml
 py-cpuinfo
+
+opencv-contrib-python>=4.7.0.72
+opencv-contrib-python-headless>=4.7.0.72
+pymatting
+pymatting
