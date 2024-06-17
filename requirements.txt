@@ -91,8 +91,3 @@ decord
 eva-decord
 diffusers
 open-clip-torch==2.20.0
-xformers
-
-mmcv
-mmdet
-mmpose
