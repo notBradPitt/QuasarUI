@@ -86,7 +86,7 @@ urllib3
 torchdiffeq
 torchmetrics
 av
-clip @ https://github.com/openai/CLIP.git
+git+https://github.com/openai/CLIP.git
 decord
 eva-decord
 diffusers
