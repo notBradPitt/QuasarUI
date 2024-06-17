@@ -80,4 +80,19 @@ py-cpuinfo
 opencv-contrib-python>=4.7.0.72
 opencv-contrib-python-headless>=4.7.0.72
 pymatting
-pymatting
+
+moviepy
+urllib3
+torchdiffeq
+torchmetrics
+av
+clip @ https://github.com/openai/CLIP/archive/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1.zip#sha256=b5842c25da441d6c581b53a5c60e0c2127ebafe0f746f8e15561a006c6c3be6a
+decord
+eva-decord
+diffusers
+open-clip-torch==2.20.0
+xformers
+
+mmcv
+mmdet
+mmpose
