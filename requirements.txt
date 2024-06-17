@@ -88,5 +88,5 @@ torchmetrics
 av
 decord
 eva-decord
-diffusers==0.24.0
+diffusers==0.27.2
 open-clip-torch==2.20.0
