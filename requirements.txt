@@ -23,7 +23,7 @@ scikit-image
 piexif
 importlib_metadata
 huggingface_hub
-opencv-python==4.8.0
+opencv-python>=4.8.0
 filelock
 numpy
 timm
@@ -51,7 +51,6 @@ scikit-learn
 
 qrcode[pil]
 pytorch_lightning
-kornia
 pydantic
 
 GitPython
@@ -91,21 +90,3 @@ decord
 eva-decord
 diffusers==0.27.2
 open-clip-torch==2.20.0
-
-torchsde
-spandrel
-kornia
-rembg
-wget
-deepdiff
-pymatting
-insightface
-av
-pynvml
-mediapipe
-diffusers
-segment_anything
-piexif
-timm
-omegaconf
-diffusers
