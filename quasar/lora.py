@@ -1,3 +1,21 @@
+"""
+    This file is part of QuasarUI.
+    Copyright (C) 2024 Quasar
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
 import quasar.utils
 import logging
 
@@ -29,6 +47,8 @@ def load_lora(lora, to_load):
 
         regular_lora = "{}.lora_up.weight".format(x)
         diffusers_lora = "{}_lora.up.weight".format(x)
+        diffusers2_lora = "{}.lora_B.weight".format(x)
+        diffusers3_lora = "{}.lora.up.weight".format(x)
         transformers_lora = "{}.lora_linear_layer.up.weight".format(x)
         A_name = None
 
@@ -39,6 +59,14 @@ def load_lora(lora, to_load):
         elif diffusers_lora in lora.keys():
             A_name = diffusers_lora
             B_name = "{}_lora.down.weight".format(x)
+            mid_name = None
+        elif diffusers2_lora in lora.keys():
+            A_name = diffusers2_lora
+            B_name = "{}.lora_A.weight".format(x)
+            mid_name = None
+        elif diffusers3_lora in lora.keys():
+            A_name = diffusers3_lora
+            B_name = "{}.lora.down.weight".format(x)
             mid_name = None
         elif transformers_lora in lora.keys():
             A_name = transformers_lora
@@ -164,6 +192,7 @@ def load_lora(lora, to_load):
     for x in lora.keys():
         if x not in loaded_keys:
             logging.warning("lora key not loaded: {}".format(x))
+
     return patch_dict
 
 def model_lora_keys_clip(model, key_map={}):
@@ -207,23 +236,40 @@ def model_lora_keys_clip(model, key_map={}):
                     lora_key = "lora_prior_te_text_model_encoder_layers_{}_{}".format(b, LORA_CLIP_MAP[c]) #cascade lora: TODO put lora key prefix in the model config
                     key_map[lora_key] = k
 
+    for k in sdk:
+        if k.endswith(".weight"):
+            if k.startswith("t5xxl.transformer."):#OneTrainer SD3 lora
+                l_key = k[len("t5xxl.transformer."):-len(".weight")]
+                lora_key = "lora_te3_{}".format(l_key.replace(".", "_"))
+                key_map[lora_key] = k
+            elif k.startswith("hydit_clip.transformer.bert."): #HunyuanDiT Lora
+                l_key = k[len("hydit_clip.transformer.bert."):-len(".weight")]
+                lora_key = "lora_te1_{}".format(l_key.replace(".", "_"))
+                key_map[lora_key] = k
+
 
     k = "clip_g.transformer.text_projection.weight"
     if k in sdk:
         key_map["lora_prior_te_text_projection"] = k #cascade lora?
         # key_map["text_encoder.text_projection"] = k #TODO: check if other lora have the text_projection too
-        # key_map["lora_te_text_projection"] = k
+        key_map["lora_te2_text_projection"] = k #OneTrainer SD3 lora
+
+    k = "clip_l.transformer.text_projection.weight"
+    if k in sdk:
+        key_map["lora_te1_text_projection"] = k #OneTrainer SD3 lora, not necessary but omits warning
 
     return key_map
 
 def model_lora_keys_unet(model, key_map={}):
-    sdk = model.state_dict().keys()
+    sd = model.state_dict()
+    sdk = sd.keys()
 
     for k in sdk:
         if k.startswith("diffusion_model.") and k.endswith(".weight"):
             key_lora = k[len("diffusion_model."):-len(".weight")].replace(".", "_")
             key_map["lora_unet_{}".format(key_lora)] = k
             key_map["lora_prior_unet_{}".format(key_lora)] = k #cascade lora: TODO put lora key prefix in the model config
+            key_map["{}".format(k[:-len(".weight")])] = k #generic lora format without any weird key names
 
     diffusers_keys = quasar.utils.unet_to_diffusers(model.model_config.unet_config)
     for k in diffusers_keys:
@@ -238,4 +284,41 @@ def model_lora_keys_unet(model, key_map={}):
                 if diffusers_lora_key.endswith(".to_out.0"):
                     diffusers_lora_key = diffusers_lora_key[:-2]
                 key_map[diffusers_lora_key] = unet_key
+
+    if isinstance(model, quasar.model_base.SD3): #Diffusers lora SD3
+        diffusers_keys = quasar.utils.mmdit_to_diffusers(model.model_config.unet_config, output_prefix="diffusion_model.")
+        for k in diffusers_keys:
+            if k.endswith(".weight"):
+                to = diffusers_keys[k]
+                key_lora = "transformer.{}".format(k[:-len(".weight")]) #regular diffusers sd3 lora format
+                key_map[key_lora] = to
+
+                key_lora = "base_model.model.{}".format(k[:-len(".weight")]) #format for flash-sd3 lora and others?
+                key_map[key_lora] = to
+
+                key_lora = "lora_transformer_{}".format(k[:-len(".weight")].replace(".", "_")) #OneTrainer lora
+                key_map[key_lora] = to
+
+    if isinstance(model, quasar.model_base.AuraFlow): #Diffusers lora AuraFlow
+        diffusers_keys = quasar.utils.auraflow_to_diffusers(model.model_config.unet_config, output_prefix="diffusion_model.")
+        for k in diffusers_keys:
+            if k.endswith(".weight"):
+                to = diffusers_keys[k]
+                key_lora = "transformer.{}".format(k[:-len(".weight")]) #simpletrainer and probably regular diffusers lora format
+                key_map[key_lora] = to
+
+    if isinstance(model, quasar.model_base.HunyuanDiT):
+        for k in sdk:
+            if k.startswith("diffusion_model.") and k.endswith(".weight"):
+                key_lora = k[len("diffusion_model."):-len(".weight")]
+                key_map["base_model.model.{}".format(key_lora)] = k #official hunyuan lora format
+
+    if isinstance(model, quasar.model_base.Flux): #Diffusers lora Flux
+        diffusers_keys = quasar.utils.flux_to_diffusers(model.model_config.unet_config, output_prefix="diffusion_model.")
+        for k in diffusers_keys:
+            if k.endswith(".weight"):
+                to = diffusers_keys[k]
+                key_lora = "transformer.{}".format(k[:-len(".weight")]) #simpletrainer and probably regular diffusers flux lora format
+                key_map[key_lora] = to
+
     return key_map

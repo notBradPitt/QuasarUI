@@ -1,28 +1,112 @@
+"""
+    This file is part of QuasarUI.
+    Copyright (C) 2024 Quasar
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
 import torch
 import copy
 import inspect
 import logging
 import uuid
+import collections
 
 import quasar.utils
 import quasar.model_management
+from quasar.types import UnetWrapperFunction
 
-def apply_weight_decompose(dora_scale, weight):
+
+def weight_decompose(dora_scale, weight, lora_diff, alpha, strength):
+    dora_scale = quasar.model_management.cast_to_device(dora_scale, weight.device, torch.float32)
+    lora_diff *= alpha
+    weight_calc = weight + lora_diff.type(weight.dtype)
     weight_norm = (
-        weight.transpose(0, 1)
-        .reshape(weight.shape[1], -1)
+        weight_calc.transpose(0, 1)
+        .reshape(weight_calc.shape[1], -1)
         .norm(dim=1, keepdim=True)
-        .reshape(weight.shape[1], *[1] * (weight.dim() - 1))
+        .reshape(weight_calc.shape[1], *[1] * (weight_calc.dim() - 1))
         .transpose(0, 1)
     )
 
-    return weight * (dora_scale / weight_norm)
+    weight_calc *= (dora_scale / weight_norm).type(weight.dtype)
+    if strength != 1.0:
+        weight_calc -= weight
+        weight += strength * (weight_calc)
+    else:
+        weight[:] = weight_calc
+    return weight
+
+
+def set_model_options_patch_replace(model_options, patch, name, block_name, number, transformer_index=None):
+    to = model_options["transformer_options"].copy()
+
+    if "patches_replace" not in to:
+        to["patches_replace"] = {}
+    else:
+        to["patches_replace"] = to["patches_replace"].copy()
+
+    if name not in to["patches_replace"]:
+        to["patches_replace"][name] = {}
+    else:
+        to["patches_replace"][name] = to["patches_replace"][name].copy()
+
+    if transformer_index is not None:
+        block = (block_name, number, transformer_index)
+    else:
+        block = (block_name, number)
+    to["patches_replace"][name][block] = patch
+    model_options["transformer_options"] = to
+    return model_options
+
+def set_model_options_post_cfg_function(model_options, post_cfg_function, disable_cfg1_optimization=False):
+    model_options["sampler_post_cfg_function"] = model_options.get("sampler_post_cfg_function", []) + [post_cfg_function]
+    if disable_cfg1_optimization:
+        model_options["disable_cfg1_optimization"] = True
+    return model_options
+
+def set_model_options_pre_cfg_function(model_options, pre_cfg_function, disable_cfg1_optimization=False):
+    model_options["sampler_pre_cfg_function"] = model_options.get("sampler_pre_cfg_function", []) + [pre_cfg_function]
+    if disable_cfg1_optimization:
+        model_options["disable_cfg1_optimization"] = True
+    return model_options
+
+def wipe_lowvram_weight(m):
+    if hasattr(m, "prev_quasar_cast_weights"):
+        m.quasar_cast_weights = m.prev_quasar_cast_weights
+        del m.prev_quasar_cast_weights
+    m.weight_function = None
+    m.bias_function = None
+
+class LowVramPatch:
+    def __init__(self, key, model_patcher):
+        self.key = key
+        self.model_patcher = model_patcher
+    def __call__(self, weight):
+        return self.model_patcher.calculate_weight(self.model_patcher.patches[self.key], weight, self.key)
 
 
 class ModelPatcher:
-    def __init__(self, model, load_device, offload_device, size=0, current_device=None, weight_inplace_update=False):
+    def __init__(self, model, load_device, offload_device, size=0, weight_inplace_update=False):
         self.size = size
         self.model = model
+        if not hasattr(self.model, 'device'):
+            logging.debug("Model doesn't have a device attribute.")
+            self.model.device = offload_device
+        elif self.model.device is None:
+            self.model.device = offload_device
+
         self.patches = {}
         self.backup = {}
         self.object_patches = {}
@@ -31,25 +115,32 @@ class ModelPatcher:
         self.model_size()
         self.load_device = load_device
         self.offload_device = offload_device
-        if current_device is None:
-            self.current_device = self.offload_device
-        else:
-            self.current_device = current_device
-
         self.weight_inplace_update = weight_inplace_update
-        self.model_lowvram = False
         self.patches_uuid = uuid.uuid4()
+
+        if not hasattr(self.model, 'model_loaded_weight_memory'):
+            self.model.model_loaded_weight_memory = 0
+
+        if not hasattr(self.model, 'lowvram_patch_counter'):
+            self.model.lowvram_patch_counter = 0
+
+        if not hasattr(self.model, 'model_lowvram'):
+            self.model.model_lowvram = False
 
     def model_size(self):
         if self.size > 0:
             return self.size
-        model_sd = self.model.state_dict()
         self.size = quasar.model_management.module_size(self.model)
-        self.model_keys = set(model_sd.keys())
         return self.size
 
+    def loaded_size(self):
+        return self.model.model_loaded_weight_memory
+
+    def lowvram_patch_counter(self):
+        return self.model.lowvram_patch_counter
+
     def clone(self):
-        n = ModelPatcher(self.model, self.load_device, self.offload_device, self.size, self.current_device, weight_inplace_update=self.weight_inplace_update)
+        n = ModelPatcher(self.model, self.load_device, self.offload_device, self.size, weight_inplace_update=self.weight_inplace_update)
         n.patches = {}
         for k in self.patches:
             n.patches[k] = self.patches[k][:]
@@ -57,7 +148,6 @@ class ModelPatcher:
 
         n.object_patches = self.object_patches.copy()
         n.model_options = copy.deepcopy(self.model_options)
-        n.model_keys = self.model_keys
         n.backup = self.backup
         n.object_patches_backup = self.object_patches_backup
         return n
@@ -92,11 +182,12 @@ class ModelPatcher:
             self.model_options["disable_cfg1_optimization"] = True
 
     def set_model_sampler_post_cfg_function(self, post_cfg_function, disable_cfg1_optimization=False):
-        self.model_options["sampler_post_cfg_function"] = self.model_options.get("sampler_post_cfg_function", []) + [post_cfg_function]
-        if disable_cfg1_optimization:
-            self.model_options["disable_cfg1_optimization"] = True
+        self.model_options = set_model_options_post_cfg_function(self.model_options, post_cfg_function, disable_cfg1_optimization)
 
-    def set_model_unet_function_wrapper(self, unet_wrapper_function):
+    def set_model_sampler_pre_cfg_function(self, pre_cfg_function, disable_cfg1_optimization=False):
+        self.model_options = set_model_options_pre_cfg_function(self.model_options, pre_cfg_function, disable_cfg1_optimization)
+
+    def set_model_unet_function_wrapper(self, unet_wrapper_function: UnetWrapperFunction):
         self.model_options["model_function_wrapper"] = unet_wrapper_function
 
     def set_model_denoise_mask_function(self, denoise_mask_function):
@@ -109,16 +200,7 @@ class ModelPatcher:
         to["patches"][name] = to["patches"].get(name, []) + [patch]
 
     def set_model_patch_replace(self, patch, name, block_name, number, transformer_index=None):
-        to = self.model_options["transformer_options"]
-        if "patches_replace" not in to:
-            to["patches_replace"] = {}
-        if name not in to["patches_replace"]:
-            to["patches_replace"][name] = {}
-        if transformer_index is not None:
-            block = (block_name, number, transformer_index)
-        else:
-            block = (block_name, number)
-        to["patches_replace"][name][block] = patch
+        self.model_options = set_model_options_patch_replace(self.model_options, patch, name, block_name, number, transformer_index=transformer_index)
 
     def set_model_attn1_patch(self, patch):
         self.set_model_patch(patch, "attn1_patch")
@@ -186,12 +268,23 @@ class ModelPatcher:
 
     def add_patches(self, patches, strength_patch=1.0, strength_model=1.0):
         p = set()
+        model_sd = self.model.state_dict()
         for k in patches:
-            if k in self.model_keys:
+            offset = None
+            function = None
+            if isinstance(k, str):
+                key = k
+            else:
+                offset = k[1]
+                key = k[0]
+                if len(k) > 2:
+                    function = k[2]
+
+            if key in model_sd:
                 p.add(k)
-                current_patches = self.patches.get(k, [])
-                current_patches.append((strength_patch, patches[k], strength_model))
-                self.patches[k] = current_patches
+                current_patches = self.patches.get(key, [])
+                current_patches.append((strength_patch, patches[k], strength_model, offset, function))
+                self.patches[key] = current_patches
 
         self.patches_uuid = uuid.uuid4()
         return list(p)
@@ -219,16 +312,16 @@ class ModelPatcher:
                     sd.pop(k)
         return sd
 
-    def patch_weight_to_device(self, key, device_to=None):
+    def patch_weight_to_device(self, key, device_to=None, inplace_update=False):
         if key not in self.patches:
             return
 
         weight = quasar.utils.get_attr(self.model, key)
 
-        inplace_update = self.weight_inplace_update
+        inplace_update = self.weight_inplace_update or inplace_update
 
         if key not in self.backup:
-            self.backup[key] = weight.to(device=self.offload_device, copy=inplace_update)
+            self.backup[key] = collections.namedtuple('Dimension', ['weight', 'inplace_update'])(weight.to(device=self.offload_device, copy=inplace_update), inplace_update)
 
         if device_to is not None:
             temp_weight = quasar.model_management.cast_to_device(weight, device_to, torch.float32, copy=True)
@@ -257,56 +350,96 @@ class ModelPatcher:
 
             if device_to is not None:
                 self.model.to(device_to)
-                self.current_device = device_to
+                self.model.device = device_to
+                self.model.model_loaded_weight_memory = self.model_size()
 
         return self.model
 
-    def patch_model_lowvram(self, device_to=None, lowvram_model_memory=0):
-        self.patch_model(device_to, patch_weights=False)
-
-        logging.info("loading in lowvram mode {}".format(lowvram_model_memory/(1024 * 1024)))
-        class LowVramPatch:
-            def __init__(self, key, model_patcher):
-                self.key = key
-                self.model_patcher = model_patcher
-            def __call__(self, weight):
-                return self.model_patcher.calculate_weight(self.model_patcher.patches[self.key], weight, self.key)
-
+    def lowvram_load(self, device_to=None, lowvram_model_memory=0, force_patch_weights=False, full_load=False):
         mem_counter = 0
+        patch_counter = 0
+        lowvram_counter = 0
         for n, m in self.model.named_modules():
             lowvram_weight = False
-            if hasattr(m, "quasar_cast_weights"):
+
+            if not full_load and hasattr(m, "quasar_cast_weights"):
                 module_mem = quasar.model_management.module_size(m)
                 if mem_counter + module_mem >= lowvram_model_memory:
                     lowvram_weight = True
+                    lowvram_counter += 1
+                    if m.quasar_cast_weights:
+                        continue
 
             weight_key = "{}.weight".format(n)
             bias_key = "{}.bias".format(n)
 
             if lowvram_weight:
                 if weight_key in self.patches:
-                    m.weight_function = LowVramPatch(weight_key, self)
+                    if force_patch_weights:
+                        self.patch_weight_to_device(weight_key)
+                    else:
+                        m.weight_function = LowVramPatch(weight_key, self)
+                        patch_counter += 1
                 if bias_key in self.patches:
-                    m.bias_function = LowVramPatch(bias_key, self)
+                    if force_patch_weights:
+                        self.patch_weight_to_device(bias_key)
+                    else:
+                        m.bias_function = LowVramPatch(bias_key, self)
+                        patch_counter += 1
 
                 m.prev_quasar_cast_weights = m.quasar_cast_weights
                 m.quasar_cast_weights = True
             else:
-                if hasattr(m, "weight"):
-                    self.patch_weight_to_device(weight_key, device_to)
-                    self.patch_weight_to_device(bias_key, device_to)
-                    m.to(device_to)
-                    mem_counter += quasar.model_management.module_size(m)
-                    logging.debug("lowvram: loaded module regularly {}".format(m))
+                if hasattr(m, "quasar_cast_weights"):
+                    if m.quasar_cast_weights:
+                        wipe_lowvram_weight(m)
 
-        self.model_lowvram = True
+                if hasattr(m, "weight"):
+                    mem_counter += quasar.model_management.module_size(m)
+                    param = list(m.parameters())
+                    if len(param) > 0:
+                        weight = param[0]
+                        if weight.device == device_to:
+                            continue
+
+                    weight_to = None
+                    if full_load:#TODO
+                        weight_to = device_to
+                    self.patch_weight_to_device(weight_key, device_to=weight_to) #TODO: speed this up without OOM
+                    self.patch_weight_to_device(bias_key, device_to=weight_to)
+                    m.to(device_to)
+                    logging.debug("lowvram: loaded module regularly {} {}".format(n, m))
+
+        if lowvram_counter > 0:
+            logging.info("loaded partially {} {} {}".format(lowvram_model_memory / (1024 * 1024), mem_counter / (1024 * 1024), patch_counter))
+            self.model.model_lowvram = True
+        else:
+            logging.info("loaded completely {} {}".format(lowvram_model_memory / (1024 * 1024), mem_counter / (1024 * 1024)))
+            self.model.model_lowvram = False
+        self.model.lowvram_patch_counter += patch_counter
+        self.model.device = device_to
+        self.model.model_loaded_weight_memory = mem_counter
+
+
+    def patch_model_lowvram(self, device_to=None, lowvram_model_memory=0, force_patch_weights=False):
+        self.patch_model(device_to, patch_weights=False)
+        self.lowvram_load(device_to, lowvram_model_memory=lowvram_model_memory, force_patch_weights=force_patch_weights)
         return self.model
 
     def calculate_weight(self, patches, weight, key):
         for p in patches:
-            alpha = p[0]
+            strength = p[0]
             v = p[1]
             strength_model = p[2]
+            offset = p[3]
+            function = p[4]
+            if function is None:
+                function = lambda a: a
+
+            old_weight = None
+            if offset is not None:
+                old_weight = weight
+                weight = weight.narrow(offset[0], offset[1], offset[2])
 
             if strength_model != 1.0:
                 weight *= strength_model
@@ -322,26 +455,31 @@ class ModelPatcher:
 
             if patch_type == "diff":
                 w1 = v[0]
-                if alpha != 0.0:
+                if strength != 0.0:
                     if w1.shape != weight.shape:
                         logging.warning("WARNING SHAPE MISMATCH {} WEIGHT NOT MERGED {} != {}".format(key, w1.shape, weight.shape))
                     else:
-                        weight += alpha * quasar.model_management.cast_to_device(w1, weight.device, weight.dtype)
+                        weight += function(strength * quasar.model_management.cast_to_device(w1, weight.device, weight.dtype))
             elif patch_type == "lora": #lora/locon
                 mat1 = quasar.model_management.cast_to_device(v[0], weight.device, torch.float32)
                 mat2 = quasar.model_management.cast_to_device(v[1], weight.device, torch.float32)
                 dora_scale = v[4]
                 if v[2] is not None:
-                    alpha *= v[2] / mat2.shape[0]
+                    alpha = v[2] / mat2.shape[0]
+                else:
+                    alpha = 1.0
+
                 if v[3] is not None:
                     #locon mid weights, hopefully the math is fine because I didn't properly test it
                     mat3 = quasar.model_management.cast_to_device(v[3], weight.device, torch.float32)
                     final_shape = [mat2.shape[1], mat2.shape[0], mat3.shape[2], mat3.shape[3]]
                     mat2 = torch.mm(mat2.transpose(0, 1).flatten(start_dim=1), mat3.transpose(0, 1).flatten(start_dim=1)).reshape(final_shape).transpose(0, 1)
                 try:
-                    weight += (alpha * torch.mm(mat1.flatten(start_dim=1), mat2.flatten(start_dim=1))).reshape(weight.shape).type(weight.dtype)
+                    lora_diff = torch.mm(mat1.flatten(start_dim=1), mat2.flatten(start_dim=1)).reshape(weight.shape)
                     if dora_scale is not None:
-                        weight = apply_weight_decompose(quasar.model_management.cast_to_device(dora_scale, weight.device, torch.float32), weight)
+                        weight = function(weight_decompose(dora_scale, weight, lora_diff, alpha, strength))
+                    else:
+                        weight += function(((strength * alpha) * lora_diff).type(weight.dtype))
                 except Exception as e:
                     logging.error("ERROR {} {} {}".format(patch_type, key, e))
             elif patch_type == "lokr":
@@ -378,19 +516,26 @@ class ModelPatcher:
                 if len(w2.shape) == 4:
                     w1 = w1.unsqueeze(2).unsqueeze(2)
                 if v[2] is not None and dim is not None:
-                    alpha *= v[2] / dim
+                    alpha = v[2] / dim
+                else:
+                    alpha = 1.0
 
                 try:
-                    weight += alpha * torch.kron(w1, w2).reshape(weight.shape).type(weight.dtype)
+                    lora_diff = torch.kron(w1, w2).reshape(weight.shape)
                     if dora_scale is not None:
-                        weight = apply_weight_decompose(quasar.model_management.cast_to_device(dora_scale, weight.device, torch.float32), weight)
+                        weight = function(weight_decompose(dora_scale, weight, lora_diff, alpha, strength))
+                    else:
+                        weight += function(((strength * alpha) * lora_diff).type(weight.dtype))
                 except Exception as e:
                     logging.error("ERROR {} {} {}".format(patch_type, key, e))
             elif patch_type == "loha":
                 w1a = v[0]
                 w1b = v[1]
                 if v[2] is not None:
-                    alpha *= v[2] / w1b.shape[0]
+                    alpha = v[2] / w1b.shape[0]
+                else:
+                    alpha = 1.0
+
                 w2a = v[3]
                 w2b = v[4]
                 dora_scale = v[7]
@@ -413,14 +558,18 @@ class ModelPatcher:
                                   quasar.model_management.cast_to_device(w2b, weight.device, torch.float32))
 
                 try:
-                    weight += (alpha * m1 * m2).reshape(weight.shape).type(weight.dtype)
+                    lora_diff = (m1 * m2).reshape(weight.shape)
                     if dora_scale is not None:
-                        weight = apply_weight_decompose(quasar.model_management.cast_to_device(dora_scale, weight.device, torch.float32), weight)
+                        weight = function(weight_decompose(dora_scale, weight, lora_diff, alpha, strength))
+                    else:
+                        weight += function(((strength * alpha) * lora_diff).type(weight.dtype))
                 except Exception as e:
                     logging.error("ERROR {} {} {}".format(patch_type, key, e))
             elif patch_type == "glora":
                 if v[4] is not None:
-                    alpha *= v[4] / v[0].shape[0]
+                    alpha = v[4] / v[0].shape[0]
+                else:
+                    alpha = 1.0
 
                 dora_scale = v[5]
 
@@ -430,45 +579,106 @@ class ModelPatcher:
                 b2 = quasar.model_management.cast_to_device(v[3].flatten(start_dim=1), weight.device, torch.float32)
 
                 try:
-                    weight += ((torch.mm(b2, b1) + torch.mm(torch.mm(weight.flatten(start_dim=1), a2), a1)) * alpha).reshape(weight.shape).type(weight.dtype)
+                    lora_diff = (torch.mm(b2, b1) + torch.mm(torch.mm(weight.flatten(start_dim=1), a2), a1)).reshape(weight.shape)
                     if dora_scale is not None:
-                        weight = apply_weight_decompose(quasar.model_management.cast_to_device(dora_scale, weight.device, torch.float32), weight)
+                        weight = function(weight_decompose(dora_scale, weight, lora_diff, alpha, strength))
+                    else:
+                        weight += function(((strength * alpha) * lora_diff).type(weight.dtype))
                 except Exception as e:
                     logging.error("ERROR {} {} {}".format(patch_type, key, e))
             else:
                 logging.warning("patch type not recognized {} {}".format(patch_type, key))
 
+            if old_weight is not None:
+                weight = old_weight
+
         return weight
 
     def unpatch_model(self, device_to=None, unpatch_weights=True):
         if unpatch_weights:
-            if self.model_lowvram:
+            if self.model.model_lowvram:
                 for m in self.model.modules():
-                    if hasattr(m, "prev_quasar_cast_weights"):
-                        m.quasar_cast_weights = m.prev_quasar_cast_weights
-                        del m.prev_quasar_cast_weights
-                    m.weight_function = None
-                    m.bias_function = None
+                    wipe_lowvram_weight(m)
 
-                self.model_lowvram = False
+                self.model.model_lowvram = False
+                self.model.lowvram_patch_counter = 0
 
             keys = list(self.backup.keys())
 
-            if self.weight_inplace_update:
-                for k in keys:
-                    quasar.utils.copy_to_param(self.model, k, self.backup[k])
-            else:
-                for k in keys:
-                    quasar.utils.set_attr_param(self.model, k, self.backup[k])
+            for k in keys:
+                bk = self.backup[k]
+                if bk.inplace_update:
+                    quasar.utils.copy_to_param(self.model, k, bk.weight)
+                else:
+                    quasar.utils.set_attr_param(self.model, k, bk.weight)
 
             self.backup.clear()
 
             if device_to is not None:
                 self.model.to(device_to)
-                self.current_device = device_to
+                self.model.device = device_to
+            self.model.model_loaded_weight_memory = 0
 
         keys = list(self.object_patches_backup.keys())
         for k in keys:
             quasar.utils.set_attr(self.model, k, self.object_patches_backup[k])
 
         self.object_patches_backup.clear()
+
+    def partially_unload(self, device_to, memory_to_free=0):
+        memory_freed = 0
+        patch_counter = 0
+
+        for n, m in list(self.model.named_modules())[::-1]:
+            if memory_to_free < memory_freed:
+                break
+
+            shift_lowvram = False
+            if hasattr(m, "quasar_cast_weights"):
+                module_mem = quasar.model_management.module_size(m)
+                weight_key = "{}.weight".format(n)
+                bias_key = "{}.bias".format(n)
+
+
+                if m.weight is not None and m.weight.device != device_to:
+                    for key in [weight_key, bias_key]:
+                        bk = self.backup.get(key, None)
+                        if bk is not None:
+                            if bk.inplace_update:
+                                quasar.utils.copy_to_param(self.model, key, bk.weight)
+                            else:
+                                quasar.utils.set_attr_param(self.model, key, bk.weight)
+                            self.backup.pop(key)
+
+                    m.to(device_to)
+                    if weight_key in self.patches:
+                        m.weight_function = LowVramPatch(weight_key, self)
+                        patch_counter += 1
+                    if bias_key in self.patches:
+                        m.bias_function = LowVramPatch(bias_key, self)
+                        patch_counter += 1
+
+                    m.prev_quasar_cast_weights = m.quasar_cast_weights
+                    m.quasar_cast_weights = True
+                    memory_freed += module_mem
+                    logging.debug("freed {}".format(n))
+
+        self.model.model_lowvram = True
+        self.model.lowvram_patch_counter += patch_counter
+        self.model.model_loaded_weight_memory -= memory_freed
+        return memory_freed
+
+    def partially_load(self, device_to, extra_memory=0):
+        self.unpatch_model(unpatch_weights=False)
+        self.patch_model(patch_weights=False)
+        full_load = False
+        if self.model.model_lowvram == False:
+            return 0
+        if self.model.model_loaded_weight_memory + extra_memory > self.model_size():
+            full_load = True
+        current_used = self.model.model_loaded_weight_memory
+        self.lowvram_load(device_to, lowvram_model_memory=current_used + extra_memory, full_load=full_load)
+        return self.model.model_loaded_weight_memory - current_used
+
+    def current_loaded_device(self):
+        return self.model.device

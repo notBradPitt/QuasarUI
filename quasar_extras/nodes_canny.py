@@ -1,11 +1,5 @@
-#From https://github.com/kornia/kornia
-import math
-
-import torch
-import torch.nn.functional as F
-import quasar.model_management
-
 from kornia.filters import canny
+import quasar.model_management
 
 
 class Canny:

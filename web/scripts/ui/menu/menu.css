@@ -1,0 +1,710 @@
+.relative {
+	position: relative;
+}
+.hidden {
+	display: none !important;
+}
+.mdi.rotate270::before {
+	transform: rotate(270deg);
+}
+
+/* Generic */
+.quasarui-button {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	cursor: pointer;
+	border: none;
+	border-radius: 4px;
+	padding: 4px 8px;
+	box-sizing: border-box;
+	margin: 0;
+	transition: box-shadow 0.1s;
+}
+
+.quasarui-button:active {
+	box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.5);
+}
+.quasarui-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.primary .quasarui-button,
+.primary.quasarui-button {
+	background-color: var(--primary-bg) !important;
+	color: var(--primary-fg) !important;
+}
+
+.primary .quasarui-button:not(:disabled):hover,
+.primary.quasarui-button:not(:disabled):hover {
+	background-color: var(--primary-hover-bg) !important;
+	color: var(--primary-hover-fg) !important;
+}
+
+/* Popup */
+.quasarui-popup {
+	position: absolute;
+	left: var(--left);
+	right: var(--right);
+	top: var(--top);
+	bottom: var(--bottom);
+	z-index: 2000;
+	max-height: calc(100vh - var(--limit) - 10px);
+	box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.3);
+}
+
+.quasarui-popup:not(.open) {
+	display: none;
+}
+
+.quasarui-popup.right.open {
+	border-top-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	overflow: hidden;
+}
+/* Split button */
+.quasarui-split-button {
+	position: relative;
+	display: flex;
+}
+
+.quasarui-split-primary {
+	flex: auto;
+}
+
+.quasarui-split-primary .quasarui-button {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: 1px solid var(--quasar-menu-bg);
+	width: 100%;
+}
+
+.quasarui-split-arrow .quasarui-button {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.quasarui-split-button-popup {
+	white-space: nowrap;
+	background-color: var(--content-bg);
+	color: var(--content-fg);
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+
+.quasarui-split-button-popup.hover {
+	z-index: 2001;
+}
+.quasarui-split-button-popup > .quasarui-button {
+	border: none;
+	background-color: transparent;
+	color: var(--fg-color);
+	padding: 8px 12px 8px 8px;
+}
+
+.quasarui-split-button-popup > .quasarui-button:not(:disabled):hover {
+	background-color: var(--quasar-input-bg);
+}
+
+/* Button group */
+.quasarui-button-group {
+	display: flex;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.quasarui-button-group > .quasarui-button,
+.quasarui-button-group > .quasarui-button-wrapper > .quasarui-button {
+	padding: 4px 10px;
+	border-radius: 0;
+}
+
+/* Menu */
+.quasarui-menu {
+	width: 100vw;
+	background: var(--quasar-menu-bg);
+	color: var(--fg-color);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	display: flex;
+	padding: 4px 8px;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	z-index: 1000;
+	order: 0;
+	grid-column: 1/-1;
+	overflow: auto;
+	max-height: 90vh;
+}
+
+.quasarui-menu>* {
+	flex-shrink: 0;
+}
+.quasarui-menu .mdi::before {
+	font-size: 18px;
+}
+
+.quasarui-menu .quasarui-button {
+	background: var(--quasar-input-bg);
+	color: var(--fg-color);
+	white-space: nowrap;
+}
+
+.quasarui-menu .quasarui-button:not(:disabled):hover {
+	background: var(--border-color);
+	color: var(--content-fg);
+}
+
+.quasarui-menu .quasarui-split-button-popup > .quasarui-button {
+	border-radius: 0;
+	background-color: transparent;
+}
+
+.quasarui-menu .quasarui-split-button-popup > .quasarui-button:not(:disabled):hover {
+	background-color: var(--quasar-input-bg);
+}
+
+.quasarui-menu .quasarui-split-button-popup.left {
+	border-top-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+.quasarui-menu .quasarui-button.popup-open {
+	background-color: var(--content-bg);
+	color: var(--content-fg);
+}
+
+.quasarui-menu-push {
+	margin-left: -0.8em;
+	flex: auto;
+}
+
+.quasarui-logo {
+	font-size: 1.2em;
+	margin: 0;
+	user-select: none;
+	cursor: default;
+}
+
+/* Workflows */
+.quasarui-workflows-button {
+	flex-direction: row-reverse;
+	max-width: 200px;
+	position: relative;
+	z-index: 0;
+}
+
+.quasarui-workflows-button.popup-open {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.quasarui-workflows-button.unsaved {
+	font-style: italic;
+}
+.quasarui-workflows-button-progress {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: green;
+	height: 100%;
+	border-radius: 4px;
+	z-index: -1;
+}
+
+.quasarui-workflows-button > span {
+	flex: auto;
+	text-align: left;
+	overflow: hidden;
+}
+.quasarui-workflows-button-inner {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	width: 150px;
+}
+.quasarui-workflows-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	direction: rtl;
+	flex: auto;
+	position: relative;
+}
+
+.quasarui-workflows-button.unsaved .quasarui-workflows-label {
+	padding-left: 8px;
+}
+
+.quasarui-workflows-button.unsaved .quasarui-workflows-label:after {
+	content: "*";
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.quasarui-workflows-button-inner .mdi-graph::before {
+	transform: rotate(-90deg);
+}
+
+.quasarui-workflows-popup {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	padding: 10px;
+	overflow: auto;
+	background-color: var(--content-bg);
+	color: var(--content-fg);
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	z-index: 400;
+}
+
+.quasarui-workflows-panel {
+	min-height: 150px;
+}
+
+.quasarui-workflows-panel .lds-ring {
+	transform: translate(-50%);
+	position: absolute;
+	left: 50%;
+	top: 75px;
+}
+
+.quasarui-workflows-panel h3 {
+	margin: 10px 0 10px 0;
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.quasarui-workflows-panel section header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.quasar-ui-workflows-search .mdi {
+	position: relative;
+	top: 2px;
+	pointer-events: none;
+}
+.quasar-ui-workflows-search input {
+	background-color: var(--quasar-input-bg);
+	color: var(--input-text);
+	border: none;
+	border-radius: 4px;
+	padding: 4px 10px;
+	margin-left: -24px;
+	text-indent: 18px;
+}
+.quasar-ui-workflows-search input:placeholder-shown {
+	width: 10px;
+}
+.quasar-ui-workflows-search input:placeholder-shown:focus {
+	width: auto;
+}
+.quasarui-workflows-actions {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.quasarui-workflows-actions .quasarui-button {
+	background: var(--quasar-input-bg);
+	color: var(--input-text);
+}
+
+.quasarui-workflows-actions .quasarui-button:not(:disabled):hover {
+	background: var(--primary-bg);
+	color: var(--primary-fg);
+}
+
+.quasarui-workflows-favorites,
+.quasarui-workflows-open {
+	border-bottom: 1px solid var(--quasar-input-bg);
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+}
+
+.quasarui-workflows-open .active {
+	font-weight: bold;
+	color: var(--primary-fg);
+}
+
+.quasarui-workflows-favorites:empty {
+	display: none;
+}
+
+.quasarui-workflows-tree {
+	padding: 0;
+	margin: 0;
+}
+
+.quasarui-workflows-tree:empty::after {
+	content: "No saved workflows";
+	display: block;
+	text-align: center;
+}
+.quasarui-workflows-tree > ul {
+	padding: 0;
+}
+
+.quasarui-workflows-tree > ul ul {
+	margin: 0;
+	padding: 0 0 0 25px;
+}
+
+.quasarui-workflows-tree:not(.filtered) .closed > ul {
+	display: none;
+}
+
+.quasarui-workflows-tree li,
+.quasarui-workflows-tree-file {
+	--item-height: 32px;
+	list-style-type: none;
+	height: var(--item-height);
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.quasarui-workflows-tree-file.active::before,
+.quasarui-workflows-tree li:hover::before,
+.quasarui-workflows-tree-file:hover::before {
+	content: "";
+	position: absolute;
+	width: 100%;
+	left: 0;
+	height: var(--item-height);
+	background-color: var(--content-hover-bg);
+	color: var(--content-hover-fg);
+	z-index: -1;
+}
+
+.quasarui-workflows-tree-file.active::before {
+	background-color: var(--primary-bg);
+	color: var(--primary-fg);
+}
+
+.quasarui-workflows-tree-file.running:not(:hover)::before {
+	content: "";
+	position: absolute;
+	width: var(--progress, 0);
+	left: 0;
+	height: var(--item-height);
+	background-color: green;
+	z-index: -1;
+}
+
+.quasarui-workflows-tree-file.unsaved span {
+	font-style: italic;
+}
+
+.quasarui-workflows-tree-file span {
+	flex: auto;
+}
+
+.quasarui-workflows-tree-file span + .quasarui-workflows-file-action {
+	margin-left: 10px;
+}
+
+.quasarui-workflows-tree-file .quasarui-workflows-file-action {
+	background-color: transparent;
+	color: var(--fg-color);
+	padding: 2px 4px;
+}
+
+.quasarui-workflows-tree-file.active .quasarui-workflows-file-action {
+	color: var(--primary-fg);
+}
+
+.lg ~ .quasarui-workflows-popup .quasarui-workflows-tree-file:not(:hover) .quasarui-workflows-file-action {
+	opacity: 0;
+}
+
+.quasarui-workflows-tree-file .quasarui-workflows-file-action:hover {
+	background-color: var(--primary-bg);
+	color: var(--primary-fg);
+}
+
+.quasarui-workflows-tree-file .quasarui-workflows-file-action-primary {
+	background-color: transparent;
+	color: var(--fg-color);
+	padding: 2px 4px;
+	margin: 0 -4px;
+}
+
+.quasarui-workflows-file-action-favorite .mdi-star {
+	color: orange;
+}
+
+/* View List */
+.quasarui-view-list-popup {
+	padding: 10px;
+	background-color: var(--content-bg);
+	color: var(--content-fg);
+	min-width: 170px;
+	min-height: 435px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: border-box;
+}
+.quasarui-view-list-popup h3 {
+	margin: 0 0 5px 0;
+}
+.quasarui-view-list-items {
+	width: 100%;
+	background: var(--quasar-menu-bg);
+	border-radius: 5px;
+	display: flex;
+	justify-content: center;
+	flex: auto;
+	align-items: center;
+	flex-direction: column;
+}
+.quasarui-view-list-items section {
+	max-height: 400px;
+	overflow: auto;
+	width: 100%;
+	display: grid;
+	grid-template-columns: auto auto auto;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	padding: 5px 0;
+}
+.quasarui-view-list-items section + section {
+	border-top: 1px solid var(--border-color);
+	margin-top: 10px;
+	padding-top: 5px;
+}
+.quasarui-view-list-items section h5 {
+	grid-column: 1 / 4;
+	text-align: center;
+	margin: 5px;
+}
+.quasarui-view-list-items span {
+	text-align: center;
+	padding: 0 2px;
+}
+.quasarui-view-list-popup header {
+	margin-bottom: 10px;
+	display: flex;
+	gap: 5px;
+}
+.quasarui-view-list-popup header .quasarui-button {
+	border: 1px solid transparent;
+}
+.quasarui-view-list-popup header .quasarui-button:not(:disabled):hover {
+	border: 1px solid var(--quasar-menu-bg);
+}
+/* Queue button */
+.quasarui-queue-button .quasarui-split-primary .quasarui-button {
+	padding-right: 12px;
+}
+.quasarui-queue-count {
+	margin-left: 5px;
+	border-radius: 10px;
+	background-color: rgb(8, 80, 153);
+	padding: 2px 4px;
+	font-size: 10px;
+	min-width: 1em;
+	display: inline-block;
+}
+/* Queue options*/
+.quasarui-queue-options {
+	padding: 10px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	display: flex;
+	gap: 10px;
+}
+
+.quasarui-queue-batch {
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid var(--quasar-menu-bg);
+	padding-right: 10px;
+	gap: 5px;
+}
+
+.quasarui-queue-batch input {
+	width: 145px;
+}
+
+.quasarui-queue-batch .quasarui-queue-batch-value {
+	width: 70px;
+}
+
+.quasarui-queue-mode {
+	display: flex;
+	flex-direction: column;
+}
+
+.quasarui-queue-mode span {
+	font-weight: bold;
+	margin-bottom: 2px;
+}
+
+.quasarui-queue-mode label {
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: start;
+	gap: 5px;
+	padding: 2px 0;
+}
+
+.quasarui-queue-mode label input {
+	padding: 0;
+	margin: 0;
+}
+
+/** Send to workflow widget selection dialog */
+.quasar-widget-selection-dialog {
+	border: none;
+}
+
+.quasar-widget-selection-dialog div {
+	color: var(--fg-color);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.quasar-widget-selection-dialog h2 {
+	margin-top: 0;
+}
+
+.quasar-widget-selection-dialog section {
+	width: fit-content;
+	display: flex;
+	flex-direction: column;
+}
+
+.quasar-widget-selection-item {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.quasar-widget-selection-item span {
+	margin-right: auto;
+}
+
+.quasar-widget-selection-item span::before {
+	content: '#' attr(data-id);
+	opacity: 0.5;
+	margin-right: 5px;
+}
+
+.quasar-modal .quasar-widget-selection-item button {
+	font-size: 1em;
+}
+
+/***** Responsive *****/
+.lg.quasarui-menu .lt-lg-show {
+	display: none !important;
+}
+.quasarui-menu:not(.lg) .nlg-hide {
+	display: none !important;
+}
+/** Large screen */
+.lg.quasarui-menu>.quasarui-menu-mobile-collapse .quasarui-button span,
+.lg.quasarui-menu>.quasarui-menu-mobile-collapse.quasarui-button span {
+	display: none;
+}
+.lg.quasarui-menu>.quasarui-menu-mobile-collapse .quasarui-popup .quasarui-button span {
+	display: unset;
+}
+
+/** Non large screen */
+.lt-lg.quasarui-menu {
+	flex-wrap: wrap;
+}
+
+.lt-lg.quasarui-menu > *:not(.quasarui-menu-mobile-collapse) {
+	order: 1;
+}
+
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse {
+	order: 9999;
+	width: 100%;
+}
+
+.quasarui-body-bottom .lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse {
+	order: -1;
+}
+
+.quasarui-body-bottom .lt-lg.quasarui-menu > .quasarui-menu-button {
+	top: unset;
+	bottom: 4px;
+}
+
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse.quasarui-button-group {
+	flex-wrap: wrap;
+}
+
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse .quasarui-button,
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse.quasarui-button {
+	padding: 10px;
+}
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse .quasarui-button,
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse .quasarui-button-wrapper {
+	width: 100%;
+}
+
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse .quasarui-popup {
+	position: static;
+	background-color: var(--quasar-input-bg);
+	max-width: unset;
+	max-height: 50vh;
+	overflow: auto;
+}
+
+.lt-lg.quasarui-menu:not(.expanded) > .quasarui-menu-mobile-collapse {
+	display: none;
+}
+
+.lt-lg .quasarui-queue-button {
+	margin-right: 44px;
+}
+
+.lt-lg .quasarui-menu-button {
+	position: absolute;
+	top: 4px;
+	right: 8px;
+}
+
+.lt-lg.quasarui-menu > .quasarui-menu-mobile-collapse .quasarui-view-list-popup {
+	border-radius: 0;
+}
+
+.lt-lg.quasarui-menu .quasarui-workflows-popup {
+	width: 100vw;
+}
+
+/** Small */
+.lt-md .quasarui-workflows-button-inner {
+	width: unset !important;
+}
+.lt-md  .quasarui-workflows-label {
+	display: none;
+}
+
+/** Extra small */
+.lt-sm .quasarui-queue-button {
+	margin-right: 0;
+	width: 100%;
+}
+.lt-sm .quasarui-queue-button .quasarui-button {
+	justify-content: center;
+}
+.lt-sm .quasarui-interrupt-button {
+	margin-right: 45px;
+}
+.quasarui-body-bottom .lt-sm.quasarui-menu > .quasarui-menu-button{
+	bottom: 41px;
+}

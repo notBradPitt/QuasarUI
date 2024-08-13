@@ -1,5 +1,4 @@
 import torch
-import nodes
 import quasar.utils
 
 class SD_4XUpscale_Conditioning:

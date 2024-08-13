@@ -1,8 +1,11 @@
 torch==2.1.0
 torchsde
 torchvision==0.16.0
+torchaudio
 einops
 transformers
+tokenizers>=0.13.3
+sentencepiece
 safetensors>=0.3.0
 aiohttp
 pyyaml
@@ -11,6 +14,8 @@ scipy
 tqdm
 psutil
 kornia>=0.7.1
+spandrel
+soundfile
 
 accelerate
 segment-anything

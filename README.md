@@ -1,70 +1,181 @@
 QuasarUI
 =======
-A powerful and modular stable diffusion GUI and backend.
+The most powerful and modular stable diffusion GUI and backend.
 -----------
 ![QuasarUI Screenshot](quasarui_screenshot.png)
 
 This ui will let you design and execute advanced stable diffusion pipelines using a graph/nodes/flowchart based interface. For some workflow examples and see what QuasarUI can do you can check out:
+### [QuasarUI Examples](https://quasaranonymous.github.io/QuasarUI_examples/)
 
-
-
+### [Installing QuasarUI](#installing)
 
 ## Features
 - Nodes/graph/flowchart interface to experiment and create complex Stable Diffusion workflows without needing to code anything.
-- Fully supports SD1.x, SD2.x and SDXL
+- Fully supports SD1.x, SD2.x, [SDXL](https://quasaranonymous.github.io/QuasarUI_examples/sdxl/), [Stable Video Diffusion](https://quasaranonymous.github.io/QuasarUI_examples/video/), [Stable Cascade](https://quasaranonymous.github.io/QuasarUI_examples/stable_cascade/), [SD3](https://quasaranonymous.github.io/QuasarUI_examples/sd3/) and [Stable Audio](https://quasaranonymous.github.io/QuasarUI_examples/audio/)
+- [Flux](https://quasaranonymous.github.io/QuasarUI_examples/flux/)
 - Asynchronous Queue system
 - Many optimizations: Only re-executes the parts of the workflow that changes between executions.
-- Command line option: ```--lowvram``` to make it work on GPUs with less than 3GB vram (enabled automatically on GPUs with low vram)
+- Smart memory management: can automatically run models on GPUs with as low as 1GB vram.
 - Works even if you don't have a GPU with: ```--cpu``` (slow)
 - Can load ckpt, safetensors and diffusers models/checkpoints. Standalone VAEs and CLIP models.
 - Embeddings/Textual inversion
-- Loras (regular, locon and loha)
-- Hypernetworks
-- Loading full workflows (with seeds) from generated PNG files.
+- [Loras (regular, locon and loha)](https://quasaranonymous.github.io/QuasarUI_examples/lora/)
+- [Hypernetworks](https://quasaranonymous.github.io/QuasarUI_examples/hypernetworks/)
+- Loading full workflows (with seeds) from generated PNG, WebP and FLAC files.
 - Saving/Loading workflows as Json files.
-- Nodes interface can be used to create complex workflows like one for Hires fix or much more advanced ones.
-- Area Composition
-- Inpainting with both regular and inpainting models.
-- ControlNet and T2I-Adapter
-- Upscale Models (ESRGAN, ESRGAN variants, SwinIR, Swin2SR, etc...)
-- unCLIP Models
-- GLIGEN
-- Model Merging
-- Latent previews with TAESD
+- Nodes interface can be used to create complex workflows like one for [Hires fix](https://quasaranonymous.github.io/QuasarUI_examples/2_pass_txt2img/) or much more advanced ones.
+- [Area Composition](https://quasaranonymous.github.io/QuasarUI_examples/area_composition/)
+- [Inpainting](https://quasaranonymous.github.io/QuasarUI_examples/inpaint/) with both regular and inpainting models.
+- [ControlNet and T2I-Adapter](https://quasaranonymous.github.io/QuasarUI_examples/controlnet/)
+- [Upscale Models (ESRGAN, ESRGAN variants, SwinIR, Swin2SR, etc...)](https://quasaranonymous.github.io/QuasarUI_examples/upscale_models/)
+- [unCLIP Models](https://quasaranonymous.github.io/QuasarUI_examples/unclip/)
+- [GLIGEN](https://quasaranonymous.github.io/QuasarUI_examples/gligen/)
+- [Model Merging](https://quasaranonymous.github.io/QuasarUI_examples/model_merging/)
+- [LCM models and Loras](https://quasaranonymous.github.io/QuasarUI_examples/lcm/)
+- [SDXL Turbo](https://quasaranonymous.github.io/QuasarUI_examples/sdturbo/)
+- [AuraFlow](https://quasaranonymous.github.io/QuasarUI_examples/aura_flow/)
+- [HunyuanDiT](https://quasaranonymous.github.io/QuasarUI_examples/hunyuan_dit/)
+- Latent previews with [TAESD](#how-to-show-high-quality-previews)
 - Starts up very fast.
 - Works fully offline: will never download anything.
-- Config file to set the search paths for models.
+- [Config file](extra_model_paths.yaml.example) to set the search paths for models.
+
+Workflow examples can be found on the [Examples page](https://quasaranonymous.github.io/QuasarUI_examples/)
 
 ## Shortcuts
 
-| Keybind                   | Explanation                                                                                                        |
-|---------------------------|--------------------------------------------------------------------------------------------------------------------|
-| Ctrl + Enter              | Queue up current graph for generation                                                                              |
-| Ctrl + Shift + Enter      | Queue up current graph as first for generation                                                                     |
-| Ctrl + S                  | Save workflow                                                                                                      |
-| Ctrl + O                  | Load workflow                                                                                                      |
-| Ctrl + A                  | Select all nodes                                                                                                   |
-| Ctrl + M                  | Mute/unmute selected nodes                                                                                         |
-| Ctrl + B                  | Bypass selected nodes (acts like the node was removed from the graph and the wires reconnected through)            |
-| Delete/Backspace          | Delete selected nodes                                                                                              |
-| Ctrl + Delete/Backspace   | Delete the current graph                                                                                           |
-| Space                     | Move the canvas around when held and moving the cursor                                                             |
-| Ctrl/Shift + Click        | Add clicked node to selection                                                                                      |
-| Ctrl + C/Ctrl + V         | Copy and paste selected nodes (without maintaining connections to outputs of unselected nodes)                     |
-| Ctrl + C/Ctrl + Shift + V | Copy and paste selected nodes (maintaining connections from outputs of unselected nodes to inputs of pasted nodes) |
-| Shift + Drag              | Move multiple selected nodes at the same time                                                                      |
-| Ctrl + D                  | Load default graph                                                                                                 |
-| Q                         | Toggle visibility of the queue                                                                                     |
-| H                         | Toggle visibility of history                                                                                       |
-| R                         | Refresh graph                                                                                                      |
-| Double-Click LMB          | Open node quick search palette                                                                                     |
+| Keybind                            | Explanation                                                                                                        |
+|------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| Ctrl + Enter                       | Queue up current graph for generation                                                                              |
+| Ctrl + Shift + Enter               | Queue up current graph as first for generation                                                                     |
+| Ctrl + Z/Ctrl + Y                  | Undo/Redo                                                                                                          |
+| Ctrl + S                           | Save workflow                                                                                                      |
+| Ctrl + O                           | Load workflow                                                                                                      |
+| Ctrl + A                           | Select all nodes                                                                                                   |
+| Alt + C                            | Collapse/uncollapse selected nodes                                                                                 |
+| Ctrl + M                           | Mute/unmute selected nodes                                                                                         |
+| Ctrl + B                           | Bypass selected nodes (acts like the node was removed from the graph and the wires reconnected through)            |
+| Delete/Backspace                   | Delete selected nodes                                                                                              |
+| Ctrl + Backspace                   | Delete the current graph                                                                                           |
+| Space                              | Move the canvas around when held and moving the cursor                                                             |
+| Ctrl/Shift + Click                 | Add clicked node to selection                                                                                      |
+| Ctrl + C/Ctrl + V                  | Copy and paste selected nodes (without maintaining connections to outputs of unselected nodes)                     |
+| Ctrl + C/Ctrl + Shift + V          | Copy and paste selected nodes (maintaining connections from outputs of unselected nodes to inputs of pasted nodes) |
+| Shift + Drag                       | Move multiple selected nodes at the same time                                                                      |
+| Ctrl + D                           | Load default graph                                                                                                 |
+| Alt + `+`                          | Canvas Zoom in                                                                                                     |
+| Alt + `-`                          | Canvas Zoom out                                                                                                    |
+| Ctrl + Shift + LMB + Vertical drag | Canvas Zoom in/out                                                                                                 |
+| Q                                  | Toggle visibility of the queue                                                                                     |
+| H                                  | Toggle visibility of history                                                                                       |
+| R                                  | Refresh graph                                                                                                      |
+| Double-Click LMB                   | Open node quick search palette                                                                                     |
 
 Ctrl can also be replaced with Cmd instead for macOS users
 
+# Installing
+
+## Windows
+
+There is a portable standalone build for Windows that should work for running on Nvidia GPUs or for running on your CPU only on the [releases page](https://github.com/quasaranonymous/QuasarUI/releases).
+
+### [Direct link to download](https://github.com/quasaranonymous/QuasarUI/releases/latest/download/QuasarUI_windows_portable_nvidia.7z)
+
+Simply download, extract with [7-Zip](https://7-zip.org) and run. Make sure you put your Stable Diffusion checkpoints/models (the huge ckpt/safetensors files) in: QuasarUI\models\checkpoints
+
+If you have trouble extracting it, right click the file -> properties -> unblock
+
+#### How do I share models between another UI and QuasarUI?
+
+See the [Config file](extra_model_paths.yaml.example) to set the search paths for models. In the standalone windows build you can find this file in the QuasarUI directory. Rename this file to extra_model_paths.yaml and edit it with your favorite text editor.
+
+## Jupyter Notebook
+
+To run it on services like paperspace, kaggle or colab you can use my [Jupyter Notebook](notebooks/quasarui_colab.ipynb)
+
+## Manual Install (Windows, Linux)
+
+Git clone this repo.
+
+Put your SD checkpoints (the huge ckpt/safetensors files) in: models/checkpoints
+
+Put your VAE in: models/vae
+
+
+### AMD GPUs (Linux only)
+AMD users can install rocm and pytorch with pip if you don't have it already installed, this is the command to install the stable version:
+
+```pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.0```
+
+This is the command to install the nightly with ROCm 6.0 which might have some performance improvements:
+
+```pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/rocm6.1```
+
+### NVIDIA
+
+Nvidia users should install stable pytorch using this command:
+
+```pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121```
+
+This is the command to install pytorch nightly instead which might have performance improvements:
+
+```pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu124```
+
+#### Troubleshooting
+
+If you get the "Torch not compiled with CUDA enabled" error, uninstall torch with:
+
+```pip uninstall torch```
+
+And install it again with the command above.
+
+### Dependencies
+
+Install the dependencies by opening your terminal inside the QuasarUI folder and:
+
+```pip install -r requirements.txt```
+
+After this you should have everything installed and can proceed to running QuasarUI.
+
+### Others:
+
+#### Intel GPUs
+
+Intel GPU support is available for all Intel GPUs supported by Intel's Extension for Pytorch (IPEX) with the support requirements listed in the [Installation](https://intel.github.io/intel-extension-for-pytorch/index.html#installation?platform=gpu) page. Choose your platform and method of install and follow the instructions. The steps are as follows:
+
+1. Start by installing the drivers or kernel listed or newer in the Installation page of IPEX linked above for Windows and Linux if needed.
+1. Follow the instructions to install [Intel's oneAPI Basekit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html) for your platform.
+1. Install the packages for IPEX using the instructions provided in the Installation page for your platform.
+1. Follow the [QuasarUI manual installation](#manual-install-windows-linux) instructions for Windows and Linux and run QuasarUI normally as described above after everything is installed.
+
+Additional discussion and help can be found [here](https://github.com/quasaranonymous/QuasarUI/discussions/476).
+
+#### Apple Mac silicon
+
+You can install QuasarUI in Apple Mac silicon (M1 or M2) with any recent macOS version.
+
+1. Install pytorch nightly. For instructions, read the [Accelerated PyTorch training on Mac](https://developer.apple.com/metal/pytorch/) Apple Developer guide (make sure to install the latest pytorch nightly).
+1. Follow the [QuasarUI manual installation](#manual-install-windows-linux) instructions for Windows and Linux.
+1. Install the QuasarUI [dependencies](#dependencies). If you have another Stable Diffusion UI [you might be able to reuse the dependencies](#i-already-have-another-ui-for-stable-diffusion-installed-do-i-really-have-to-install-all-of-these-dependencies).
+1. Launch QuasarUI by running `python main.py`
+
+> **Note**: Remember to add your models, VAE, LoRAs etc. to the corresponding Quasar folders, as discussed in [QuasarUI manual installation](#manual-install-windows-linux).
+
+#### DirectML (AMD Cards on Windows)
+
+```pip install torch-directml``` Then you can launch QuasarUI with: ```python main.py --directml```
 
 # Running
 
 ```python main.py```
+
+### For AMD cards not officially supported by ROCm
+
+Try running it with this command if you have issues:
+
+For 6700, 6600 and maybe other RDNA2 or older: ```HSA_OVERRIDE_GFX_VERSION=10.3.0 python main.py```
+
+For AMD 7600 and maybe other RDNA3 cards: ```HSA_OVERRIDE_GFX_VERSION=11.0.0 python main.py```
 
 # Notes
 
@@ -85,16 +196,29 @@ To use a textual inversion concepts/embeddings in a text prompt put them in the 
 ```embedding:embedding_filename.pt```
 
 
-## How to increase generation speed?
-
-Make sure you use the regular loaders/Load Checkpoint node to load checkpoints. It will auto pick the right settings depending on your GPU.
-
-You can set this command line setting to disable the upcasting to fp32 in some cross attention operations which will increase your speed. Note that this will very likely give you black images on SD2.x models. If you use xformers this option does not do anything.
-
-```--dont-upcast-attention```
-
 ## How to show high-quality previews?
 
 Use ```--preview-method auto``` to enable previews.
 
 The default installation includes a fast latent preview method that's low-resolution. To enable higher-quality previews with [TAESD](https://github.com/madebyollin/taesd), download the [taesd_decoder.pth](https://github.com/madebyollin/taesd/raw/main/taesd_decoder.pth) (for SD1.x and SD2.x) and [taesdxl_decoder.pth](https://github.com/madebyollin/taesd/raw/main/taesdxl_decoder.pth) (for SDXL) models and place them in the `models/vae_approx` folder. Once they're installed, restart QuasarUI to enable high-quality previews.
+
+## How to use TLS/SSL?
+Generate a self-signed certificate (not appropriate for shared/production use) and key by running the command: `openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"`
+
+Use `--tls-keyfile key.pem --tls-certfile cert.pem` to enable TLS/SSL, the app will now be accessible with `https://...` instead of `http://...`.
+
+> Note: Windows users can use [alexisrolland/docker-openssl](https://github.com/alexisrolland/docker-openssl) or one of the [3rd party binary distributions](https://wiki.openssl.org/index.php/Binaries) to run the command example above. 
+<br/><br/>If you use a container, note that the volume mount `-v` can be a relative path so `... -v ".\:/openssl-certs" ...` would create the key & cert files in the current directory of your command prompt or powershell terminal.
+
+## Support and dev channel
+
+[Matrix space: #quasarui_space:matrix.org](https://app.element.io/#/room/%23quasarui_space%3Amatrix.org) (it's like discord but open source).
+
+See also: [https://www.quasar.org/](https://www.quasar.org/)
+
+# QA
+
+### Which GPU should I buy for this?
+
+[See this page for some recommendations](https://github.com/quasaranonymous/QuasarUI/wiki/Which-GPU-should-I-buy-for-QuasarUI)
+

@@ -6,17 +6,22 @@ import { QuasarSettingsDialog } from "./ui/settings.js";
 export const QuasarDialog = _QuasarDialog;
 
 /**
- * 
- * @param { string } tag HTML Element Tag and optional classes e.g. div.class1.class2
- * @param { string | Element | Element[] | {
+ * @template { string | (keyof HTMLElementTagNameMap) } K
+ * @typedef { K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : HTMLElement } ElementType 
+ */
+
+/**
+ * @template { string | (keyof HTMLElementTagNameMap) } K 
+ * @param { K } tag HTML Element Tag and optional classes e.g. div.class1.class2
+ * @param { string | Element | Element[] | ({
  * 	 parent?: Element,
- *   $?: (el: Element) => void, 
+ *   $?: (el: ElementType<K>) => void, 
  *   dataset?: DOMStringMap,
- *   style?: CSSStyleDeclaration,
+ *   style?: Partial<CSSStyleDeclaration>,
  * 	 for?: string
- * } | undefined } propsOrChildren 
- * @param { Element[] | undefined } [children]
- * @returns 
+ * } & Omit<Partial<ElementType<K>>, "style">) | undefined } [propsOrChildren]
+ * @param { string | Element | Element[] | undefined } [children]
+ * @returns { ElementType<K> }
  */
 export function $el(tag, propsOrChildren, children) {
 	const split = tag.split(".");
@@ -54,7 +59,7 @@ export function $el(tag, propsOrChildren, children) {
 
 			Object.assign(element, propsOrChildren);
 			if (children) {
-				element.append(...(children instanceof Array ? children : [children]));
+				element.append(...(children instanceof Array ? children.filter(Boolean) : [children]));
 			}
 
 			if (parent) {
@@ -90,15 +95,20 @@ function dragElement(dragEl, settings) {
 	}).observe(dragEl);
 
 	function ensureInBounds() {
-		if (dragEl.classList.contains("quasar-menu-manual-pos")) {
+		try {
 			newPosX = Math.min(document.body.clientWidth - dragEl.clientWidth, Math.max(0, dragEl.offsetLeft));
 			newPosY = Math.min(document.body.clientHeight - dragEl.clientHeight, Math.max(0, dragEl.offsetTop));
 
 			positionElement();
 		}
+		catch(exception){
+			// robust
+		}
 	}
 
 	function positionElement() {
+		if(dragEl.style.display === "none") return;
+
 		const halfWidth = document.body.clientWidth / 2;
 		const anchorRight = newPosX + dragEl.clientWidth / 2 > halfWidth;
 
@@ -188,6 +198,8 @@ function dragElement(dragEl, settings) {
 		document.onmouseup = null;
 		document.onmousemove = null;
 	}
+
+	return restorePos;
 }
 
 class QuasarList {
@@ -225,7 +237,7 @@ class QuasarList {
 							$el("button", {
 								textContent: "Load",
 								onclick: async () => {
-									await app.loadGraphData(item.prompt[3].extra_pnginfo.workflow);
+									await app.loadGraphData(item.prompt[3].extra_pnginfo.workflow, true, false);
 									if (item.outputs) {
 										app.nodeOutputs = item.outputs;
 									}
@@ -329,7 +341,7 @@ export class QuasarUI {
 			id: "Quasar.PreviewFormat",
 			name: "When displaying a preview in the image widget, convert it to a lightweight image, e.g. webp, jpeg, webp;50, etc.",
 			type: "text",
-			defaultValue: "jpeg;80",
+			defaultValue: "",
 		});
 
 		this.settings.addSetting({
@@ -361,13 +373,15 @@ export class QuasarUI {
 		const fileInput = $el("input", {
 			id: "quasar-file-input",
 			type: "file",
-			accept: ".json,image/png,.latent,.safetensors,image/webp",
+			accept: ".json,image/png,.latent,.safetensors,image/webp,audio/flac",
 			style: {display: "none"},
 			parent: document.body,
 			onchange: () => {
 				app.handleFile(fileInput.files[0]);
 			},
 		});
+
+		this.loadFile = () => fileInput.click();
 
 		const autoQueueModeEl = toggleSwitch(
 			"autoQueueMode",
@@ -594,14 +608,21 @@ export class QuasarUI {
 					if (!confirmClear.value || confirm("Clear workflow?")) {
 						app.clean();
 						app.graph.clear();
+						app.resetView();
 					}
 				}
 			}),
 			$el("button", {
 				id: "quasar-load-default-button", textContent: "Load Default", onclick: async () => {
 					if (!confirmClear.value || confirm("Load default workflow?")) {
+						app.resetView();
 						await app.loadGraphData()
 					}
+				}
+			}),
+			$el("button", {
+				id: "quasar-reset-view-button", textContent: "Reset View", onclick: async () => {
+					app.resetView();
 				}
 			}),
 		]);
@@ -611,10 +632,10 @@ export class QuasarUI {
 			name: "Enable Dev mode Options",
 			type: "boolean",
 			defaultValue: false,
-			onChange: function(value) { document.getElementById("quasar-dev-save-api-button").style.display = value ? "block" : "none"},
+			onChange: function(value) { document.getElementById("quasar-dev-save-api-button").style.display = value ? "flex" : "none"},
 		});
 
-		dragElement(this.menuContainer, this.settings);
+		this.restoreMenuPosition = dragElement(this.menuContainer, this.settings);
 
 		this.setStatus({exec_info: {queue_remaining: "X"}});
 	}

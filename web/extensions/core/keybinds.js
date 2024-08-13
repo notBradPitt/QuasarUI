@@ -21,7 +21,6 @@ app.registerExtension({
 				s: "#quasar-save-button",
 				o: "#quasar-file-input",
 				Backspace: "#quasar-clear-button",
-				Delete: "#quasar-clear-button",
 				d: "#quasar-load-default-button",
 			};
 
