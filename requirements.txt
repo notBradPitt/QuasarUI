@@ -1,6 +1,6 @@
-torch
+torch==2.1.0
 torchsde
-torchvision
+torchvision==0.16.0
 einops
 transformers
 safetensors>=0.3.0
