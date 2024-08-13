@@ -1,5 +1,5 @@
 import impact.core as core
-from impact.config import MAX_RESOLUTION
+from nodes import MAX_RESOLUTION
 import impact.segs_nodes as segs_nodes
 import impact.utils as utils
 import torch
@@ -151,6 +151,10 @@ class SegmDetectorCombined:
 
     def doit(self, segm_detector, image, threshold, dilation):
         mask = segm_detector.detect_combined(image, threshold, dilation)
+
+        if mask is None:
+            mask = torch.zeros((image.shape[2], image.shape[1]), dtype=torch.float32, device="cpu")
+
         return (mask.unsqueeze(0),)
 
 
@@ -167,6 +171,10 @@ class BboxDetectorCombined(SegmDetectorCombined):
 
     def doit(self, bbox_detector, image, threshold, dilation):
         mask = bbox_detector.detect_combined(image, threshold, dilation)
+
+        if mask is None:
+            mask = torch.zeros((image.shape[2], image.shape[1]), dtype=torch.float32, device="cpu")
+
         return (mask.unsqueeze(0),)
 
 
@@ -402,13 +410,14 @@ class SimpleDetectorForAnimateDiff:
                 return segs_by_frames[0][1]
             else:
                 merged_mask = get_whole_merged_mask()
-                return segs_nodes.MaskToSEGS().doit(merged_mask, False, crop_factor, False, drop_size, contour_fill=True)[0]
+                return segs_nodes.MaskToSEGS.doit(merged_mask, False, crop_factor, False, drop_size, contour_fill=True)[0]
 
-        def get_merged_neighboring_segs():
+        def get_segs(merged_neighboring=False):
             pivot_segs = get_pivot_segs()
 
             masks_by_frame = get_masked_frames()
-            masks_by_frame = get_merged_neighboring_mask(masks_by_frame)
+            if merged_neighboring:
+                masks_by_frame = get_merged_neighboring_mask(masks_by_frame)
 
             new_segs = []
             for seg in pivot_segs[1]:
@@ -427,33 +436,15 @@ class SimpleDetectorForAnimateDiff:
 
             return pivot_segs[0], new_segs
 
-        def get_separated_segs():
-            pivot_segs = get_pivot_segs()
-
-            masks_by_frame = get_masked_frames()
-
-            new_segs = []
-            for seg in pivot_segs[1]:
-                cropped_mask = torch.zeros(seg.cropped_mask.shape, dtype=torch.float32, device="cpu").unsqueeze(0)
-                x1, y1, x2, y2 = seg.crop_region
-                for mask in masks_by_frame:
-                    cropped_mask_at_frame = mask[y1:y2, x1:x2]
-                    cropped_mask = torch.cat((cropped_mask, cropped_mask_at_frame), dim=0)
-
-                new_seg = SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
-                new_segs.append(new_seg)
-
-            return pivot_segs[0], new_segs
-
         # create result mask
         if masking_mode == "Pivot SEGS":
             return (get_pivot_segs(), )
 
         elif masking_mode == "Combine neighboring frames":
-            return (get_merged_neighboring_segs(), )
+            return (get_segs(merged_neighboring=True), )
 
         else: # elif masking_mode == "Don't combine":
-            return (get_separated_segs(), )
+            return (get_segs(merged_neighboring=False), )
 
     def doit(self, bbox_detector, image_frames, bbox_threshold, bbox_dilation, crop_factor, drop_size,
              sub_threshold, sub_dilation, sub_bbox_expansion, sam_mask_hint_threshold,

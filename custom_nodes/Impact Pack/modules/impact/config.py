@@ -1,18 +1,15 @@
 import configparser
 import os
 
-
-version_code = [4, 87, 5]
+version_code = [6, 2]
 version = f"V{version_code[0]}.{version_code[1]}" + (f'.{version_code[2]}' if len(version_code) > 2 else '')
 
-dependency_version = 20
+dependency_version = 22
 
 my_path = os.path.dirname(__file__)
 old_config_path = os.path.join(my_path, "impact-pack.ini")
 config_path = os.path.join(my_path, "..", "..", "impact-pack.ini")
 latent_letter_path = os.path.join(my_path, "..", "..", "latent.png")
-
-MAX_RESOLUTION = 8192
 
 
 def write_config():
@@ -35,11 +32,15 @@ def read_config():
         config.read(config_path)
         default_conf = config['default']
 
+        if not os.path.exists(default_conf['custom_wildcards']):
+            print(f"[WARN] QuasarUI-Impact-Pack: custom_wildcards path not found: {default_conf['custom_wildcards']}. Using default path.")
+            default_conf['custom_wildcards'] = os.path.join(my_path, "..", "..", "custom_wildcards")
+
         return {
                     'dependency_version': int(default_conf['dependency_version']),
                     'mmdet_skip': default_conf['mmdet_skip'].lower() == 'true' if 'mmdet_skip' in default_conf else True,
                     'sam_editor_cpu': default_conf['sam_editor_cpu'].lower() == 'true' if 'sam_editor_cpu' in default_conf else False,
-                    'sam_editor_model': 'sam_vit_b_01ec64.pth',
+                    'sam_editor_model': default_conf['sam_editor_model'].lower() if 'sam_editor_model' else 'sam_vit_b_01ec64.pth',
                     'custom_wildcards': default_conf['custom_wildcards'] if 'custom_wildcards' in default_conf else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards")),
                     'disable_gpu_opencv': default_conf['disable_gpu_opencv'].lower() == 'true' if 'disable_gpu_opencv' in default_conf else True
                }

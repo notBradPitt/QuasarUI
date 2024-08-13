@@ -5,6 +5,8 @@ import torch
 import quasar
 import sys
 import nodes
+import re
+from server import PromptServer
 
 
 class GeneralSwitch:
@@ -32,16 +34,20 @@ class GeneralSwitch:
 
         selected_label = input_name
         node_id = kwargs['unique_id']
-        nodelist = kwargs['extra_pnginfo']['workflow']['nodes']
-        for node in nodelist:
-            if str(node['id']) == node_id:
-                inputs = node['inputs']
 
-                for slot in inputs:
-                    if slot['name'] == input_name and 'label' in slot:
-                        selected_label = slot['label']
+        if 'extra_pnginfo' in kwargs and kwargs['extra_pnginfo'] is not None:
+            nodelist = kwargs['extra_pnginfo']['workflow']['nodes']
+            for node in nodelist:
+                if str(node['id']) == node_id:
+                    inputs = node['inputs']
 
-                break
+                    for slot in inputs:
+                        if slot['name'] == input_name and 'label' in slot:
+                            selected_label = slot['label']
+
+                    break
+        else:
+            print(f"[Impact-Pack] The switch node does not guarantee proper functioning in API mode.")
 
         if input_name in kwargs:
             return (kwargs[input_name], selected_label, selected_index)
@@ -190,9 +196,10 @@ class ImpactLogger:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "data": (any_typ, ""),
+                        "data": (any_typ,),
+                        "text": ("STRING", {"multiline": True}),
                     },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"},
                 }
 
     CATEGORY = "ImpactPack/Debug"
@@ -202,7 +209,7 @@ class ImpactLogger:
     RETURN_TYPES = ()
     FUNCTION = "doit"
 
-    def doit(self, data, prompt, extra_pnginfo):
+    def doit(self, data, text, prompt, extra_pnginfo, unique_id):
         shape = ""
         if hasattr(data, "shape"):
             shape = f"{data.shape} / "
@@ -213,12 +220,13 @@ class ImpactLogger:
 
         # for x in prompt:
         #     if 'inputs' in x and 'populated_text' in x['inputs']:
-        #         print(f"PROMP: {x['10']['inputs']['populated_text']}")
+        #         print(f"PROMPT: {x['10']['inputs']['populated_text']}")
         #
         # for x in extra_pnginfo['workflow']['nodes']:
         #     if x['type'] == 'ImpactWildcardProcessor':
         #         print(f" WV : {x['widgets_values'][1]}\n")
 
+        PromptServer.instance.send_sync("impact-node-feedback", {"node_id": unique_id, "widget_name": "text", "type": "TEXT", "value": f"{data}"})
         return {}
 
 
@@ -485,3 +493,94 @@ class StringSelector:
                 selected = lines[select % len(lines)]
 
         return (selected, )
+
+
+class StringListToString:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "join_with": ("STRING", {"default": "\\n"}),
+                "string_list": ("STRING", {"forceInput": True}),
+            }
+        }
+
+    INPUT_IS_LIST = True
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, join_with, string_list):
+        # convert \\n to newline character
+        if join_with[0] == "\\n":
+            join_with[0] = "\n"
+
+        joined_text = join_with[0].join(string_list)
+
+        return (joined_text,)
+
+
+class WildcardPromptFromString:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "string": ("STRING", {"forceInput": True}),
+                "delimiter": ("STRING", {"multiline": False, "default": "\\n" }),
+                "prefix_all": ("STRING", {"multiline": False}),
+                "postfix_all": ("STRING", {"multiline": False}),
+                "restrict_to_tags": ("STRING", {"multiline": False}),
+                "exclude_tags": ("STRING", {"multiline": False})
+            },
+        }
+
+    RETURN_TYPES = ("STRING", "STRING",)
+    RETURN_NAMES = ("wildcard", "segs_labels",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, string, delimiter, prefix_all, postfix_all, restrict_to_tags, exclude_tags):
+        # convert \\n to newline character
+        if delimiter == "\\n":
+            delimiter = "\n"
+
+        # some sanity checks and normalization for later processing
+        if prefix_all is None:
+            prefix_all = ""
+        if postfix_all is None:
+            postfix_all = ""
+        if restrict_to_tags is None:
+            restrict_to_tags = ""
+        if exclude_tags is None:
+            exclude_tags = ""
+
+        restrict_to_tags = restrict_to_tags.split(", ")
+        exclude_tags = exclude_tags.split(", ")
+
+        # build the wildcard prompt per list entry
+        output = ["[LAB]"]
+        labels = []
+        for x in string.split(delimiter):
+            label = str(len(labels) + 1)
+            labels.append(label)
+            x = x.split(", ")
+            # restrict to tags
+            if restrict_to_tags != [""]:
+                x = list(set(x) & set(restrict_to_tags))
+            # remove tags
+            if exclude_tags != [""]:
+                x = list(set(x) - set(exclude_tags))
+            # next row: <LABEL> <PREFIX> <TAGS> <POSTFIX>
+            prompt_for_seg = f'[{label}] {prefix_all} {", ".join(x)} {postfix_all}'.strip()
+            output.append(prompt_for_seg)
+        output = "\n".join(output)
+
+        # clean string: fixup double spaces, commas etc.
+        output = re.sub(r' ,', ',', output)
+        output = re.sub(r'  +', ' ', output)
+        output = re.sub(r',,+', ',', output)
+        output = re.sub(r'\n, ', '\n', output)
+
+        return output, ", ".join(labels)

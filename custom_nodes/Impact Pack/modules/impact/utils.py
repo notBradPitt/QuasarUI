@@ -126,7 +126,7 @@ def to_pil(image):
 
 def to_tensor(image):
     if isinstance(image, Image.Image):
-        return torch.from_numpy(np.array(image))
+        return torch.from_numpy(np.array(image)) / 255.0
     if isinstance(image, torch.Tensor):
         return image
     if isinstance(image, np.ndarray):
@@ -509,12 +509,6 @@ def to_latent_image(pixels, vae):
         pixels = pixels[:, :x, :y, :]
 
     vae_encode = nodes.VAEEncode()
-    if hasattr(nodes.VAEEncode, "vae_encode_crop_pixels"):
-        # backward compatibility
-        print(f"[Impact Pack] QuasarUI is outdated.")
-        pixels = nodes.VAEEncode.vae_encode_crop_pixels(pixels)
-        t = vae.encode(pixels[:, :, :, :3])
-        return {"samples": t}
 
     return vae_encode.encode(vae, pixels)[0]
 

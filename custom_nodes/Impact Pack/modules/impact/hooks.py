@@ -1,6 +1,6 @@
 import copy
+import torch
 import nodes
-
 from impact import utils
 from . import segs_nodes
 from thirdparty import noise_nodes
@@ -8,6 +8,9 @@ from server import PromptServer
 import asyncio
 import folder_paths
 import os
+from quasar_extras import nodes_custom_sampler
+import math
+
 
 class PixelKSampleHook:
     cur_step = 0
@@ -101,6 +104,11 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         image = self.hook2.post_paste(image)
         return image
 
+    def get_custom_noise(self, seed, noise, is_touched):
+        noise_1st, is_touched = self.hook1.get_custom_noise(seed, noise, is_touched)
+        noise_2nd, is_touched = self.hook2.get_custom_noise(seed, noise, is_touched)
+        return noise, is_touched
+
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
     target_cfg = 0
@@ -161,6 +169,39 @@ class DetailerHook(PixelKSampleHook):
 
     def post_paste(self, image):
         return image
+
+    def get_custom_noise(self, seed, noise, is_touched):
+        return noise, is_touched
+
+
+# class CustomNoiseDetailerHookProvider(DetailerHook):
+#     def __init__(self, noise):
+#         super().__init__()
+#         self.noise = noise
+#
+#     def get_custom_noise(self, seed, noise, is_start):
+#         return self.noise
+
+
+class VariationNoiseDetailerHookProvider(DetailerHook):
+    def __init__(self, variation_seed, variation_strength):
+        super().__init__()
+        self.variation_seed = variation_seed
+        self.variation_strength = variation_strength
+
+    def get_custom_noise(self, seed, noise, is_touched):
+        empty_noise = {'samples': torch.zeros(noise.size())}
+        if not is_touched:
+            noise = nodes_custom_sampler.Noise_RandomNoise(seed).generate_noise(empty_noise)
+        noise_2nd = nodes_custom_sampler.Noise_RandomNoise(self.variation_seed).generate_noise(empty_noise)
+
+        mixed_noise = ((1 - self.variation_strength) * noise + self.variation_strength * noise_2nd)
+
+        # NOTE: Since the variance of the Gaussian noise in mixed_noise has changed, it must be corrected through scaling.
+        scale_factor = math.sqrt((1 - self.variation_strength) ** 2 + self.variation_strength ** 2)
+        corrected_noise = mixed_noise / scale_factor  # Scale the noise to maintain variance of 1
+
+        return corrected_noise, True
 
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
@@ -300,14 +341,7 @@ class UnsamplerHook(PixelKSampleHook):
     def post_encode(self, samples):
         cur_step = self.cur_step
 
-        try:
-            Unsampler = noise_nodes.Unsampler
-        except:
-            if 'BNK_Unsampler' not in nodes.NODE_CLASS_MAPPINGS:
-                print("[Impact Pack] ERROR: QuasarUI version is outdated and the BNK_Unsampler node is not installed, so this feature cannot be used.")
-                raise Exception("ERROR: QuasarUI version is outdated and the BNK_Unsampler node is not installed, so this feature cannot be used.")
-
-            Unsampler = nodes.NODE_CLASS_MAPPINGS['BNK_Unsampler']
+        Unsampler = noise_nodes.Unsampler
 
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
         end_at_step = int(end_at_step)

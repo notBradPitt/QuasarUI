@@ -10,7 +10,9 @@ from .core import SEG
 import impact.utils as utils
 from . import defs
 from . import segs_upscaler
+from quasar.cli_args import args
 import math
+
 
 class SEGSDetailer:
     @classmethod
@@ -18,17 +20,17 @@ class SEGSDetailer:
         return {"required": {
                      "image": ("IMAGE", ),
                      "segs": ("SEGS", ),
-                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                     "guide_size": ("FLOAT", {"default": 512, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
                      "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
                      "max_size": ("FLOAT", {"default": 768, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                      "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                     "scheduler": (core.SCHEDULERS,),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE",),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
@@ -39,6 +41,7 @@ class SEGSDetailer:
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                      }
                 }
 
@@ -53,7 +56,7 @@ class SEGSDetailer:
     @staticmethod
     def do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
                   denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
-                  refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+                  refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -106,7 +109,7 @@ class SEGSDetailer:
                                                                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                                                 control_net_wrapper=seg.control_net_wrapper, cycle=cycle,
-                                                                inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                                inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func=scheduler_func_opt)
 
                 if cnet_pils is not None:
                     cnet_pil_list.extend(cnet_pils)
@@ -123,7 +126,7 @@ class SEGSDetailer:
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
-             refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+             refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: SEGSDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/QuasarUI-extension-tutorials/blob/Main/QuasarUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -131,13 +134,13 @@ class SEGSDetailer:
         segs, cnet_pil_list = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
                                                      scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, cycle=cycle,
                                                      refiner_basic_pipe_opt=refiner_basic_pipe_opt,
-                                                     inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                     inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return (segs, cnet_pil_list)
+        return segs, cnet_pil_list
 
 
 class SEGSPaste:
@@ -195,9 +198,8 @@ class SEGSPaste:
                     x, y, *_ = seg.crop_region
 
                     # ensure same device
-                    mask.cpu()
-                    image_i.cpu()
-                    ref_image.cpu()
+                    mask = mask.to(image_i.device)
+                    ref_image = ref_image.to(image_i.device)
 
                     tensor_paste(image_i, ref_image, (x, y), mask)
 
@@ -205,6 +207,9 @@ class SEGSPaste:
                 result = image_i
             else:
                 result = torch.concat((result, image_i), dim=0)
+
+        if not args.highvram and not args.gpu_only:
+            result = result.cpu()
 
         return (result, )
 
@@ -481,7 +486,7 @@ class SEGSOrderedFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"],),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "confidence"],),
                         "order": ("BOOLEAN", {"default": True, "label_on": "descending", "label_off": "ascending"}),
                         "take_start": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                         "take_count": ("INT", {"default": 1, "min": 0, "max": sys.maxsize, "step": 1}),
@@ -515,8 +520,12 @@ class SEGSOrderedFilter:
                 value = x2
             elif target == "y1":
                 value = y1
-            else:
+            elif target == "y2":
                 value = y2
+            elif target == "confidence":
+                value = seg.confidence
+            else:
+                raise Exception(f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
 
             segs_with_order.append((value, seg))
 
@@ -534,7 +543,7 @@ class SEGSOrderedFilter:
             else:
                 remained_list.append(item[1])
 
-        return ((segs[0], result_list), (segs[0], remained_list), )
+        return (segs[0], result_list), (segs[0], remained_list),
 
 
 class SEGSRangeFilter:
@@ -542,7 +551,7 @@ class SEGSRangeFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent"],),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent", "confidence(0-100)"],),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "inside", "label_off": "outside"}),
                         "min_value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                         "max_value": ("INT", {"default": 67108864, "min": 0, "max": sys.maxsize, "step": 1}),
@@ -582,8 +591,12 @@ class SEGSRangeFilter:
                 value = x2
             elif target == "y1":
                 value = y1
-            else:
+            elif target == "y2":
                 value = y2
+            elif target == "confidence(0-100)":
+                value = seg.confidence*100
+            else:
+                raise Exception(f"[Impact Pack] SEGSRangeFilter - Unexpected target '{target}'")
 
             if mode and min_value <= value <= max_value:
                 print(f"[in] value={value} / {mode}, {min_value}, {max_value}")
@@ -595,7 +608,7 @@ class SEGSRangeFilter:
                 remained_segs.append(seg)
                 print(f"[filter] value={value} / {mode}, {min_value}, {max_value}")
 
-        return ((segs[0], new_segs), (segs[0], remained_segs), )
+        return (segs[0], new_segs), (segs[0], remained_segs),
 
 
 class SEGSToImageList:
@@ -716,6 +729,23 @@ class SEGSConcat:
             return (empty_segs, )
         else:
             return ((dim, res), )
+
+
+class Count_Elts_in_SEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                }
+
+    RETURN_TYPES = ("INT",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs):
+        return (len(segs[1]), )
 
 
 class DecomposeSEGS:
@@ -1140,10 +1170,11 @@ class MaskToSEGS:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+    @staticmethod
+    def doit(mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
         mask = make_2d_mask(mask)
-
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
+
         return (result, )
 
 
@@ -1165,11 +1196,17 @@ class MaskToSEGS_for_AnimateDiff:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+    @staticmethod
+    def doit(mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+        if (len(mask.shape) == 4 and mask.shape[1] > 1) or (len(mask.shape) == 3 and mask.shape[0] > 1):
+            mask = make_3d_mask(mask)
+            if contour_fill:
+                print(f"[Impact Pack] MaskToSEGS_for_AnimateDiff: 'contour_fill' is ignored because batch mask 'contour_fill' is not supported.")
+            result = core.batch_mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
+            return (result, )
+
         mask = make_2d_mask(mask)
-
         segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
-
         all_masks = SEGSToMaskList().doit(segs)[0]
 
         result_mask = (all_masks[0] * 255).to(torch.uint8)
@@ -1179,7 +1216,7 @@ class MaskToSEGS_for_AnimateDiff:
         result_mask = (result_mask/255.0).to(torch.float32)
         result_mask = utils.to_binary_mask(result_mask, 0.1)[0]
 
-        return MaskToSEGS().doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
+        return MaskToSEGS.doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
 
 
 class IPAdapterApplySEGS:
@@ -1210,7 +1247,8 @@ class IPAdapterApplySEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, context_crop_factor, reference_image, combine_embeds="concat", neg_image=None):
+    @staticmethod
+    def doit(segs, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, context_crop_factor, reference_image, combine_embeds="concat", neg_image=None):
 
         if len(ipadapter_pipe) == 4:
             print(f"[Impact Pack] IPAdapterApplySEGS: Installed Inspire Pack is outdated.")
@@ -1254,7 +1292,8 @@ class ControlNetApplySEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, control_net, strength, segs_preprocessor=None, control_image=None):
+    @staticmethod
+    def doit(segs, control_net, strength, segs_preprocessor=None, control_image=None):
         new_segs = []
 
         for seg in segs[1]:
@@ -1287,7 +1326,8 @@ class ControlNetApplyAdvancedSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, control_net, strength, start_percent, end_percent, segs_preprocessor=None, control_image=None):
+    @staticmethod
+    def doit(segs, control_net, strength, start_percent, end_percent, segs_preprocessor=None, control_image=None):
         new_segs = []
 
         for seg in segs[1]:
@@ -1310,7 +1350,8 @@ class ControlNetClearSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs):
+    @staticmethod
+    def doit(segs):
         new_segs = []
 
         for seg in segs[1]:
@@ -1368,7 +1409,8 @@ class SEGSPicker:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, picks, segs, fallback_image_opt=None, unique_id=None):
+    @staticmethod
+    def doit(picks, segs, fallback_image_opt=None, unique_id=None):
         if fallback_image_opt is not None:
             segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
@@ -1423,7 +1465,8 @@ class DefaultImageForSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, image, override):
+    @staticmethod
+    def doit(segs, image, override):
         results = []
 
         segs = core.segs_scale_match(segs, image.shape)
@@ -1467,7 +1510,8 @@ class RemoveImageFromSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs):
+    @staticmethod
+    def doit(segs):
         results = []
 
         if len(segs[1]) > 0:
@@ -1486,7 +1530,7 @@ class MakeTileSEGS:
         return {"required": {
                      "images": ("IMAGE", ),
                      "bbox_size": ("INT", {"default": 512, "min": 64, "max": 4096, "step": 8}),
-                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.01}),
                      "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
                      "filter_segs_dilation": ("INT", {"default": 20, "min": -255, "max": 255, "step": 1}),
                      "mask_irregularity": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
@@ -1504,7 +1548,8 @@ class MakeTileSEGS:
 
     CATEGORY = "ImpactPack/__for_testing"
 
-    def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
+    @staticmethod
+    def doit(images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:
             new_min_overlap = bbox_size / 2
             print(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
@@ -1688,7 +1733,7 @@ class SEGSUpscaler:
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
-                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                    "scheduler": (core.SCHEDULERS,),
                     "positive": ("CONDITIONING",),
                     "negative": ("CONDITIONING",),
                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
@@ -1699,6 +1744,7 @@ class SEGSUpscaler:
                 "optional": {
                     "upscale_model_opt": ("UPSCALE_MODEL",),
                     "upscaler_hook_opt": ("UPSCALER_HOOK",),
+                    "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     }
                 }
 
@@ -1710,7 +1756,7 @@ class SEGSUpscaler:
     @staticmethod
     def doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
              seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
-             upscale_model_opt=None, upscaler_hook_opt=None):
+             upscale_model_opt=None, upscaler_hook_opt=None, scheduler_func_opt=None):
 
         new_image = segs_upscaler.upscaler(image, upscale_model_opt, rescale_factor, resampling_method, supersample, rounding_modulus)
 
@@ -1736,7 +1782,7 @@ class SEGSUpscaler:
             enhanced_image = segs_upscaler.img2img_segs(cropped_image, model, clip, vae, seg_seed, steps, cfg, sampler_name, scheduler,
                                                         positive, negative, denoise,
                                                         noise_mask=cropped_mask, control_net_wrapper=seg.control_net_wrapper,
-                                                        inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                        inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
             if not (enhanced_image is None):
                 new_image = new_image.cpu()
                 enhanced_image = enhanced_image.cpu()
@@ -1745,7 +1791,7 @@ class SEGSUpscaler:
                 tensor_paste(new_image, enhanced_image, (left, top), mask)
 
                 if upscaler_hook_opt is not None:
-                    upscaler_hook_opt.post_paste(new_image)
+                    new_image = upscaler_hook_opt.post_paste(new_image)
 
         enhanced_img = tensor_convert_rgb(new_image)
 
@@ -1769,7 +1815,7 @@ class SEGSUpscalerPipe:
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                     "sampler_name": (quasar.samplers.KSampler.SAMPLERS,),
-                    "scheduler": (quasar.samplers.KSampler.SCHEDULERS,),
+                    "scheduler": (core.SCHEDULERS,),
                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
@@ -1778,6 +1824,7 @@ class SEGSUpscalerPipe:
                 "optional": {
                     "upscale_model_opt": ("UPSCALE_MODEL",),
                     "upscaler_hook_opt": ("UPSCALER_HOOK",),
+                    "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     }
                 }
 
@@ -1789,10 +1836,10 @@ class SEGSUpscalerPipe:
     @staticmethod
     def doit(image, segs, basic_pipe, rescale_factor, resampling_method, supersample, rounding_modulus,
              seed, steps, cfg, sampler_name, scheduler, denoise, feather, inpaint_model, noise_mask_feather,
-             upscale_model_opt=None, upscaler_hook_opt=None):
+             upscale_model_opt=None, upscaler_hook_opt=None, scheduler_func_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
 
         return SEGSUpscaler.doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
                                  seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
-                                 upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt)
+                                 upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt, scheduler_func_opt=scheduler_func_opt)
