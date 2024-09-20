@@ -19,9 +19,9 @@ from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
 
 from ..modules.pose_net import PoseNet
 
-from comfy.utils import ProgressBar
-import comfy.model_management as mm
-from comfy.clip_vision import clip_preprocess
+from quasar.utils import ProgressBar
+import quasar.model_management as mm
+from quasar.clip_vision import clip_preprocess
 offload_device = mm.unet_offload_device()
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -615,7 +615,7 @@ class MimicMotionPipeline(DiffusionPipeline):
                    range(0, num_frames - tile_size + 1, tile_size - tile_overlap)]
         if indices[-1][-1] < num_frames - 1:
             indices.append([0, *range(num_frames - tile_size + 1, num_frames)])
-        comfy_pbar = ProgressBar(len(timesteps) * len(indices))
+        quasar_pbar = ProgressBar(len(timesteps) * len(indices))
         with self.progress_bar(total=len(timesteps) * len(indices)) as progress_bar:
             for i, t in enumerate(timesteps):
                 # expand the latents if we are doing classifier free guidance
@@ -684,7 +684,7 @@ class MimicMotionPipeline(DiffusionPipeline):
 
                     noise_pred_cnt[idx] += weight
                     progress_bar.update()
-                    comfy_pbar.update(1)
+                    quasar_pbar.update(1)
                 noise_pred.div_(noise_pred_cnt[:, None, None, None])
 
                 # perform guidance
