@@ -1,6 +1,6 @@
 import numpy as np
 
-import comfy.model_management as mm
+import quasar.model_management as mm
 
 #import onnxruntime as ort
 # from .onnxdet import inference_detector
